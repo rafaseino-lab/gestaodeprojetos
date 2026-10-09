@@ -5110,6 +5110,7 @@ function buildBudgetRooms(){
     card.innerHTML=`<table class="bitbl"><thead><tr><th style="width:240px">Item</th><th style="width:155px">Categoria</th><th style="width:110px">Fornecedor</th><th style="width:55px">Qty</th><th style="width:90px">Custo unit. ($)</th><th style="width:100px">Valor orçado ($)</th><th style="width:110px">Notas</th><th style="width:40px"></th></tr></thead><tbody id="tb-est-all"></tbody></table>
       <div style="padding:10px 15px;background:#FAF7F3;border-top:1px solid #F0EAE2">
         <button class="btn btn-ghost" style="font-size:12px;padding:6px 12px" onclick="addItem('est')">+ Adicionar item</button>
+        <button class="btn" style="font-size:12px;padding:6px 12px;margin-left:8px;background:var(--gold,#9B7535);color:#fff;border:0;border-radius:6px;cursor:pointer;font-weight:700" onclick="estimateBudgetAI()">✨ Estimar com IA</button>
       </div>`;
     estC.appendChild(card);
     renderEstimateFlat();
@@ -14255,6 +14256,56 @@ async function _saveBI(roomId,islug){
     paid_from_wc:!!d.paid_from_wc},
     {onConflict:'project_id,room_id,item_slug'});
   showSaved();
+}
+
+// ═══ AGENTE: estimar Valor Orçado com IA (por região + sqft) ═══════════
+async function estimateBudgetAI(){
+  if(!CID){ toast('Abra uma obra primeiro.',false); return; }
+  const p=(projects.find(x=>x.id===CID))||{};
+  // 1) Endereço/região
+  let address=(p.address||'').trim();
+  if(!address){ address=(prompt('Endereço / cidade / região da obra (pra IA estimar os preços da região):','')||'').trim(); }
+  // 2) Área em sqft
+  let sqRaw=prompt('Área da obra em pés quadrados (sqft):','');
+  if(sqRaw===null) return;
+  const sqft=parseFloat(String(sqRaw).replace(/[^\d.]/g,''))||0;
+  if(!sqft){ toast('Informe uma área (sqft) válida.',false); return; }
+  // 3) Coleta os itens do Orçado deste projeto
+  const items=[];
+  ROOMS.forEach(r=>{ const rm=(budgetMap[CID]||{})[r.id]||{}; Object.keys(rm).forEach(islug=>{ const d=rm[islug]||{}; items.push({key:r.id+'|'+islug, name:_itemName(r.id,islug), category:d.category||''}); }); });
+  if(!items.length){ toast('Adicione itens no Orçado antes de estimar.',false); return; }
+  // 4) Chama a Edge Function (IA)
+  toast('✨ Estimando com IA… ('+items.length+' itens)');
+  let data;
+  try{
+    const resp=await sb.functions.invoke('estimate-budget',{body:{address,sqft,currency:'USD',items}});
+    if(resp.error) throw resp.error;
+    data=resp.data;
+    if(data && data.error) throw new Error(data.error);
+  }catch(e){
+    const msg=(e&&e.message)?e.message:String(e);
+    toast('Erro na estimativa: '+msg+' — verifique se a Edge Function "estimate-budget" está publicada e a ANTHROPIC_API_KEY configurada.',false);
+    return;
+  }
+  const est=(data&&data.items)||[];
+  if(!est.length){ toast('A IA não retornou valores.',false); return; }
+  // 5) Prévia + confirmação (sobrescreve os Valores Orçados atuais)
+  let total=0, n=0;
+  est.forEach(it=>{ const [rid,isl]=String(it.key||'').split('|'); if(rid&&isl&&(budgetMap[CID]||{})[rid]&&budgetMap[CID][rid][isl]){ total+=(+it.est||0); n++; } });
+  const basis=(data.assumptions?('\n\nBase: '+data.assumptions):'');
+  if(!confirm('A IA estimou '+n+' itens — total ≈ '+fmt(total)+' (US$).'+basis+'\n\nAplicar aos Valores Orçados? (substitui os valores atuais)')) return;
+  // 6) Aplica e salva
+  let applied=0;
+  for(const it of est){
+    const [rid,isl]=String(it.key||'').split('|');
+    if(!rid||!isl) continue;
+    if(!(budgetMap[CID]||{})[rid]||!budgetMap[CID][rid][isl]) continue;
+    budgetMap[CID][rid][isl].est=Math.round((+it.est||0)*100)/100;
+    if(it.note) budgetMap[CID][rid][isl].est_note=('IA: '+String(it.note)).slice(0,250);
+    try{ await _saveBI(rid,isl); applied++; }catch(_){}
+  }
+  renderEstimateFlat();
+  toast('✅ '+applied+' itens estimados pela IA (US$).');
 }
 function _recalcAmount(type,roomId,islug){
   const d=budgetMap[CID][roomId][islug];
