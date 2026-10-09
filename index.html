@@ -14278,13 +14278,13 @@ async function estimateBudgetAI(){
   toast('✨ Estimando com IA… ('+items.length+' itens)');
   let data;
   try{
-    const resp=await sb.functions.invoke('estimate-budget',{body:{address,sqft,currency:'USD',items}});
+    const resp=await sb.functions.invoke('estimate-budge',{body:{address,sqft,currency:'USD',items}});
     if(resp.error) throw resp.error;
     data=resp.data;
     if(data && data.error) throw new Error(data.error);
   }catch(e){
     const msg=(e&&e.message)?e.message:String(e);
-    toast('Erro na estimativa: '+msg+' — verifique se a Edge Function "estimate-budget" está publicada e a ANTHROPIC_API_KEY configurada.',false);
+    toast('Erro na estimativa: '+msg+' — verifique se a Edge Function "estimate-budge" está publicada e a ANTHROPIC_API_KEY configurada.',false);
     return;
   }
   const est=(data&&data.items)||[];
@@ -15850,7 +15850,7 @@ async function renderBudgets(){
   const el=document.getElementById('bdg-list');
   if(!el) return;
   document.getElementById('bdg-sub').textContent=
-    budgets.length===0?'Nenhum orçamento ainda. Clique em "<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><path d="M5 12h14"/><path d="M12 5v14"/></svg>Novo Orçamento" pra começar.':
+    budgets.length===0?'Nenhum orçamento ainda. Clique em "+ Novo Orçamento" pra começar.':
     `${budgets.length} orçamento${budgets.length!==1?'s':''} · clique em qualquer um pra abrir`;
   if(budgets.length===0){
     el.innerHTML=`<div style="background:#fff;padding:60px 30px;border-radius:12px;text-align:center;color:#999;font-style:italic">
