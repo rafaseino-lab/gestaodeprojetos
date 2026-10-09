@@ -2440,7 +2440,7 @@ const EC_DEFAULTS={
 let CURRENT_USER=null;
 
 // CEO list — full access (Property & Finance, DRE, Financial, all CEO-only items)
-const CEO_EMAILS=['rafaseino@gmail.com'];
+const CEO_EMAILS=['rafaseino@gmail.com','rafael@krafted.com'];
 // Supervisor list — limited access: Projects + Estimate + Actual Costs + Project Info only
 // To add a supervisor: 1) Create user in Supabase Auth · 2) Add email below
 const SUPERVISOR_EMAILS=[];
@@ -2482,7 +2482,7 @@ function applyCEOVisibility(){
 // ═══ AUTH ════════════════════════════════════════════════════════════
 // E-mails do TIME (CEO/supervisores) — só eles entram no admin.
 // Qualquer outro e-mail logado é tratado como INVESTIDOR (portal por login).
-const TEAM_EMAILS=['rafaseino@gmail.com'];
+const TEAM_EMAILS=['rafaseino@gmail.com','rafael@krafted.com'];
 function isTeamEmail(email){ return TEAM_EMAILS.includes((email||'').toLowerCase()); }
 
 async function init(){
