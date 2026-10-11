@@ -6,7 +6,7 @@
 <title>KRAFTED · Sistema</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -14,7 +14,7 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <style>
 /* ═══ DEC GROUP BRAND GUIDELINES 2026 — Official Fonts ═══ */
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 *{box-sizing:border-box;margin:0;padding:0}
 
@@ -72,7 +72,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
   --shadow:0 2px 12px rgba(61,39,26,.09);
 
   /* Fontes oficiais (Broad Sans é paga — usando substitutas elegantes) */
-  --font-display:'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+  --font-display:'Fraunces', 'Playfair Display', Georgia, serif;
   --font-body:'Inter', 'Helvetica Neue', 'Segoe UI', Arial, sans-serif;
 }
 
@@ -3907,7 +3907,7 @@ function _renderInvestorPortal(client,projects,invoices,itemsByInvoice,propertyB
       <div style="background:#fff;border-radius:14px;padding:22px 28px;margin-bottom:24px;box-shadow:0 4px 20px rgba(0,0,0,.06);display:flex;align-items:center;gap:24px;flex-wrap:wrap">
         <!-- DEC Logo (left) — same logo used in PDF reports -->
         <div style="flex:0 0 auto">
-          <img src="${DEC_LOGO_B64}" alt="KRAFTED" style="height:64px;width:auto;display:block">
+          ${KRAFTED_WORDMARK}
         </div>
         <!-- Welcome (right) -->
         <div style="flex:1;min-width:200px">
@@ -8636,7 +8636,7 @@ function generateReport(){
 <body>
   <div class="header">
     <div class="h-logo">
-      <img src="${DEC_LOGO_B64}" alt="KRAFTED">
+      ${KRAFTED_WORDMARK}
     </div>
     <div class="h-center">
       <div class="title">Financial Report</div>
@@ -9714,7 +9714,7 @@ th{background:#F6F3ED;padding:6px 10px;text-align:left;font-size:10px;color:#706
 @page{size:A4;margin:10mm}
 </style></head><body>
 <div class="header">
-  <div class="h-logo"><img src="${DEC_LOGO_B64}" alt="KRAFTED"></div>
+  <div class="h-logo">${KRAFTED_WORDMARK}</div>
   <div class="h-center">
     <div class="title">Working Capital Report</div>
     <div class="subtitle">Cash Flow · Inflows &amp; Outflows</div>
@@ -10708,6 +10708,9 @@ const INVOICE_STATUS_META={
 };
 
 // DEC company info (fixed in code)
+// Wordmark KRAFTED em texto (transparente) — p/ relatórios/propostas/portal em fundo claro
+const KRAFTED_WORDMARK = '<div style="font-family:\'Fraunces\',\'Playfair Display\',Georgia,serif;line-height:1.05;display:inline-block"><div style="font-size:27px;font-weight:600;letter-spacing:1.5px;color:#191815">KRAFTED</div><div style="font-size:8.5px;font-weight:600;letter-spacing:3.5px;color:#B89B64;margin-top:3px;font-family:\'Inter\',Arial,sans-serif">BY ZK BAHIA</div></div>';
+
 const DEC_COMPANY={
   name:'KRAFTED',
   address:'',
@@ -11633,7 +11636,7 @@ function generateListingPDF(){
 <body>
 <div class="wrapper">
   <div class="hdr">
-    <div class="logo"><img src="${DEC_LOGO_B64}" alt="KRAFTED"></div>
+    <div class="logo">${KRAFTED_WORDMARK}</div>
     <div class="title">
       <h1>PROPERTY LISTING REPORT</h1>
       <div class="sub">Complete Listing Specification</div>
@@ -11808,7 +11811,7 @@ function _showInvoiceDoc(inv, client, items){
       <div class="ad">${(client.address||'').replace(/,\\s*/g,',\\n')}</div>
     </div>
     <div class="h-center">
-      <img src="${DEC_LOGO_B64}" alt="KRAFTED">
+      ${KRAFTED_WORDMARK}
       <div class="company-info">
         <div class="cname">${DEC_COMPANY.name}</div>
         <div>${DEC_COMPANY.address}</div>
@@ -16214,7 +16217,7 @@ function renderBudgetClientView(b, mode){
     <!-- Header with DEC logo + welcome -->
     <div style="background:#fff;border-radius:14px;padding:22px 28px;margin-bottom:24px;box-shadow:0 4px 20px rgba(0,0,0,.06);display:flex;align-items:center;gap:24px;flex-wrap:wrap">
       <div style="flex:0 0 auto">
-        <img src="${typeof DEC_LOGO_B64!=='undefined'?DEC_LOGO_B64:''}" alt="KRAFTED" style="height:64px;width:auto;display:block">
+        ${KRAFTED_WORDMARK}
       </div>
       <div style="flex:1;min-width:200px">
         <div style="font-size:11px;font-weight:700;color:#B89B64;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px">Proposta de Investimento</div>
