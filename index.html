@@ -802,17 +802,17 @@ h1{font-weight:300}  /* Light 300 = títulos principais (igual manual) */
               <div class="fg"><label>% Client</label>
                 <input id="pi-pct-client" type="number" min="0" max="100" step="0.1" placeholder="50" value="50" oninput="onPctChange('client')">
               </div>
-              <div class="fg"><label>% DEC</label>
+              <div class="fg"><label>% KRAFTED</label>
                 <input id="pi-pct-dec" type="number" min="0" max="100" step="0.1" placeholder="50" value="50" oninput="onPctChange('dec')">
               </div>
             </div>
             <div class="dgrid" style="grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px">
               <div class="kpi" style="border-left-color:var(--gold);background:#EEE5D3"><div class="kpi-l"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Cliente recebe</div><div class="kpi-v" id="pft-client">$0</div><div class="kpi-l" style="margin-top:4px;font-size:10px">% Client of profit</div></div>
-              <div class="kpi" style="border-left-color:var(--blue);background:#F6F3ED"><div class="kpi-l"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><path d="M9 22v-4h6v4"/></svg>DEC receives</div><div class="kpi-v" id="pft-dec">$0</div><div class="kpi-l" style="margin-top:4px;font-size:10px">% DEC of profit</div></div>
+              <div class="kpi" style="border-left-color:var(--blue);background:#F6F3ED"><div class="kpi-l"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><path d="M9 22v-4h6v4"/></svg>KRAFTED recebe</div><div class="kpi-v" id="pft-dec">$0</div><div class="kpi-l" style="margin-top:4px;font-size:10px">% KRAFTED of profit</div></div>
               <div class="kpi" style="border-left-color:var(--p3);background:#E7F2EB"><div class="kpi-l"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px"><line x1="19" x2="5" y1="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>Refund</div><div class="kpi-v" id="pft-refund">$0</div><div class="kpi-l" style="margin-top:4px;font-size:10px">From Refund invoices · info only (not summed)</div></div>
             </div>
             <div style="margin-top:14px;padding:12px 14px;background:#F6F3ED;border-left:3px solid var(--gray3);border-radius:6px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-              <span style="color:var(--navy);font-weight:700;font-size:13px"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>Fatura DEC nº:</span>
+              <span style="color:var(--navy);font-weight:700;font-size:13px"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>Fatura KRAFTED nº:</span>
               <input id="pi-dec-invoice" type="text" placeholder="INV-2025-001" oninput="debouncePI()" style="padding:6px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:6px;outline:none;width:180px">
               <span style="color:var(--gray3);font-size:11px;font-style:italic">— número da invoice emitida (faturada separadamente)</span>
             </div>
@@ -1755,14 +1755,14 @@ h1{font-weight:300}  /* Light 300 = títulos principais (igual manual) */
         <select id="fin-oh-base" style="margin-left:5px;padding:6px 9px;font-size:12px;border:1.5px solid var(--gray2);border-radius:6px;outline:none">
           <option value="total_invested">Total investido</option>
           <option value="actual">Custo realizado</option>
-          <option value="faturamento">Faturamento DEC</option>
+          <option value="faturamento">Faturamento KRAFTED</option>
         </select>
       </label>
       <label style="font-size:12px;color:var(--gray3)">Taxa:
         <input id="fin-oh-rate" type="number" min="0" step="0.01" style="margin-left:5px;width:80px;padding:6px 9px;font-size:12px;border:1.5px solid var(--gray2);border-radius:6px;outline:none"> %
       </label>
       <button class="btn btn-primary" style="padding:7px 14px;font-size:12px" onclick="saveOverheadConfig()">Salvar taxa</button>
-      <span style="font-size:11px;color:var(--gray3);font-style:italic">Overhead = taxa × base de cada projeto · entra no custo da DEC e abate o Lucro DEC.</span>
+      <span style="font-size:11px;color:var(--gray3);font-style:italic">Overhead = taxa × base de cada projeto · entra no custo da KRAFTED e abate o Lucro KRAFTED.</span>
     </div>
   </div>
 
@@ -1794,7 +1794,7 @@ h1{font-weight:300}  /* Light 300 = títulos principais (igual manual) */
             <th style="padding:10px 12px;text-align:right;border-bottom:2px solid var(--gray2);font-size:11px;width:120px" title="Operacional − Custos realizados">Margem reforma</th>
             <th style="padding:10px 12px;text-align:right;border-bottom:2px solid var(--gray2);font-size:11px;width:110px" title="Lucro final (invoices de ROI)">ROI (lucro final)</th>
             <th style="padding:10px 12px;text-align:right;border-bottom:2px solid var(--gray2);font-size:11px;width:110px">Overhead</th>
-            <th style="padding:10px 12px;text-align:right;border-bottom:2px solid var(--gray2);font-size:11px;width:120px" title="Margem reforma + ROI − Overhead">Lucro DEC</th>
+            <th style="padding:10px 12px;text-align:right;border-bottom:2px solid var(--gray2);font-size:11px;width:120px" title="Margem reforma + ROI − Overhead">Lucro KRAFTED</th>
             <th style="padding:10px 12px;text-align:right;border-bottom:2px solid var(--gray2);font-size:11px;width:80px">Margem %</th>
           </tr>
         </thead>
@@ -3424,7 +3424,7 @@ function _renderInvestorPortal(client,projects,invoices,itemsByInvoice,propertyB
     const lucroDec=netProfit*pctDec/100;
     const roiClient=roiTotal*pctClient/100;
     const roiDec=roiTotal*pctDec/100;
-    const pagarADec=lucroDec; // DEC receives = % DEC of profit only
+    const pagarADec=lucroDec; // KRAFTED recebe = % KRAFTED of profit only
 
     // Header sub-info: Purchase Date, Final Sale Price, Execution Time (for sold projects)
     let executionDays=null;
@@ -3907,7 +3907,7 @@ function _renderInvestorPortal(client,projects,invoices,itemsByInvoice,propertyB
       <div style="background:#fff;border-radius:14px;padding:22px 28px;margin-bottom:24px;box-shadow:0 4px 20px rgba(0,0,0,.06);display:flex;align-items:center;gap:24px;flex-wrap:wrap">
         <!-- DEC Logo (left) — same logo used in PDF reports -->
         <div style="flex:0 0 auto">
-          <img src="${DEC_LOGO_B64}" alt="DEC Group" style="height:64px;width:auto;display:block">
+          <img src="${DEC_LOGO_B64}" alt="KRAFTED" style="height:64px;width:auto;display:block">
         </div>
         <!-- Welcome (right) -->
         <div style="flex:1;min-width:200px">
@@ -4738,7 +4738,7 @@ async function renderFluxo(){
 function _fluxoExport(){
   const wrap=document.getElementById('fluxo-table-wrap'); if(!wrap) return;
   const w=window.open('','_blank'); if(!w){toast('Permita pop-ups para exportar',false);return;}
-  w.document.write('<html><head><title>Fluxo de Caixa '+_fluxoYear+'</title><style>body{font-family:-apple-system,Arial,sans-serif;padding:20px}table{width:100%;border-collapse:collapse}@page{size:landscape}</style></head><body><h3>DEC Group USA — Fluxo de Caixa '+_fluxoYear+'</h3>'+wrap.innerHTML+'</body></html>');
+  w.document.write('<html><head><title>Fluxo de Caixa '+_fluxoYear+'</title><style>body{font-family:-apple-system,Arial,sans-serif;padding:20px}table{width:100%;border-collapse:collapse}@page{size:landscape}</style></head><body><h3>KRAFTED — Fluxo de Caixa '+_fluxoYear+'</h3>'+wrap.innerHTML+'</body></html>');
   w.document.close(); setTimeout(()=>{w.print();},350);
 }
 
@@ -8461,7 +8461,7 @@ function recalcProfit(){
   const pctClient=parseFloat(v('pi-pct-client'))||0;
   const pctDec=parseFloat(v('pi-pct-dec'))||0;
   const cliShare=actProfit*pctClient/100;
-  const decShare=actProfit*pctDec/100; // DEC receives = % of profit ONLY (refund is no longer added)
+  const decShare=actProfit*pctDec/100; // KRAFTED recebe = % of profit ONLY (refund is no longer added)
   const cliEl=document.getElementById('pft-client');
   const decEl=document.getElementById('pft-dec');
   if(cliEl){
@@ -8561,7 +8561,7 @@ function generateReport(){
   const pctDec=+p.pct_dec||0;
   const lucroClient=lucroLiquido*pctClient/100;
   const lucroDec=lucroLiquido*pctDec/100;
-  const pagarADec=lucroDec; // DEC receives = % DEC of profit only (refund is no longer added)
+  const pagarADec=lucroDec; // KRAFTED recebe = % KRAFTED of profit only (refund is no longer added)
   // ROI = Net Profit / Total investido × 100 (dividido proporcionalmente entre Client e DEC)
   const roiTotal=totalInvestido>0?(lucroLiquido/totalInvestido*100):0;
   const roiClient=roiTotal*pctClient/100;
@@ -8587,7 +8587,7 @@ function generateReport(){
 <meta charset="utf-8">
 <title>Report - ${projName}</title>
 <style>
-  /* ═══ DEC Group Brand Palette ═══
+  /* ═══ KRAFTED Brand Palette ═══
      #191815 — Dark (texto principal, headers fortes)
      #292824 — Brown Dark (títulos, section bars)
      #706B62 — Brown Medium (texto secundário)
@@ -8636,7 +8636,7 @@ function generateReport(){
 <body>
   <div class="header">
     <div class="h-logo">
-      <img src="${DEC_LOGO_B64}" alt="DEC Group">
+      <img src="${DEC_LOGO_B64}" alt="KRAFTED">
     </div>
     <div class="h-center">
       <div class="title">Financial Report</div>
@@ -8716,9 +8716,9 @@ function generateReport(){
     <div class="summary-row"><strong>ROI Total</strong><span>${$pct(roiTotal)}</span></div>
     <div class="summary-row"><strong>${pctClient}% Client</strong><span>${$$(lucroClient)}</span></div>
     <div class="summary-row"><strong>ROI Client</strong><span>${$pct(roiClient)}</span></div>
-    <div class="summary-row"><strong>${pctDec}% DEC</strong><span>${$$(lucroDec)}</span></div>
+    <div class="summary-row"><strong>${pctDec}% KRAFTED</strong><span>${$$(lucroDec)}</span></div>
     ${refund>0?`<div class="summary-row"><strong>Reembolso</strong><span>${$$(refund)}</span></div>`:''}
-    <div class="summary-row final"><strong>PAID TO DEC</strong><span>${$$(pagarADec)}</span></div>
+    <div class="summary-row final"><strong>PAGO À KRAFTED</strong><span>${$$(pagarADec)}</span></div>
   </div>
 
   <div class="footer">
@@ -8766,10 +8766,10 @@ function _initDreSelectors(){
 // Calcular DRE de um período (mês ou range)
 // startKey, endKey = 'YYYY-MM' inclusive
 function calcDREPeriod(startKey,endKey){
-  // ═══ DRE DA DEC (modelo de margem operacional + ROI final) ═══
+  // ═══ DRE DA KRAFTED (modelo de margem operacional + ROI final) ═══
   // RECEITAS:
-  //   Frente 1 — Invoices operacionais PAGAS (cliente paga DEC durante a obra)
-  //   Frente 2 — Invoices Final ROI PAGAS (cliente paga DEC após a venda — 50% do lucro)
+  //   Frente 1 — Invoices operacionais PAGAS (cliente paga KRAFTED durante a obra)
+  //   Frente 2 — Invoices Final ROI PAGAS (cliente paga KRAFTED após a venda — 50% do lucro)
   // CUSTOS da DEC:
   //   Actual Costs (vendors) + Costs (DEC Invoice items)
   //   + Documents + High End  (alocados ao mês baseado em invoice.date do projeto)
@@ -8897,14 +8897,14 @@ function _fmtSignedNeg(n){return (n>=0?'':'-')+fmt(Math.abs(n));}
 function _dreSectionHTML(d,title){
   return `
     <div class="card" style="margin-bottom:14px">
-      <div style="background:#292824;color:#DDD8CF;padding:10px 14px;font-size:13px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;border-radius:8px 8px 0 0;margin:-15px -15px 14px">${title} — DRE da DEC</div>
+      <div style="background:#292824;color:#DDD8CF;padding:10px 14px;font-size:13px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;border-radius:8px 8px 0 0;margin:-15px -15px 14px">${title} — DRE da KRAFTED</div>
       <table style="width:100%;border-collapse:collapse;font-size:13px">
 
         <tr><td colspan="2" style="padding:8px 12px;background:#F6F3ED;font-weight:700;color:var(--navy);text-transform:uppercase;font-size:11px;letter-spacing:.5px">FRENTE 1 — MARGEM OPERACIONAL</td></tr>
         <tr><td style="padding:7px 12px 7px 24px;border-bottom:1px solid #DDD8CF"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Faturas operacionais (pagas)</td><td style="padding:7px 12px;border-bottom:1px solid #DDD8CF;text-align:right;font-weight:600;color:var(--p3)">${fmt(d.opPaid)}</td></tr>
         ${d.opOpen>0?`<tr><td style="padding:5px 12px 5px 24px;border-bottom:1px solid #DDD8CF;color:var(--gray3);font-size:11px;font-style:italic">↳ Pendente (não conta)</td><td style="padding:5px 12px;border-bottom:1px solid #DDD8CF;text-align:right;color:var(--gray3);font-size:11px;font-style:italic">${fmt(d.opOpen)}</td></tr>`:''}
         <tr><td style="padding:7px 12px 7px 24px;border-bottom:1px solid #DDD8CF"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>(−) Custos realizados (fornecedores)</td><td style="padding:7px 12px;border-bottom:1px solid #DDD8CF;text-align:right;color:var(--p1)">−${fmt(d.actualCosts)}</td></tr>
-        <tr><td style="padding:7px 12px 7px 24px;border-bottom:1px solid #DDD8CF"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/></svg>(−) Custos (itens de fatura DEC)</td><td style="padding:7px 12px;border-bottom:1px solid #DDD8CF;text-align:right;color:var(--p1)">−${fmt(d.decInvoiceCost)}</td></tr>
+        <tr><td style="padding:7px 12px 7px 24px;border-bottom:1px solid #DDD8CF"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/></svg>(−) Custos (itens de fatura KRAFTED)</td><td style="padding:7px 12px;border-bottom:1px solid #DDD8CF;text-align:right;color:var(--p1)">−${fmt(d.decInvoiceCost)}</td></tr>
         <tr><td style="padding:7px 12px 7px 24px;border-bottom:1px solid #DDD8CF"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>(−) Documentos</td><td style="padding:7px 12px;border-bottom:1px solid #DDD8CF;text-align:right;color:var(--p1)">−${fmt(d.docCost)}</td></tr>
         <tr><td style="padding:7px 12px 7px 24px;border-bottom:1px solid #DDD8CF"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.287 1.288L3 12l5.8 1.9a2 2 0 0 1 1.288 1.287L12 21l1.9-5.8a2 2 0 0 1 1.287-1.288L21 12l-5.8-1.9a2 2 0 0 1-1.288-1.287Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>(−) High End</td><td style="padding:7px 12px;border-bottom:1px solid #DDD8CF;text-align:right;color:var(--p1)">−${fmt(d.heCost)}</td></tr>
         <tr style="background:#F6F3ED"><td style="padding:9px 12px;font-weight:700;color:${d.margemOperacional>=0?'var(--p3)':'var(--p1)'};text-transform:uppercase;font-size:11px">= MARGEM OPERACIONAL</td><td style="padding:9px 12px;text-align:right;font-weight:800;color:${d.margemOperacional>=0?'var(--p3)':'var(--p1)'};font-size:14px">${_fmtSignedNeg(d.margemOperacional)}</td></tr>
@@ -8913,7 +8913,7 @@ function _dreSectionHTML(d,title){
         <tr><td style="padding:7px 12px 7px 24px;border-bottom:1px solid #DDD8CF"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px"><polygon points="6 3 18 3 22 9 12 22 2 9"/><line x1="11" x2="13" y1="3" y2="3"/><line x1="2" x2="22" y1="9" y2="9"/></svg>Faturas de ROI Final (pagas)</td><td style="padding:7px 12px;border-bottom:1px solid #DDD8CF;text-align:right;font-weight:600;color:var(--gold)">${fmt(d.roiPaid)}</td></tr>
         ${d.roiOpen>0?`<tr><td style="padding:5px 12px 5px 24px;border-bottom:1px solid #DDD8CF;color:var(--gray3);font-size:11px;font-style:italic">↳ Pendente (não conta)</td><td style="padding:5px 12px;border-bottom:1px solid #DDD8CF;text-align:right;color:var(--gray3);font-size:11px;font-style:italic">${fmt(d.roiOpen)}</td></tr>`:''}
 
-        <tr><td colspan="2" style="padding:8px 12px;background:#EEE5D3;font-weight:700;color:var(--gold);text-transform:uppercase;font-size:12px;letter-spacing:.5px;border-top:8px solid #fff">RECEITA TOTAL DEC (F1 + F2)</td></tr>
+        <tr><td colspan="2" style="padding:8px 12px;background:#EEE5D3;font-weight:700;color:var(--gold);text-transform:uppercase;font-size:12px;letter-spacing:.5px;border-top:8px solid #fff">RECEITA TOTAL KRAFTED (F1 + F2)</td></tr>
         <tr style="background:#EEE5D3"><td style="padding:9px 12px;font-weight:700;color:var(--gold);text-transform:uppercase;font-size:11px">= TOTAL RECEITA</td><td style="padding:9px 12px;text-align:right;font-weight:800;color:var(--gold);font-size:14px">${fmt(d.receitaTotal)}</td></tr>
 
         <tr><td colspan="2" style="padding:8px 12px;background:#F6F3ED;font-weight:700;color:var(--navy);text-transform:uppercase;font-size:11px;letter-spacing:.5px;border-top:8px solid #fff">(−) DESPESAS</td></tr>
@@ -8921,7 +8921,7 @@ function _dreSectionHTML(d,title){
         <tr><td style="padding:7px 12px 7px 24px;border-bottom:1px solid #DDD8CF">💼 Custos fixos da empresa (Escritório, Salários, Marketing, etc.)</td><td style="padding:7px 12px;border-bottom:1px solid #DDD8CF;text-align:right">${fmt(d.fixedCostsTotal)}</td></tr>
         <tr style="background:#F6F3ED"><td style="padding:9px 12px;font-weight:700;color:var(--p1);text-transform:uppercase;font-size:11px">TOTAL DE DESPESAS</td><td style="padding:9px 12px;text-align:right;font-weight:800;color:var(--p1);font-size:14px">${fmt(d.fixedCostsTotal)}</td></tr>
 
-        <tr style="background:#191815;color:#fff"><td style="padding:14px 12px;font-weight:800;text-transform:uppercase;font-size:13px;letter-spacing:.8px">(=) LUCRO LÍQUIDO DEC</td><td style="padding:14px 12px;text-align:right;font-weight:800;font-size:18px;color:#B89B64">${_fmtSignedNeg(d.lucroLiquido)}</td></tr>
+        <tr style="background:#191815;color:#fff"><td style="padding:14px 12px;font-weight:800;text-transform:uppercase;font-size:13px;letter-spacing:.8px">(=) LUCRO LÍQUIDO KRAFTED</td><td style="padding:14px 12px;text-align:right;font-weight:800;font-size:18px;color:#B89B64">${_fmtSignedNeg(d.lucroLiquido)}</td></tr>
       </table>
       <div style="font-size:10px;color:var(--gray3);font-style:italic;margin-top:10px;padding:8px 12px;background:#F6F3ED;border-left:3px solid var(--gold);border-radius:0 6px 6px 0"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#B89B64" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>Refund não conta como receita (é só repasse). Só faturas <strong>pagas</strong> contam.</div>
     </div>`;
@@ -8975,7 +8975,7 @@ function renderDRE(){
       ['📉 TOTAL DE CUSTOS','totalCostsDiretosDec','var(--p1)'],
       ['📅 Recorrentes','recurringExpense','#706B62'],
       ['<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--dec-gold)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:8px"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>Custos fixos','fixedCostsTotal','#706B62'],
-      ['💎 LUCRO LÍQUIDO DEC','lucroLiquido','var(--gold)'],
+      ['💎 LUCRO LÍQUIDO KRAFTED','lucroLiquido','var(--gold)'],
     ];
     rows.forEach((r,idx)=>{
       const [label,key,color]=r;
@@ -9714,7 +9714,7 @@ th{background:#F6F3ED;padding:6px 10px;text-align:left;font-size:10px;color:#706
 @page{size:A4;margin:10mm}
 </style></head><body>
 <div class="header">
-  <div class="h-logo"><img src="${DEC_LOGO_B64}" alt="DEC Group"></div>
+  <div class="h-logo"><img src="${DEC_LOGO_B64}" alt="KRAFTED"></div>
   <div class="h-center">
     <div class="title">Working Capital Report</div>
     <div class="subtitle">Cash Flow · Inflows &amp; Outflows</div>
@@ -9952,8 +9952,8 @@ async function _finFillCaixaKPI(){
   }catch(e){ el.textContent='—'; el.style.color='var(--gray3)'; }
 }
 
-// Lucro REAL da DEC por projeto = mesmo cálculo do relatório (PAID TO DEC):
-//   flip: lucro líquido × %DEC  ·  rehab (serviço): lucro do serviço (100% DEC)
+// Lucro REAL da DEC por projeto = mesmo cálculo do relatório (PAGO À KRAFTED):
+//   flip: lucro líquido × %DEC  ·  rehab (serviço): lucro do serviço (100% KRAFTED)
 //   menos o overhead do projeto (descontado UMA vez).
 function _decProfitForProject(pid){
   const op=calcProjectInvoices(pid,'operational');   // faturamento da reforma
@@ -9961,7 +9961,7 @@ function _decProfitForProject(pid){
   const cost=calcRoomTotal(pid,'actual');            // custos realizados do projeto
   const oh=(typeof overheadForProject==='function')?overheadForProject(pid):0;
   const margemReforma=op-cost;                        // fonte 1: sobra da reforma
-  // Lucro DEC = margem da reforma + ROI (lucro final) − overhead (uma vez)
+  // Lucro KRAFTED = margem da reforma + ROI (lucro final) − overhead (uma vez)
   return { op, roi, cost, oh, margemReforma, lucro: margemReforma + roi - oh };
 }
 function renderFinancial(){
@@ -9973,8 +9973,8 @@ function renderFinancial(){
   if(q) list=list.filter(p=>(p.name||'').toLowerCase().includes(q)||customerName(p.customer).toLowerCase().includes(q));
   // ─── Ótica DEC ───────────────────────────────────────────────────────
   // Faturamento da DEC = invoices Operational + Final ROI (emitidas, não canceladas)
-  // Custo da DEC       = Total Actual (soma dos Actual Costs lançados por projeto)
-  // Lucro DEC          = Faturamento − Custo   ·   Margem = Lucro / Faturamento
+  // Custo da KRAFTED       = Total Actual (soma dos Actual Costs lançados por projeto)
+  // Lucro KRAFTED          = Faturamento − Custo   ·   Margem = Lucro / Faturamento
   // Sincroniza os controles de overhead com a config salva
   const ohBaseEl=document.getElementById('fin-oh-base'); if(ohBaseEl && ohBaseEl.value!==appConfig.overhead_base) ohBaseEl.value=appConfig.overhead_base||'total_invested';
   const ohRateEl=document.getElementById('fin-oh-rate'); if(ohRateEl && document.activeElement!==ohRateEl) ohRateEl.value=(+appConfig.overhead_rate_pct||0);
@@ -9984,7 +9984,7 @@ function renderFinancial(){
     totRoi+=calcProjectInvoices(p.id,'final_roi');
     totCost+=calcRoomTotal(p.id,'actual');
     totOh+=overheadForProject(p.id);
-    totProfit+=_decProfitForProject(p.id).lucro;   // Lucro DEC = split %DEC − overhead (conta do relatório)
+    totProfit+=_decProfitForProject(p.id).lucro;   // Lucro KRAFTED = split %DEC − overhead (conta do relatório)
   });
   const totRev=totOp+totRoi;
   const totMargin=totRev>0?(totProfit/totRev*100):0;
@@ -9993,10 +9993,10 @@ function renderFinancial(){
   if(kpisEl){
     kpisEl.innerHTML=`
       <div class="home-card"><div class="lbl">📁 Projects</div><div class="val">${list.length}</div></div>
-      <div class="home-card gold"><div class="lbl">💵 Faturamento DEC</div><div class="val">${fmt(totRev)}</div><div class="sub">Op ${fmt(totOp)} · ROI ${fmt(totRoi)}</div></div>
+      <div class="home-card gold"><div class="lbl">💵 Faturamento KRAFTED</div><div class="val">${fmt(totRev)}</div><div class="sub">Op ${fmt(totOp)} · ROI ${fmt(totRoi)}</div></div>
       <div class="home-card"><div class="lbl">🔨 Custos realizados</div><div class="val">${fmt(totCost)}</div></div>
       <div class="home-card"><div class="lbl">🏢 Overhead (${(+appConfig.overhead_rate_pct||0)}%)</div><div class="val">${fmt(totOh)}</div></div>
-      <div class="home-card green"><div class="lbl">📈 Lucro DEC</div><div class="val" style="color:${totProfit>=0?'var(--p3)':'var(--p1)'}">${totProfit>=0?'':'-'}${fmt(Math.abs(totProfit))}</div><div class="sub">Reforma ${fmt(totOp-totCost)} · ROI ${fmt(totRoi)} · −OH ${fmt(totOh)}</div></div>
+      <div class="home-card green"><div class="lbl">📈 Lucro KRAFTED</div><div class="val" style="color:${totProfit>=0?'var(--p3)':'var(--p1)'}">${totProfit>=0?'':'-'}${fmt(Math.abs(totProfit))}</div><div class="sub">Reforma ${fmt(totOp-totCost)} · ROI ${fmt(totRoi)} · −OH ${fmt(totOh)}</div></div>
       <div class="home-card"><div class="lbl">💳 Caixa do mês <span style="font-size:9px;color:var(--gray3)">(Livros)</span></div><div class="val" id="fin-kpi-caixa-val" style="color:var(--gray3)">…</div><div class="sub" id="fin-kpi-caixa-sub"></div></div>`;
     _finFillCaixaKPI();
   }
@@ -10709,15 +10709,15 @@ const INVOICE_STATUS_META={
 
 // DEC company info (fixed in code)
 const DEC_COMPANY={
-  name:'DEC INVESTMENTS GROUP LLC',
-  address:'16544 Bolsena Dr',
-  city:'Bella Collina',
-  state:'FL',
-  zip:'34756',
-  phone:'(407) 956 7710',
-  bank:'Bank Of America',
-  account_number:'898095023246',
-  wire:'026009593',
+  name:'KRAFTED',
+  address:'',
+  city:'',
+  state:'',
+  zip:'',
+  phone:'',
+  bank:'',
+  account_number:'',
+  wire:'',
 };
 
 async function loadInvoices(){
@@ -11633,7 +11633,7 @@ function generateListingPDF(){
 <body>
 <div class="wrapper">
   <div class="hdr">
-    <div class="logo"><img src="${DEC_LOGO_B64}" alt="DEC Group"></div>
+    <div class="logo"><img src="${DEC_LOGO_B64}" alt="KRAFTED"></div>
     <div class="title">
       <h1>PROPERTY LISTING REPORT</h1>
       <div class="sub">Complete Listing Specification</div>
@@ -11808,7 +11808,7 @@ function _showInvoiceDoc(inv, client, items){
       <div class="ad">${(client.address||'').replace(/,\\s*/g,',\\n')}</div>
     </div>
     <div class="h-center">
-      <img src="${DEC_LOGO_B64}" alt="DEC Group">
+      <img src="${DEC_LOGO_B64}" alt="KRAFTED">
       <div class="company-info">
         <div class="cname">${DEC_COMPANY.name}</div>
         <div>${DEC_COMPANY.address}</div>
@@ -12565,10 +12565,10 @@ function emailInsuranceRenewal(vendorId){
   const past=item && item.days<0;
   const subject=`Insurance renewal required — ${v.name||''}`;
   const body='Hello '+(v.name||'')+',\n\n'+
-    'Our records show that your insurance certificate on file with DEC Group USA '+(past?'expired on ':'expires on ')+expTxt+'.\n\n'+
+    'Our records show that your insurance certificate on file with KRAFTED '+(past?'expired on ':'expires on ')+expTxt+'.\n\n'+
     'To keep working with us, please send an updated Certificate of Insurance (COI) as soon as possible.\n\n'+
     'You can simply reply to this email with the updated document attached.\n\n'+
-    'Thank you,\nDEC Group USA';
+    'Thank you,\nKRAFTED';
   window.location.href='mailto:'+encodeURIComponent(mail)+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
 }
 
@@ -15124,7 +15124,7 @@ async function renderPiso(){
   <div class="card" style="background:#FBF8F3;border:1px solid #EADFCD;display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px">
     <div style="font-weight:700;font-size:13px;color:#292824">🎯 ROI mínimo do negócio</div>
     <input id="piso-pct" type="number" min="0" step="0.5" value="${lucroPct}" onchange="localStorage.setItem('dec_piso_lucro_pct',this.value);renderPiso()" style="width:80px;padding:6px 9px;font-size:13px;border:1.5px solid var(--gray2);border-radius:6px;outline:none"> %
-    <span style="font-size:11px;color:var(--gray3);font-style:italic">Piso = zero-a-zero + ${lucroPct}% sobre o investido do negócio (não é a fatia da DEC). Ponha 0% pro zero-a-zero puro.</span>
+    <span style="font-size:11px;color:var(--gray3);font-style:italic">Piso = zero-a-zero + ${lucroPct}% sobre o investido do negócio (não é a fatia da empresa). Ponha 0% pro zero-a-zero puro.</span>
   </div>
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:16px">
     <div class="card" style="text-align:center"><div style="font-size:11px;color:var(--gray3);text-transform:uppercase">Casas à venda</div><div style="font-size:24px;font-weight:800;color:#292824">${rows.length}</div></div>
@@ -15157,7 +15157,7 @@ async function renderPiso(){
       <td style="padding:9px 10px;text-align:right;font-weight:700;color:${r.folga==null?'var(--gray3)':(r.folga>=0?'#237A50':'#C0392B')}">${r.folga==null?'—':(r.folga>=0?'🟢 ':'🔴 ')+(r.folga>=0?'':'-')+fmt(Math.abs(r.folga))}</td>
     </tr>`).join('')||'<tr><td colspan="10" style="padding:20px;text-align:center;color:var(--gray3)">Nenhuma casa à venda.</td></tr>'}</tbody>
   </table></div></div>
-  <div style="font-size:10px;color:var(--gray3);margin-top:8px"><strong>PISO</strong> = zero-a-zero (Compra cash + Custos + Quitação do loan + Custos de venda) <strong>+ ${lucroPct}% de ROI sobre o investido do negócio</strong> (o lucro total do deal, não a fatia da DEC). É o mínimo pra vender garantindo esse retorno; abaixo do zero-a-zero (mostrado embaixo) é prejuízo de verdade. <strong>Carreg./mês</strong> = quanto a casa custa parada por mês (loan + utilities + taxas/seguro ÷12); o piso sobe por esse valor a cada mês. <strong>Folga</strong> = preço pedido − piso mín. Linha vermelha = dado da ficha a conferir.</div>`;
+  <div style="font-size:10px;color:var(--gray3);margin-top:8px"><strong>PISO</strong> = zero-a-zero (Compra cash + Custos + Quitação do loan + Custos de venda) <strong>+ ${lucroPct}% de ROI sobre o investido do negócio</strong> (o lucro total do deal, não a fatia da empresa). É o mínimo pra vender garantindo esse retorno; abaixo do zero-a-zero (mostrado embaixo) é prejuízo de verdade. <strong>Carreg./mês</strong> = quanto a casa custa parada por mês (loan + utilities + taxas/seguro ÷12); o piso sobe por esse valor a cada mês. <strong>Folga</strong> = preço pedido − piso mín. Linha vermelha = dado da ficha a conferir.</div>`;
 }
 async function renderPanorama(){
   if(!isCEO()) return;
@@ -15962,7 +15962,7 @@ function budgetHmLoan(b){
   const rehab=+b.rehab_estimate||0;
   return budgetHouseLoan(b) + (b.hm_includes_rehab ? rehab : 0);
 }
-// Split do lucro: 30% DEC / 70% cliente
+// Split do lucro: 30% KRAFTED / 70% cliente
 const BUDGET_DEC_PCT = 0.30;
 
 function calcBudgetSummary(b){
@@ -16214,7 +16214,7 @@ function renderBudgetClientView(b, mode){
     <!-- Header with DEC logo + welcome -->
     <div style="background:#fff;border-radius:14px;padding:22px 28px;margin-bottom:24px;box-shadow:0 4px 20px rgba(0,0,0,.06);display:flex;align-items:center;gap:24px;flex-wrap:wrap">
       <div style="flex:0 0 auto">
-        <img src="${typeof DEC_LOGO_B64!=='undefined'?DEC_LOGO_B64:''}" alt="DEC Group" style="height:64px;width:auto;display:block">
+        <img src="${typeof DEC_LOGO_B64!=='undefined'?DEC_LOGO_B64:''}" alt="KRAFTED" style="height:64px;width:auto;display:block">
       </div>
       <div style="flex:1;min-width:200px">
         <div style="font-size:11px;font-weight:700;color:#B89B64;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px">Proposta de Investimento</div>
@@ -16231,7 +16231,7 @@ function renderBudgetClientView(b, mode){
       * Os valores apresentados nesta proposta são <strong>estimativas</strong> e estão sujeitos a alteração. Custos de compra, reforma, financiamento, venda e demais despesas podem variar conforme as condições de mercado, a execução da obra e o fechamento do negócio.
     </div>
     <div style="text-align:center;margin-top:24px;padding:20px;color:#999;font-size:11px">
-      DEC Group USA · Proposta de Investimento · Valores estimados
+      KRAFTED · Proposta de Investimento · Valores estimados
     </div>
   </div>`;
 }
@@ -16558,7 +16558,7 @@ function renderBudgetEditorModal(){
           ${isFormula && !hasOverride
             ? `<button onclick="useFormulaValue(${idx})" title="Pegar o valor auto-calculado e colocar como manual (assim você pode editar)" style="background:#B89B64;color:#fff;border:0;border-radius:4px;cursor:pointer;font-size:9px;font-weight:700;padding:3px 6px;font-family:inherit;white-space:nowrap"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.4 2.4 0 0 1 0-3.4l2.6-2.6a2.4 2.4 0 0 1 3.4 0Z"/></svg>Usar</button>`
             : ''}
-          <input id="bm-line-base-${idx}" type="number" min="0" step="0.01" value="${line.base||''}" oninput="updateBudgetLine(${idx},'base',this.value)" placeholder="${isFormula?'auto':'0.00'}" title="${isFormula?'Deixe 0 pra usar o cálculo automático. Digite um valor pra sobrescrever.':'Valor base'}" style="width:90px;padding:5px 7px;font-size:12px;border:1.5px solid ${hasOverride && isFormula?'#B89B64':'var(--gray2)'};border-radius:4px;outline:none;text-align:right;${hasOverride && isFormula?'background:#FFF8E7;font-weight:700':''}">
+          <input id="bm-line-base-${idx}" type="text" inputmode="decimal" value="${_money(line.base)}" oninput="moneyInputLine(this,${idx})" placeholder="${isFormula?'auto':'0'}" title="${isFormula?'Deixe vazio pra usar o cálculo automático. Digite um valor pra sobrescrever.':'Valor base'}" style="width:90px;padding:5px 7px;font-size:12px;border:1.5px solid ${hasOverride && isFormula?'#B89B64':'var(--gray2)'};border-radius:4px;outline:none;text-align:right;font-variant-numeric:tabular-nums;${hasOverride && isFormula?'background:#FFF8E7;font-weight:700':''}">
         </div>
         ${autoHint}
       </td>
@@ -16685,11 +16685,11 @@ function renderBudgetEditorModal(){
           <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px">
             <div>
               <label style="font-size:10px;font-weight:700;color:#706B62;display:block;margin-bottom:3px">Preço de Compra ($)</label>
-              <input type="number" min="0" step="0.01" value="${b.purchase_price||''}" oninput="updateBudgetField('purchase_price',this.value)" style="width:100%;padding:7px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:5px;outline:none;font-family:inherit">
+              <input type="text" inputmode="decimal" value="${_money(b.purchase_price)}" oninput="moneyInput(this,'purchase_price')" placeholder="0" style="width:100%;padding:7px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:5px;outline:none;font-family:inherit;font-variant-numeric:tabular-nums">
             </div>
             <div>
               <label style="font-size:10px;font-weight:700;color:#706B62;display:block;margin-bottom:3px">Preço de Venda ($)</label>
-              <input type="number" min="0" step="0.01" value="${b.arv||''}" oninput="updateBudgetField('arv',this.value)" style="width:100%;padding:7px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:5px;outline:none;font-family:inherit">
+              <input type="text" inputmode="decimal" value="${_money(b.arv)}" oninput="moneyInput(this,'arv')" placeholder="0" style="width:100%;padding:7px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:5px;outline:none;font-family:inherit;font-variant-numeric:tabular-nums">
             </div>
             <div>
               <label style="font-size:10px;font-weight:700;color:#706B62;display:flex;align-items:center;justify-content:space-between;gap:4px;margin-bottom:3px;flex-wrap:wrap">
@@ -16700,12 +16700,12 @@ function renderBudgetEditorModal(){
                   ${b.converted_to_project_id?`<button type="button" onclick="pullRehabFromObra()" title="Puxar o total do orçamento de obra (Orçado) do projeto vinculado" style="background:#237A50;color:#fff;border:0;border-radius:4px;padding:2px 7px;font-size:9px;font-weight:700;cursor:pointer;font-family:inherit;text-transform:none;letter-spacing:0">↙ Da obra</button>`:''}
                 </span>
               </label>
-              <input type="number" min="0" step="0.01" value="${b.rehab_estimate||''}" oninput="updateBudgetField('rehab_estimate',this.value)" style="width:100%;padding:7px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:5px;outline:none;font-family:inherit">
+              <input type="text" inputmode="decimal" value="${_money(b.rehab_estimate)}" oninput="moneyInput(this,'rehab_estimate')" placeholder="0" style="width:100%;padding:7px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:5px;outline:none;font-family:inherit;font-variant-numeric:tabular-nums">
               <div style="font-size:9px;color:#999;margin-top:2px;font-style:italic">${b.converted_to_project_id?'estime com IA ou puxe do orçamento de obra do projeto':'estime com IA pelo endereço + m² (ou digite)'}</div>
             </div>
             <div>
               <label style="font-size:10px;font-weight:700;color:#706B62;display:block;margin-bottom:3px">Closing Costs ($)</label>
-              <input type="number" min="0" step="0.01" value="${b.closing_costs||''}" oninput="updateBudgetField('closing_costs',this.value)" style="width:100%;padding:7px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:5px;outline:none;font-family:inherit">
+              <input type="text" inputmode="decimal" value="${_money(b.closing_costs)}" oninput="moneyInput(this,'closing_costs')" placeholder="0" style="width:100%;padding:7px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:5px;outline:none;font-family:inherit;font-variant-numeric:tabular-nums">
             </div>
           </div>
         </div>
@@ -16817,6 +16817,29 @@ function renderBudgetEditorModal(){
     </div>
   </div>`;
   document.body.appendChild(modal);
+}
+
+// Formata um número com separador de milhar p/ exibição (vazio se 0/none)
+function _money(v){ if(v===''||v==null||isNaN(+v)||+v===0) return ''; return (+v).toLocaleString('en-US',{maximumFractionDigits:2}); }
+// Campo de dinheiro que formata enquanto digita (50000 -> 50,000) e salva o número puro
+function moneyInput(el, field){
+  const raw=String(el.value).replace(/[^\d.]/g,'');
+  const parts=raw.split('.');
+  const intp=parts[0]||'';
+  const dec=parts.length>1 ? '.'+parts.slice(1).join('').slice(0,2) : '';
+  const num=parseFloat((intp||'0')+dec)||0;
+  updateBudgetField(field, num);
+  el.value=(intp?Number(intp).toLocaleString('en-US'):'')+dec;
+}
+// Versão para as LINHAS DE CUSTO (base de cada linha)
+function moneyInputLine(el, idx){
+  const raw=String(el.value).replace(/[^\d.]/g,'');
+  const parts=raw.split('.');
+  const intp=parts[0]||'';
+  const dec=parts.length>1 ? '.'+parts.slice(1).join('').slice(0,2) : '';
+  const num=parseFloat((intp||'0')+dec)||0;
+  updateBudgetLine(idx,'base',num);
+  el.value=(intp?Number(intp).toLocaleString('en-US'):'')+dec;
 }
 
 function updateBudgetField(field, value){
@@ -17130,8 +17153,8 @@ function generateBudgetPDF(){
   .notes{margin-top:14px;padding:10px 14px;background:#FFF8E7;border-left:3px solid #B89B64;font-size:11px;color:#706B62;border-radius:4px}
 </style></head><body>
   <div class="header">
-    <div class="brand">DEC<span style="color:#B89B64">GROUP</span>
-      <div class="sub">USA</div>
+    <div class="brand">KRAFTED
+      <div class="sub">BY ZK BAHIA</div>
     </div>
     <div class="title">Orçamento<br>Viabilidade Pré-Projeto</div>
   </div>
