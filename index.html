@@ -5059,7 +5059,21 @@ function _getProjectBaseline(pid){
   if(typeof base==='string'){ try{base=JSON.parse(base);}catch(e){base=null;} }
   return (base&&(base.cash||base.hm||base.rehab!=null))?base:null;
 }
-function _getProjectRehab(pid){ const b=_getProjectBaseline(pid); return b?(+b.rehab||0):0; }
+// Soma só os ITENS da obra (cômodos) do projeto — SEM a linha fixa REHAB,
+// pra o Rehab da viabilidade poder puxar daqui sem referência circular.
+function _obraItemsTotal(pid){
+  const bm=budgetMap[pid]||{}; let s=0;
+  ROOMS.forEach(r=>Object.values(bm[r.id]||{}).forEach(d=>{ s+=(+d.est||0); }));
+  return s;
+}
+// Rehab do projeto: se já existe obra detalhada (itens nos cômodos), ELA é a
+// fonte do rehab — não soma a linha fixa do baseline por cima (evita duplicar).
+// Só usa o rehab do baseline quando a obra ainda está vazia (modelo antigo:
+// rehab como número único).
+function _getProjectRehab(pid){
+  if(_obraItemsTotal(pid)>0) return 0;
+  const b=_getProjectBaseline(pid); return b?(+b.rehab||0):0;
+}
 
 function calcRoomTotal(pid,type){
   const bm=budgetMap[pid]||{};
@@ -9746,7 +9760,7 @@ th{background:#FAF7F3;padding:6px 10px;text-align:left;font-size:10px;color:#655
 </div>
 
 <div class="footer">
-  <strong>DEC GROUP USA</strong> · Working Capital Report · Generated on ${today}
+  <strong>KRAFTED</strong> · Working Capital Report · Generated on ${today}
 </div>
 <script>window.onload=function(){setTimeout(function(){window.print();},400);};<\/script>
 </body></html>`;
@@ -14663,11 +14677,9 @@ function renderBaselineAnalysis(p){
         ${row('Investido', bl.invested||0, realInvested, {higherBetter:false})}
         ${row('Lucro', bl.profit||0, realProfit, {needsSale:true})}
         ${row('ROI', bl.roi||0, realRoi, {money:false, needsSale:true})}
-        ${row('DEC ('+(decPct*100).toFixed(0)+'%)', bl.dec||0, realDec, {needsSale:true})}
-        ${row('Cliente ('+(100-decPct*100).toFixed(0)+'%)', bl.client||0, realClient, {needsSale:true})}
       </tbody>
     </table></div>
-    ${hasSale?'':'<div style="font-size:11px;color:var(--gray3);font-style:italic;margin-top:8px">Lucro/ROI/split reais aparecem quando a venda final for lançada em Property &amp; Finance. Custo e investido já comparam em tempo real.</div>'}
+    ${hasSale?'':'<div style="font-size:11px;color:var(--gray3);font-style:italic;margin-top:8px">Lucro/ROI reais aparecem quando a venda final for lançada em Property &amp; Finance. Custo e investido já comparam em tempo real.</div>'}
   </div>`;
 }
 
@@ -16355,6 +16367,19 @@ function closeBudgetEditor(){
   renderBudgets();
 }
 
+// Puxa o total do orçamento de obra (itens dos cômodos) do projeto vinculado
+// para o campo Rehab ($) da viabilidade.
+function pullRehabFromObra(){
+  const b=_bdgCurrent; if(!b) return;
+  const pid=b.converted_to_project_id;
+  if(!pid){ toast('Este orçamento ainda não virou projeto. Aprove/converta em projeto e monte a obra no Orçado (✨ Estimar com IA) — aí dá pra puxar.',false); return; }
+  const tot=_obraItemsTotal(pid);
+  if(tot<=0){ toast('A obra do projeto está zerada. Preencha o Orçado do projeto (ou use ✨ Estimar com IA) e tente de novo.',false); return; }
+  b.rehab_estimate=Math.round(tot*100)/100;
+  renderBudgetEditorModal();
+  toast('Rehab puxado da obra: $'+tot.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}),true);
+}
+
 function renderBudgetEditorModal(){
   // Remove any existing modal
   const existing=document.getElementById('modal-budget');
@@ -16435,25 +16460,17 @@ function renderBudgetEditorModal(){
     <div style="margin-top:16px;padding:9px 14px;background:#FFF8E7;border-left:3px solid #9B7535;border-radius:5px;font-size:11px;color:#655A4E;line-height:1.5">
       <strong>Este orçamento é uma previsão de custos</strong> baseada nas informações disponíveis nesta data. Os valores são estimados e podem sofrer alterações ao longo do projeto (conforme escopo, mercado e imprevistos) — não representam um valor final garantido.
     </div>
-    <!-- DESTAQUE: retorno real do cliente (após todos os custos + fatia da DEC) -->
+    <!-- DESTAQUE: lucro do projeto (100% da empresa) -->
     <div style="background:linear-gradient(135deg,#F2F4EC,#E4EDD9);border:1.5px solid #B5D3A2;border-radius:8px;padding:14px 18px;margin-top:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
       <div>
-        <div style="font-size:10px;font-weight:700;color:#5C7A3F;letter-spacing:1px;text-transform:uppercase">🎯 Retorno real do cliente</div>
-        <div style="font-size:11px;color:#655A4E;margin-top:2px">Após todos os custos e a parte da DEC (${(calc.dec_pct*100).toFixed(0)}%) · cenário ${(b.client_view_mode==='cash')?'Cash':'Hard Money'}</div>
+        <div style="font-size:10px;font-weight:700;color:#5C7A3F;letter-spacing:1px;text-transform:uppercase">🎯 Lucro do projeto</div>
+        <div style="font-size:11px;color:#655A4E;margin-top:2px">Após todos os custos · cenário ${(b.client_view_mode==='cash')?'Cash':'Hard Money'}</div>
       </div>
       <div style="text-align:right">
-        <div style="font-size:24px;font-weight:800;color:${((b.client_view_mode==='cash'?calc.cash:calc.hm).client_profit)>=0?'#5C7A3F':'#A02021'}" id="bm-gross-profit">${$fmt((b.client_view_mode==='cash'?calc.cash:calc.hm).client_profit)}</div>
-        <div style="font-size:13px;font-weight:700;color:#5C7A3F;margin-top:1px" id="bm-client-pct">${((b.client_view_mode==='cash'?calc.cash:calc.hm).client_pct).toFixed(1)}% sobre o que investiu</div>
+        <div style="font-size:24px;font-weight:800;color:${((b.client_view_mode==='cash'?calc.cash:calc.hm).profit)>=0?'#5C7A3F':'#A02021'}" id="bm-gross-profit">${$fmt((b.client_view_mode==='cash'?calc.cash:calc.hm).profit)}</div>
+        <div style="font-size:13px;font-weight:700;color:#5C7A3F;margin-top:1px" id="bm-client-pct">${((b.client_view_mode==='cash'?calc.cash:calc.hm).profit_pct).toFixed(1)}% sobre o que investiu</div>
         <div style="font-size:10px;color:#999;margin-top:2px">Gross profit (ref): ${$fmt(calc.gross_profit)}</div>
       </div>
-    </div>
-    <!-- Divisão do lucro DEC × Cliente (ajustável por orçamento) -->
-    <div style="margin-top:14px;padding:11px 14px;background:#FAF7F3;border:1px solid #E8DDC9;border-radius:8px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-      <span style="font-size:12px;font-weight:800;color:#3D271A;text-transform:uppercase;letter-spacing:.4px">Divisão do lucro</span>
-      <span style="font-size:12px;color:#655A4E">DEC</span>
-      <input type="number" min="0" max="100" step="1" value="${(calc.dec_pct*100).toFixed(0)}" onchange="updateBudgetSplit(this.value)" onkeydown="if(event.key==='Enter'){this.blur();}" style="width:70px;padding:5px 8px;border:1.5px solid #9B7535;border-radius:6px;font-size:14px;font-weight:800;color:#9B7535;text-align:center;font-family:inherit;outline:none">
-      <span style="font-size:12px;color:#655A4E">%&nbsp;·&nbsp;Cliente <strong style="color:#5C7A3F">${(100-calc.dec_pct*100).toFixed(0)}%</strong></span>
-      <span style="font-size:10px;color:#999;font-style:italic;margin-left:auto">padrão 30% — pode ajustar em cada orçamento</span>
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:14px">
       <!-- Cash scenario -->
@@ -16465,8 +16482,6 @@ function renderBudgetEditorModal(){
           <span style="color:#655A4E">Preço de Venda</span><span id="bm-cash-sale" style="text-align:right;font-weight:700;color:#3D271A">${$fmt(calc.cash.sale)}</span>
           <span style="color:#5C7A3F;font-weight:700;padding-top:8px;border-top:1px solid #E8DDC9;margin-top:4px">LUCRO</span><span id="bm-cash-profit" style="text-align:right;font-weight:800;color:${calc.cash.profit>=0?'#5C7A3F':'#A02021'};font-size:16px;padding-top:8px;border-top:1px solid #E8DDC9;margin-top:4px">${$fmt(calc.cash.profit)}</span>
           <span style="color:#5C7A3F;font-weight:700">% LUCRO</span><span id="bm-cash-profit-pct" style="text-align:right;font-weight:800;color:${calc.cash.profit_pct>=0?'#5C7A3F':'#A02021'};font-size:16px">${calc.cash.profit_pct.toFixed(1)}%</span>
-          <span style="color:#655A4E;padding-top:6px;border-top:1px dashed #CBBF9F;margin-top:4px">DEC (${(calc.dec_pct*100).toFixed(0)}%)</span><span id="bm-cash-dec" style="text-align:right;font-weight:700;color:#9B7535;padding-top:6px;border-top:1px dashed #CBBF9F;margin-top:4px">${$fmt(calc.cash.dec_profit)}</span>
-          <span style="color:#655A4E">Cliente (${(100-calc.dec_pct*100).toFixed(0)}%)</span><span id="bm-cash-client" style="text-align:right;font-weight:700;color:#3D271A">${$fmt(calc.cash.client_profit)}</span>
         </div>
       </div>
       <!-- Hard Money scenario -->
@@ -16478,8 +16493,6 @@ function renderBudgetEditorModal(){
           <span style="color:#655A4E">Preço de Venda</span><span id="bm-hm-sale" style="text-align:right;font-weight:700;color:#3D271A">${$fmt(calc.hm.sale)}</span>
           <span style="color:#9B7535;font-weight:700;padding-top:8px;border-top:1px solid #E8DDC9;margin-top:4px">LUCRO</span><span id="bm-hm-profit" style="text-align:right;font-weight:800;color:${calc.hm.profit>=0?'#9B7535':'#A02021'};font-size:16px;padding-top:8px;border-top:1px solid #E8DDC9;margin-top:4px">${$fmt(calc.hm.profit)}</span>
           <span style="color:#9B7535;font-weight:700">% LUCRO</span><span id="bm-hm-profit-pct" style="text-align:right;font-weight:800;color:${calc.hm.profit_pct>=0?'#9B7535':'#A02021'};font-size:16px">${calc.hm.profit_pct.toFixed(1)}%</span>
-          <span style="color:#655A4E;padding-top:6px;border-top:1px dashed #CBBF9F;margin-top:4px">DEC (${(calc.dec_pct*100).toFixed(0)}%)</span><span id="bm-hm-dec" style="text-align:right;font-weight:700;color:#9B7535;padding-top:6px;border-top:1px dashed #CBBF9F;margin-top:4px">${$fmt(calc.hm.dec_profit)}</span>
-          <span style="color:#655A4E">Cliente (${(100-calc.dec_pct*100).toFixed(0)}%)</span><span id="bm-hm-client" style="text-align:right;font-weight:700;color:#3D271A">${$fmt(calc.hm.client_profit)}</span>
         </div>
       </div>
     </div>`;
@@ -16536,8 +16549,12 @@ function renderBudgetEditorModal(){
               <input type="number" min="0" step="0.01" value="${b.arv||''}" oninput="updateBudgetField('arv',this.value)" style="width:100%;padding:7px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:5px;outline:none;font-family:inherit">
             </div>
             <div>
-              <label style="font-size:10px;font-weight:700;color:#655A4E;display:block;margin-bottom:3px">Rehab ($)</label>
+              <label style="font-size:10px;font-weight:700;color:#655A4E;display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:3px">
+                <span>Rehab ($)</span>
+                ${b.converted_to_project_id?`<button type="button" onclick="pullRehabFromObra()" title="Puxar o total do orçamento de obra (Orçado) do projeto vinculado" style="background:var(--gold,#9B7535);color:#fff;border:0;border-radius:4px;padding:2px 7px;font-size:9px;font-weight:700;cursor:pointer;font-family:inherit;text-transform:none;letter-spacing:0">↙ Puxar da obra</button>`:''}
+              </label>
               <input type="number" min="0" step="0.01" value="${b.rehab_estimate||''}" oninput="updateBudgetField('rehab_estimate',this.value)" style="width:100%;padding:7px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:5px;outline:none;font-family:inherit">
+              ${b.converted_to_project_id?`<div style="font-size:9px;color:#999;margin-top:2px;font-style:italic">pode puxar do orçamento de obra do projeto</div>`:''}
             </div>
             <div>
               <label style="font-size:10px;font-weight:700;color:#655A4E;display:block;margin-bottom:3px">Closing Costs ($)</label>
@@ -16769,8 +16786,8 @@ function refreshBudgetLiveCalcs(){
   // Color the gross profit
   const _clScenX=(b.client_view_mode==='cash'?calc.cash:calc.hm);
   const grossEl=document.getElementById('bm-gross-profit');
-  if(grossEl){ grossEl.textContent=$$(_clScenX.client_profit); grossEl.style.color=_clScenX.client_profit>=0?'#5C7A3F':'#A02021'; }
-  set('bm-client-pct', `${_clScenX.client_pct.toFixed(1)}% sobre o que investiu`);
+  if(grossEl){ grossEl.textContent=$$(_clScenX.profit); grossEl.style.color=_clScenX.profit>=0?'#5C7A3F':'#A02021'; }
+  set('bm-client-pct', `${_clScenX.profit_pct.toFixed(1)}% sobre o que investiu`);
   set('bm-cash-invested',  $$(calc.cash.invested));
   set('bm-cash-descontos', $$(calc.cash.descontos_closing));
   set('bm-cash-sale',      $$(calc.cash.sale));
@@ -16781,10 +16798,6 @@ function refreshBudgetLiveCalcs(){
   set('bm-hm-sale',        $$(calc.hm.sale));
   set('bm-hm-profit',      $$(calc.hm.profit));
   set('bm-hm-profit-pct',  `${calc.hm.profit_pct.toFixed(1)}%`);
-  set('bm-cash-dec',       $$(calc.cash.dec_profit));
-  set('bm-cash-client',    $$(calc.cash.client_profit));
-  set('bm-hm-dec',         $$(calc.hm.dec_profit));
-  set('bm-hm-client',      $$(calc.hm.client_profit));
   // 4. Update profit color based on sign
   ['bm-cash-profit','bm-hm-profit'].forEach(id=>{
     const e=document.getElementById(id);
@@ -17015,11 +17028,11 @@ function generateBudgetPDF(){
 
   <h2>Análise dos Cenários</h2>
 
-  <!-- DESTAQUE: retorno real do cliente -->
+  <!-- DESTAQUE: lucro do projeto -->
   <table style="margin-bottom:14px">
     <tr style="background:#F2F4EC">
-      <td style="padding:12px;font-weight:700;color:#5C7A3F;width:60%">🎯 Retorno real do cliente<br><span style="font-size:9px;color:#999;font-weight:500">Após todos os custos e a parte da DEC (${(calc.dec_pct*100).toFixed(0)}%) · cenário ${(b.client_view_mode==='cash')?'Cash':'Hard Money'} · Gross profit (ref): ${$$(calc.gross_profit)}</span></td>
-      <td style="padding:12px;text-align:right"><div style="font-weight:800;font-size:20px;color:${((b.client_view_mode==='cash'?calc.cash:calc.hm).client_profit)>=0?'#5C7A3F':'#A02021'}">${$$((b.client_view_mode==='cash'?calc.cash:calc.hm).client_profit)}</div><div style="font-size:11px;font-weight:700;color:#5C7A3F;margin-top:2px">${((b.client_view_mode==='cash'?calc.cash:calc.hm).client_pct).toFixed(1)}% sobre o que investiu</div></td>
+      <td style="padding:12px;font-weight:700;color:#5C7A3F;width:60%">🎯 Lucro do projeto<br><span style="font-size:9px;color:#999;font-weight:500">Após todos os custos · cenário ${(b.client_view_mode==='cash')?'Cash':'Hard Money'} · Gross profit (ref): ${$$(calc.gross_profit)}</span></td>
+      <td style="padding:12px;text-align:right"><div style="font-weight:800;font-size:20px;color:${((b.client_view_mode==='cash'?calc.cash:calc.hm).profit)>=0?'#5C7A3F':'#A02021'}">${$$((b.client_view_mode==='cash'?calc.cash:calc.hm).profit)}</div><div style="font-size:11px;font-weight:700;color:#5C7A3F;margin-top:2px">${((b.client_view_mode==='cash'?calc.cash:calc.hm).profit_pct).toFixed(1)}% sobre o que investiu</div></td>
     </tr>
   </table>
 
@@ -17031,8 +17044,6 @@ function generateBudgetPDF(){
       <div class="row"><span>Venda</span><span>${$$(calc.cash.sale)}</span></div>
       <div class="row lucro"><span>LUCRO</span><span>${$$(calc.cash.profit)}</span></div>
       <div class="row lucro"><span>ROI</span><span>${$pct(calc.cash.profit_pct)}</span></div>
-      <div class="row" style="padding-top:6px;border-top:1px dashed #ccc;margin-top:6px"><span>DEC (${(calc.dec_pct*100).toFixed(0)}%)</span><span>${$$(calc.cash.dec_profit)}</span></div>
-      <div class="row"><span>Cliente (${(100-calc.dec_pct*100).toFixed(0)}%)</span><span>${$$(calc.cash.client_profit)}</span></div>
     </div>
     <div class="scen hm">
       <h3><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9B7535" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><line x1="3" x2="21" y1="22" y2="22"/><line x1="6" x2="6" y1="18" y2="11"/><line x1="10" x2="10" y1="18" y2="11"/><line x1="14" x2="14" y1="18" y2="11"/><line x1="18" x2="18" y1="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg>Cenário Hard Money · ${b.hm_months} meses</h3>
@@ -17041,15 +17052,13 @@ function generateBudgetPDF(){
       <div class="row"><span>Venda</span><span>${$$(calc.hm.sale)}</span></div>
       <div class="row lucro"><span>LUCRO</span><span>${$$(calc.hm.profit)}</span></div>
       <div class="row lucro"><span>ROI</span><span>${$pct(calc.hm.profit_pct)}</span></div>
-      <div class="row" style="padding-top:6px;border-top:1px dashed #ccc;margin-top:6px"><span>DEC (${(calc.dec_pct*100).toFixed(0)}%)</span><span>${$$(calc.hm.dec_profit)}</span></div>
-      <div class="row"><span>Cliente (${(100-calc.dec_pct*100).toFixed(0)}%)</span><span>${$$(calc.hm.client_profit)}</span></div>
     </div>
   </div>
 
   ${b.notes?`<div class="notes"><strong>Notas:</strong> ${b.notes.replace(/</g,'&lt;').replace(/\n/g,'<br>')}</div>`:''}
 
   <div class="footer">
-    <strong>DEC GROUP USA</strong> · Análise de Viabilidade gerada em ${today} · ${(b.address||b.name).replace(/</g,'&lt;')}
+    <strong>KRAFTED</strong> · Análise de Viabilidade gerada em ${today} · ${(b.address||b.name).replace(/</g,'&lt;')}
   </div>
   <script>window.onload=function(){setTimeout(function(){window.print();},300);};<\/script>
 </body></html>`;
