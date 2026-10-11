@@ -16380,6 +16380,40 @@ function pullRehabFromObra(){
   toast('Rehab puxado da obra: $'+tot.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}),true);
 }
 
+// Estima o Rehab (número único) direto na viabilidade, via IA, pelo
+// endereço/região + área em sqft — pra validar o deal antes de ter projeto.
+async function estimateViabilityRehab(){
+  const b=_bdgCurrent; if(!b) return;
+  let address=(b.address||'').trim();
+  if(!address){ address=(prompt('Endereço / cidade / região do imóvel (pra IA usar os preços da região):','')||'').trim(); if(!address){ toast('Preciso do endereço pra estimar.',false); return; } b.address=address; }
+  const sqRaw=prompt('Área do imóvel em pés quadrados (sqft):', b._rehab_sqft||'');
+  if(sqRaw===null) return;
+  const sqft=parseFloat(String(sqRaw).replace(/[^\d.]/g,''))||0;
+  if(!sqft){ toast('Informe uma área (sqft) válida.',false); return; }
+  b._rehab_sqft=sqft;
+  toast('✨ Estimando rehab com IA…');
+  let data;
+  try{
+    const items=[{key:'rehab_total', name:'Complete fix-and-flip rehab, all trades (demo, kitchen, bathrooms, flooring, interior/exterior paint, HVAC, electrical, plumbing, and roof if needed)', category:'rehab'}];
+    const resp=await sb.functions.invoke('estimate-budge',{body:{address,sqft,currency:'USD',items}});
+    if(resp.error) throw resp.error;
+    data=resp.data;
+    if(data && data.error) throw new Error(data.error);
+  }catch(e){
+    const msg=(e&&e.message)?e.message:String(e);
+    toast('Erro na estimativa: '+msg+' — verifique a Edge Function "estimate-budge" e a ANTHROPIC_API_KEY.',false);
+    return;
+  }
+  const arr=(data&&data.items)||[];
+  const est=arr.length?(+arr[0].est||0):0;
+  if(est<=0){ toast('A IA não retornou um valor. Tente de novo.',false); return; }
+  const basis=(data.assumptions?('\n\nBase: '+data.assumptions):'')+((arr[0]&&arr[0].note)?('\n'+arr[0].note):'');
+  if(!confirm('Rehab estimado pela IA: $'+est.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+' (US$) para '+sqft+' sqft.'+basis+'\n\nAplicar no campo Rehab?')) return;
+  b.rehab_estimate=Math.round(est*100)/100;
+  renderBudgetEditorModal();
+  toast('Rehab estimado: $'+est.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}),true);
+}
+
 function renderBudgetEditorModal(){
   // Remove any existing modal
   const existing=document.getElementById('modal-budget');
@@ -16549,12 +16583,15 @@ function renderBudgetEditorModal(){
               <input type="number" min="0" step="0.01" value="${b.arv||''}" oninput="updateBudgetField('arv',this.value)" style="width:100%;padding:7px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:5px;outline:none;font-family:inherit">
             </div>
             <div>
-              <label style="font-size:10px;font-weight:700;color:#655A4E;display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:3px">
+              <label style="font-size:10px;font-weight:700;color:#655A4E;display:flex;align-items:center;justify-content:space-between;gap:4px;margin-bottom:3px;flex-wrap:wrap">
                 <span>Rehab ($)</span>
-                ${b.converted_to_project_id?`<button type="button" onclick="pullRehabFromObra()" title="Puxar o total do orçamento de obra (Orçado) do projeto vinculado" style="background:var(--gold,#9B7535);color:#fff;border:0;border-radius:4px;padding:2px 7px;font-size:9px;font-weight:700;cursor:pointer;font-family:inherit;text-transform:none;letter-spacing:0">↙ Puxar da obra</button>`:''}
+                <span style="display:flex;gap:4px">
+                  <button type="button" onclick="estimateViabilityRehab()" title="Estimar o rehab com IA pelo endereço + área (sqft)" style="background:var(--gold,#9B7535);color:#fff;border:0;border-radius:4px;padding:2px 7px;font-size:9px;font-weight:700;cursor:pointer;font-family:inherit;text-transform:none;letter-spacing:0">✨ Estimar com IA</button>
+                  ${b.converted_to_project_id?`<button type="button" onclick="pullRehabFromObra()" title="Puxar o total do orçamento de obra (Orçado) do projeto vinculado" style="background:#5C7A3F;color:#fff;border:0;border-radius:4px;padding:2px 7px;font-size:9px;font-weight:700;cursor:pointer;font-family:inherit;text-transform:none;letter-spacing:0">↙ Da obra</button>`:''}
+                </span>
               </label>
               <input type="number" min="0" step="0.01" value="${b.rehab_estimate||''}" oninput="updateBudgetField('rehab_estimate',this.value)" style="width:100%;padding:7px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:5px;outline:none;font-family:inherit">
-              ${b.converted_to_project_id?`<div style="font-size:9px;color:#999;margin-top:2px;font-style:italic">pode puxar do orçamento de obra do projeto</div>`:''}
+              <div style="font-size:9px;color:#999;margin-top:2px;font-style:italic">${b.converted_to_project_id?'estime com IA ou puxe do orçamento de obra do projeto':'estime com IA pelo endereço + m² (ou digite)'}</div>
             </div>
             <div>
               <label style="font-size:10px;font-weight:700;color:#655A4E;display:block;margin-bottom:3px">Closing Costs ($)</label>
