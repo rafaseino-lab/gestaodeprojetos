@@ -394,39 +394,42 @@ h1{font-weight:300}  /* Light 300 = títulos principais (igual manual) */
 <div id="view-portfolio">
   <div class="port-hdr"><div><h2>Todos os projetos</h2><p id="port-sub">Carregando projetos...</p></div></div>
   <div class="kpi-row">
-    <div class="kpi"><label>Total</label><div class="val" id="pk-total">—</div></div>
-    <div class="kpi ko"><label>Em andamento</label><div class="val" id="pk-prog">—</div></div>
-    <div class="kpi kg"><label>Concluído</label><div class="val" id="pk-done">—</div></div>
-    <div class="kpi" style="border-left-color:#7B5E8B"><label>Reforma concluída</label><div class="val" id="pk-rehab">—</div></div>
-    <div class="kpi" style="border-left-color:var(--blue)"><label>À venda</label><div class="val" id="pk-sale">—</div></div>
-    <div class="kpi" style="border-left-color:var(--gold)"><label>Vendido</label><div class="val" id="pk-sold">—</div></div>
-    <div class="kpi" style="border-left-color:#C62B2B"><label>Cancelado</label><div class="val" id="pk-cancelled">—</div></div>
+    <div class="kpi" style="cursor:pointer" title="Filtrar: todos" onclick="setPortFilter('all')"><label>Total</label><div class="val" id="pk-total">—</div></div>
+    <div class="kpi ko" style="cursor:pointer" title="Filtrar: em andamento" onclick="setPortFilter('in_progress')"><label>Em andamento</label><div class="val" id="pk-prog">—</div></div>
+    <div class="kpi kg" style="cursor:pointer" title="Filtrar: concluído" onclick="setPortFilter('completed')"><label>Concluído</label><div class="val" id="pk-done">—</div></div>
+    <div class="kpi" style="border-left-color:#7B5E8B;cursor:pointer" title="Filtrar: reforma concluída" onclick="setPortFilter('rehab_completed')"><label>Reforma concluída</label><div class="val" id="pk-rehab">—</div></div>
+    <div class="kpi" style="border-left-color:var(--blue);cursor:pointer" title="Filtrar: à venda" onclick="setPortFilter('for_sale')"><label>À venda</label><div class="val" id="pk-sale">—</div></div>
+    <div class="kpi" style="border-left-color:var(--gold);cursor:pointer" title="Filtrar: vendido" onclick="setPortFilter('sold')"><label>Vendido</label><div class="val" id="pk-sold">—</div></div>
+    <div class="kpi" style="border-left-color:#C62B2B;cursor:pointer" title="Filtrar: cancelado" onclick="setPortFilter('cancelled')"><label>Cancelado</label><div class="val" id="pk-cancelled">—</div></div>
   </div>
   <!-- Filtros de status -->
   <div id="port-filters" style="display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 14px;align-items:center">
     <input id="port-search" type="text" placeholder="🔍 Buscar (ex.: 5013, endereço, cliente)" oninput="setPortSearch(this.value)" style="padding:8px 12px;font-size:13px;border:1.5px solid var(--gray2);border-radius:7px;outline:none;font-family:inherit;min-width:280px">
-    <button class="port-flt active" data-flt="all" onclick="setPortFilter('all')">📁 Todos</button>
-    <button class="port-flt" data-flt="in_progress" onclick="setPortFilter('in_progress')"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>Em andamento</button>
-    <button class="port-flt" data-flt="completed" onclick="setPortFilter('completed')">✅ Concluído</button>
-    <button class="port-flt" data-flt="rehab_completed" onclick="setPortFilter('rehab_completed')">🔧 Reforma concluída</button>
-    <button class="port-flt" data-flt="for_sale" onclick="setPortFilter('for_sale')">🏷️ À venda</button>
-    <button class="port-flt" data-flt="sold" onclick="setPortFilter('sold')"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px"><path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8.9 3.2 2 4.2V18a2 2 0 0 0 4 0v-1.8c.6.1 1.3.2 2 .2 2.2 0 4.1-.5 5.5-1.4l1.5 1.5a1 1 0 0 0 1.7-.7V12c1.1-.5 2-1.5 2-3 0-2.2-1.5-4-3.7-4Z"/></svg>Vendido</button>
-    <button class="port-flt" data-flt="cancelled" onclick="setPortFilter('cancelled')">⛔ Cancelado</button>
+    <label for="port-status-filter" style="font-size:12px;color:var(--gray3);font-weight:600">Status:</label>
+    <select id="port-status-filter" onchange="setPortFilter(this.value)" style="padding:7px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:6px;outline:none;background:#fff;font-family:inherit;cursor:pointer;min-width:160px">
+      <option value="all">Todos</option>
+      <option value="in_progress">Em andamento</option>
+      <option value="completed">Concluído</option>
+      <option value="rehab_completed">Reforma concluída</option>
+      <option value="for_sale">À venda</option>
+      <option value="sold">Vendido</option>
+      <option value="cancelled">Cancelado</option>
+    </select>
     <div style="width:1px;height:24px;background:var(--gray2);margin:0 4px"></div>
-    <label for="port-client-filter" style="font-size:12px;color:var(--gray3);font-weight:600">👥 Cliente:</label>
+    <label for="port-client-filter" style="font-size:12px;color:var(--gray3);font-weight:600">Cliente:</label>
     <select id="port-client-filter" onchange="setPortClientFilter(this.value)" style="padding:7px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:6px;outline:none;background:#fff;font-family:inherit;cursor:pointer;min-width:180px">
       <option value="">Todos os clientes</option>
     </select>
-    <label for="port-type-filter" style="font-size:12px;color:var(--gray3);font-weight:600">🏠 Tipo:</label>
+    <label for="port-type-filter" style="font-size:12px;color:var(--gray3);font-weight:600">Tipo:</label>
     <select id="port-type-filter" onchange="setPortTypeFilter(this.value)" style="padding:7px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:6px;outline:none;background:#fff;font-family:inherit;cursor:pointer;min-width:160px">
       <option value="">Todos os tipos</option>
-      <option value="single_family">Single Family</option>
-      <option value="high_end">High End</option>
-      <option value="mobile_home">Mobile Home</option>
-      <option value="rehab">Rehab</option>
-      <option value="manufactured_home">Manufactured Home</option>
-      <option value="land">Land (Terreno)</option>
-      <option value="developer">Developer (Loteamento/desenvolvimento)</option>
+      <option value="single_family">Casa unifamiliar</option>
+      <option value="high_end">Alto padrão</option>
+      <option value="mobile_home">Mobile home (casa móvel)</option>
+      <option value="rehab">Reforma</option>
+      <option value="manufactured_home">Casa pré-fabricada</option>
+      <option value="land">Terreno</option>
+      <option value="developer">Loteamento / desenvolvimento</option>
       <option value="__none__">— Sem tipo definido —</option>
     </select>
   </div>
@@ -581,16 +584,16 @@ h1{font-weight:300}  /* Light 300 = títulos principais (igual manual) */
           </div></div>
           <div class="fgrid"><div class="fg"><label>Gerente do projeto</label><input id="pf-pm" oninput="debouncePF()"></div><div class="fg"><label>Address</label><input id="pf-address" oninput="debouncePF()"></div></div>
           <div class="fgrid">
-            <div class="fg"><label>Tipo de projeto <span style="font-size:10px;color:var(--gray3)">— defines what fields show</span></label>
+            <div class="fg"><label>Tipo de projeto <span style="font-size:10px;color:var(--gray3)">— define quais campos aparecem</span></label>
               <select id="pf-type" onchange="savePF()">
-                <option value="">— Select —</option>
-                <option value="single_family">Single Family</option>
-                <option value="high_end">High End</option>
-                <option value="mobile_home">Mobile Home</option>
-                <option value="rehab">Rehab (no purchase/sale)</option>
-                <option value="manufactured_home">Manufactured Home</option>
-                <option value="land">Land (Terreno)</option>
-                <option value="developer">Developer (Loteamento/desenvolvimento)</option>
+                <option value="">— Selecione —</option>
+                <option value="single_family">Casa unifamiliar</option>
+                <option value="high_end">Alto padrão</option>
+                <option value="mobile_home">Mobile home (casa móvel)</option>
+                <option value="rehab">Reforma (sem compra/venda)</option>
+                <option value="manufactured_home">Casa pré-fabricada</option>
+                <option value="land">Terreno</option>
+                <option value="developer">Loteamento / desenvolvimento</option>
               </select>
             </div>
             <div class="fg"></div>
@@ -3100,13 +3103,13 @@ function _renderInvestorPortal(client,projects,invoices,itemsByInvoice,propertyB
 
   // ─── DASHBOARD AGGREGATES ─────────────────────────────────────────
   const PROJECT_TYPE_LABELS={
-    single_family:{label:'Single Family',icon:'🏠'},
-    high_end:{label:'High End',icon:'💎'},
-    mobile_home:{label:'Mobile Home',icon:'🚐'},
-    rehab:{label:'Rehab',icon:'🔧'},
-    manufactured_home:{label:'Manufactured Home',icon:'🏭'},
-    land:{label:'Land',icon:'🌳'},
-    developer:{label:'Developer',icon:'🏗️'},
+    single_family:{label:'Casa unifamiliar',icon:'🏠'},
+    high_end:{label:'Alto padrão',icon:'💎'},
+    mobile_home:{label:'Mobile home',icon:'🚐'},
+    rehab:{label:'Reforma',icon:'🔧'},
+    manufactured_home:{label:'Casa pré-fabricada',icon:'🏭'},
+    land:{label:'Terreno',icon:'🌳'},
+    developer:{label:'Loteamento',icon:'🏗️'},
   };
   // Count projects by type (including 'untyped')
   const typeCount={};
@@ -4777,10 +4780,9 @@ function _resolveClientFilterIds(filterValue){
 
 function setPortFilter(f){
   _portFilter=f;
-  // Update button active state
-  document.querySelectorAll('.port-flt').forEach(b=>{
-    b.classList.toggle('active',b.dataset.flt===f);
-  });
+  // Sincroniza o dropdown de status (quando o filtro vem de um clique no card)
+  const sel=document.getElementById('port-status-filter');
+  if(sel && sel.value!==f) sel.value=f;
   renderPortfolio();
 }
 
@@ -5043,13 +5045,13 @@ const STATUS_META={
 
 // Project type labels (used in dropdowns and badges)
 const PROJECT_TYPE_META={
-  single_family:     {label:'Single Family',     icon:'🏠'},
-  high_end:          {label:'High End',          icon:'💎'},
-  mobile_home:       {label:'Mobile Home',       icon:'🚐'},
-  rehab:             {label:'Rehab',             icon:'🔧'},
-  manufactured_home: {label:'Manufactured Home', icon:'🏭'},
-  land:              {label:'Land',              icon:'🌳'},
-  developer:         {label:'Developer',         icon:'🏗️'},
+  single_family:     {label:'Casa unifamiliar',    icon:'🏠'},
+  high_end:          {label:'Alto padrão',         icon:'💎'},
+  mobile_home:       {label:'Mobile home',         icon:'🚐'},
+  rehab:             {label:'Reforma',             icon:'🔧'},
+  manufactured_home: {label:'Casa pré-fabricada',  icon:'🏭'},
+  land:              {label:'Terreno',             icon:'🌳'},
+  developer:         {label:'Loteamento',          icon:'🏗️'},
 };
 // Baseline (orçamento congelado) vinculado ao projeto — fonte do valor de REHAB
 function _getProjectBaseline(pid){
@@ -9218,12 +9220,12 @@ async function applyAIResults(){
   // Project type mapping
   if(d.property_type){
     const ptMap={
-      'single_family':'Single Family',
-      'mobile':'Mobile',
+      'single_family':'Casa unifamiliar',
+      'mobile':'Casa móvel',
       'townhome':'Townhome',
-      'condo':'Apartment',
-      'multi_family':'Multi-family',
-      'land':'Land',
+      'condo':'Apartamento',
+      'multi_family':'Multifamiliar',
+      'land':'Terreno',
     };
     fillEmpty('lc-project-type',ptMap[d.property_type]||d.property_type);
   }
