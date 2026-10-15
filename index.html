@@ -1779,15 +1779,15 @@ h1{font-weight:300}  /* Light 300 = títulos principais (igual manual) */
         <thead>
           <tr style="background:#F6F3ED">
             <th style="padding:10px 12px;text-align:left;border-bottom:2px solid var(--gray2);font-size:11px">Projeto</th>
-            <th style="padding:10px 12px;text-align:left;border-bottom:2px solid var(--gray2);font-size:11px">Cliente</th>
-            <th style="padding:10px 12px;text-align:center;border-bottom:2px solid var(--gray2);font-size:11px;width:110px">Status</th>
-            <th style="padding:10px 12px;text-align:right;border-bottom:2px solid var(--gray2);font-size:11px;width:110px" title="Preço de venda do imóvel">Venda</th>
-            <th style="padding:10px 12px;text-align:right;border-bottom:2px solid var(--gray2);font-size:11px;width:120px" title="Compra + obra + custos de venda">Custos</th>
-            <th style="padding:10px 12px;text-align:right;border-bottom:2px solid var(--gray2);font-size:11px;width:120px" title="Venda − custos (antes do overhead)">Lucro bruto</th>
-            <th style="padding:10px 12px;text-align:right;border-bottom:2px solid var(--gray2);font-size:11px;width:90px" title="Lucro ÷ investido">ROI %</th>
-            <th style="padding:10px 12px;text-align:right;border-bottom:2px solid var(--gray2);font-size:11px;width:110px">Overhead</th>
-            <th style="padding:10px 12px;text-align:right;border-bottom:2px solid var(--gray2);font-size:11px;width:120px" title="Lucro bruto − overhead">Lucro líquido</th>
-            <th style="padding:10px 12px;text-align:right;border-bottom:2px solid var(--gray2);font-size:11px;width:80px">Margem %</th>
+            <th style="padding:10px 12px;text-align:center;border-bottom:2px solid var(--gray2);font-size:11px;width:105px">Status</th>
+            <th style="padding:10px 12px;text-align:right;border-bottom:2px solid var(--gray2);font-size:11px;width:100px;color:#8A7B68" title="Venda prevista (viabilidade aprovada)">Venda prev.</th>
+            <th style="padding:10px 12px;text-align:right;border-bottom:2px solid var(--gray2);font-size:11px;width:100px" title="Venda realizada">Venda real</th>
+            <th style="padding:10px 12px;text-align:right;border-bottom:2px solid var(--gray2);font-size:11px;width:100px;color:#8A7B68" title="Custo total previsto (compra + obra + venda)">Custo prev.</th>
+            <th style="padding:10px 12px;text-align:right;border-bottom:2px solid var(--gray2);font-size:11px;width:100px" title="Custo real (até agora, ou final se vendido)">Custo real</th>
+            <th style="padding:10px 12px;text-align:right;border-bottom:2px solid var(--gray2);font-size:11px;width:100px;color:#8A7B68" title="Lucro previsto">Lucro prev.</th>
+            <th style="padding:10px 12px;text-align:right;border-bottom:2px solid var(--gray2);font-size:11px;width:100px" title="Lucro realizado (quando vendido)">Lucro real</th>
+            <th style="padding:10px 12px;text-align:right;border-bottom:2px solid var(--gray2);font-size:11px;width:75px" title="ROI (lucro ÷ investido)">ROI</th>
+            <th style="padding:10px 12px;text-align:right;border-bottom:2px solid var(--gray2);font-size:11px;width:95px" title="Lucro real − previsto">Δ Lucro</th>
           </tr>
         </thead>
         <tbody id="fin-tbody"></tbody>
@@ -5058,6 +5058,18 @@ function _getProjectBaseline(pid){
   let base=p.baseline_analysis;
   if(typeof base==='string'){ try{base=JSON.parse(base);}catch(e){base=null;} }
   return (base&&(base.cash||base.hm||base.rehab!=null))?base:null;
+}
+// "Previsto" do deal, vindo da baseline congelada (viabilidade aprovada).
+// Retorna venda/custo/lucro/roi previstos, ou null se não houver baseline.
+function _projPrevisto(pid){
+  const b=_getProjectBaseline(pid); if(!b) return null;
+  const scen=(b.scenario==='cash')?'cash':'hm';
+  const bl=b[scen]||{};
+  const sale=+b.arv||0;
+  const profit=+bl.profit||0;
+  const invested=+bl.invested||0;
+  const roi=+bl.roi||0;
+  return {sale, cost:sale-profit, profit, roi, invested, scenario:scen};
 }
 // Soma só os ITENS da obra (cômodos) do projeto — SEM a linha fixa REHAB,
 // pra o Rehab da viabilidade poder puxar daqui sem referência circular.
@@ -9970,28 +9982,28 @@ function renderFinancial(){
   // Sincroniza os controles de overhead com a config salva
   const ohBaseEl=document.getElementById('fin-oh-base'); if(ohBaseEl && ohBaseEl.value!==appConfig.overhead_base) ohBaseEl.value=appConfig.overhead_base||'total_invested';
   const ohRateEl=document.getElementById('fin-oh-rate'); if(ohRateEl && document.activeElement!==ohRateEl) ohRateEl.value=(+appConfig.overhead_rate_pct||0);
-  // ─── Modelo "dona do deal": Receita (venda) − Custos (compra+obra+venda) − Overhead = Lucro ───
-  let totSale=0,totCosts=0,totGross=0,totInvested=0,totOh=0;
+  // ─── Portfólio (dona do deal): capital aplicado, lucro realizado × projetado ───
+  let capAplicado=0, lucroReal=0, lucroProj=0, totOh=0, nAtivos=0, nVendidos=0;
   list.forEach(p=>{
     const f=calcProjectFinancials(p.id);
-    totSale+=(+f.sale||0);
-    totInvested+=(+f.totalInvested||0);
-    totCosts+=((+f.totalInvested||0)+(+f.selling||0)+(+f.lenderSale||0));
-    totGross+=(+f.netProfit||0);
+    const sold=(+f.sale||0)>0;
     totOh+=overheadForProject(p.id);
+    if(sold){ nVendidos++; lucroReal+=((+f.netProfit||0)-(overheadForProject(p.id)||0)); }
+    else {
+      nAtivos++;
+      capAplicado+=(+f.totalInvested||0);
+      const prev=_projPrevisto(p.id); if(prev) lucroProj+=prev.profit;
+    }
   });
-  const totNet=totGross-totOh;
-  const totMargin=totSale>0?(totNet/totSale*100):0;
-  const totRoiPct=totInvested>0?(totGross/totInvested*100):0;
   // Render KPIs
   const kpisEl=document.getElementById('fin-kpis');
   if(kpisEl){
     kpisEl.innerHTML=`
-      <div class="home-card"><div class="lbl">Projetos</div><div class="val">${list.length}</div></div>
-      <div class="home-card gold"><div class="lbl">Receita (vendas)</div><div class="val">${fmt(totSale)}</div><div class="sub">de imóveis vendidos</div></div>
-      <div class="home-card"><div class="lbl">Custos totais</div><div class="val">${fmt(totCosts)}</div><div class="sub">compra + obra + venda</div></div>
+      <div class="home-card"><div class="lbl">Projetos</div><div class="val">${list.length}</div><div class="sub">${nAtivos} ativos · ${nVendidos} vendidos</div></div>
+      <div class="home-card"><div class="lbl">Capital aplicado</div><div class="val">${fmt(capAplicado)}</div><div class="sub">em ${nAtivos} deal(s) ativo(s)</div></div>
+      <div class="home-card green"><div class="lbl">Lucro realizado</div><div class="val" style="color:${lucroReal>=0?'var(--p3)':'var(--p1)'}">${lucroReal>=0?'':'-'}${fmt(Math.abs(lucroReal))}</div><div class="sub">de ${nVendidos} vendido(s)</div></div>
+      <div class="home-card gold"><div class="lbl">Lucro projetado</div><div class="val" style="color:var(--gold)">${fmt(lucroProj)}</div><div class="sub">em ${nAtivos} em andamento</div></div>
       <div class="home-card"><div class="lbl">Overhead (${(+appConfig.overhead_rate_pct||0)}%)</div><div class="val">${fmt(totOh)}</div></div>
-      <div class="home-card green"><div class="lbl">Lucro líquido</div><div class="val" style="color:${totNet>=0?'var(--p3)':'var(--p1)'}">${totNet>=0?'':'-'}${fmt(Math.abs(totNet))}</div><div class="sub">venda − custos − overhead</div></div>
       <div class="home-card"><div class="lbl">Caixa do mês <span style="font-size:9px;color:var(--gray3)">(Livros)</span></div><div class="val" id="fin-kpi-caixa-val" style="color:var(--gray3)">…</div><div class="sub" id="fin-kpi-caixa-sub"></div></div>`;
     _finFillCaixaKPI();
   }
@@ -10003,43 +10015,50 @@ function renderFinancial(){
     document.getElementById('fin-tfoot').innerHTML='';
     return;
   }
+  let tVsPrev=0,tVsReal=0,tCsPrev=0,tCsReal=0,tLuPrev=0,tLuReal=0,tDl=0,tInvSold=0;
+  const _pm='color:#8A7B68';
   tbody.innerHTML=list.map(p=>{
+    const prev=_projPrevisto(p.id)||{sale:0,cost:0,profit:0,roi:0};
     const f=calcProjectFinancials(p.id);
-    const sale=+f.sale||0;
-    const costs=(+f.totalInvested||0)+(+f.selling||0)+(+f.lenderSale||0);
-    const gross=+f.netProfit||0;
     const oh=overheadForProject(p.id)||0;
-    const net=gross-oh;
-    const roiPct=+f.roi||0;
-    const margin=sale>0?(net/sale*100):0;
-    const st=projectStatus(p.id);
-    const meta=STATUS_META[st];
-    const netColor=net>=0?'var(--p3)':'var(--p1)';
-    const hasAny=(sale>0||costs>0);
+    const sold=(+f.sale||0)>0;
+    const saleReal=sold?(+f.sale||0):0;
+    const costReal=sold?((+f.totalInvested||0)+(+f.selling||0)+(+f.lenderSale||0)):(+f.totalInvested||0);
+    const profitReal=sold?((+f.netProfit||0)-oh):null;
+    const roiReal=sold?(+f.roi||0):(+prev.roi||0);
+    const dLucro=sold?(profitReal-(+prev.profit||0)):null;
+    const st=projectStatus(p.id); const meta=STATUS_META[st];
+    // acumula totais
+    tVsPrev+=(+prev.sale||0); tCsPrev+=(+prev.cost||0); tLuPrev+=(+prev.profit||0); tCsReal+=costReal;
+    if(sold){ tVsReal+=saleReal; tLuReal+=profitReal; tDl+=dLucro; tInvSold+=(+f.totalInvested||0); }
+    const prColor=profitReal==null?'var(--gray3)':(profitReal>=0?'var(--p3)':'var(--p1)');
+    const dColor=dLucro==null?'var(--gray3)':(dLucro>=0?'var(--p3)':'var(--p1)');
     return `<tr style="border-bottom:1px solid #DDD8CF;cursor:pointer" onclick="openProject('${p.id}')">
       <td style="padding:10px 12px;font-weight:600;color:var(--navy)">${escHtml(p.name||'')}</td>
-      <td style="padding:10px 12px;color:var(--text);font-size:11px">${escHtml(customerName(p.customer)||'—')}</td>
       <td style="padding:10px 12px;text-align:center"><span style="background:${meta.bg};color:${meta.color};padding:3px 8px;border-radius:10px;font-size:10px;font-weight:700">${meta.icon} ${meta.label}</span></td>
-      <td style="padding:10px 12px;text-align:right;font-weight:600">${sale>0?fmt(sale):'—'}</td>
-      <td style="padding:10px 12px;text-align:right;font-weight:600">${costs>0?fmt(costs):'—'}</td>
-      <td style="padding:10px 12px;text-align:right;font-weight:700;color:${gross>=0?'var(--p3)':'var(--p1)'}">${hasAny?(gross>=0?'':'-')+fmt(Math.abs(gross)):'—'}</td>
-      <td style="padding:10px 12px;text-align:right;font-weight:600;color:var(--gold)">${sale>0?roiPct.toFixed(1)+'%':'—'}</td>
-      <td style="padding:10px 12px;text-align:right;font-weight:600;color:#8A7B68">${oh>0?fmt(oh):'—'}</td>
-      <td style="padding:10px 12px;text-align:right;font-weight:700;color:${hasAny?netColor:'var(--gray3)'}">${hasAny?(net>=0?'':'-')+fmt(Math.abs(net)):'—'}</td>
-      <td style="padding:10px 12px;text-align:right;font-weight:700;color:${sale>0?netColor:'var(--gray3)'}">${sale>0?margin.toFixed(1)+'%':'—'}</td>
+      <td style="padding:10px 12px;text-align:right;${_pm}">${prev.sale>0?fmt(prev.sale):'—'}</td>
+      <td style="padding:10px 12px;text-align:right;font-weight:600">${sold?fmt(saleReal):'—'}</td>
+      <td style="padding:10px 12px;text-align:right;${_pm}">${prev.cost>0?fmt(prev.cost):'—'}</td>
+      <td style="padding:10px 12px;text-align:right;font-weight:600">${costReal>0?fmt(costReal):'—'}</td>
+      <td style="padding:10px 12px;text-align:right;${_pm}">${(prev.profit||prev.sale)?(prev.profit>=0?'':'-')+fmt(Math.abs(prev.profit)):'—'}</td>
+      <td style="padding:10px 12px;text-align:right;font-weight:700;color:${prColor}">${profitReal==null?'—':(profitReal>=0?'':'-')+fmt(Math.abs(profitReal))}</td>
+      <td style="padding:10px 12px;text-align:right;font-weight:600;color:var(--gold)">${(sold||prev.sale)?roiReal.toFixed(1)+'%':'—'}</td>
+      <td style="padding:10px 12px;text-align:right;font-weight:700;color:${dColor}">${dLucro==null?'—':(dLucro>=0?'+':'-')+fmt(Math.abs(dLucro))}</td>
     </tr>`;
   }).join('');
+  const tRoi=tInvSold>0?(tLuReal/tInvSold*100):0;
   // Totals footer
   document.getElementById('fin-tfoot').innerHTML=`
     <tr style="background:#292824;color:#DDD8CF">
-      <td colspan="3" style="padding:11px 12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;font-size:11px">TOTAIS (${list.length} projeto(s))</td>
-      <td style="padding:11px 12px;text-align:right;font-weight:700">${fmt(totSale)}</td>
-      <td style="padding:11px 12px;text-align:right;font-weight:700">${fmt(totCosts)}</td>
-      <td style="padding:11px 12px;text-align:right;font-weight:700;color:${totGross>=0?'#9FD3B0':'#E6A9A0'}">${totGross>=0?'':'-'}${fmt(Math.abs(totGross))}</td>
-      <td style="padding:11px 12px;text-align:right;font-weight:700">${totSale>0?totRoiPct.toFixed(1)+'%':'—'}</td>
-      <td style="padding:11px 12px;text-align:right;font-weight:700">${fmt(totOh)}</td>
-      <td style="padding:11px 12px;text-align:right;font-weight:700;color:#B89B64">${totNet>=0?'':'-'}${fmt(Math.abs(totNet))}</td>
-      <td style="padding:11px 12px;text-align:right;font-weight:700;color:#B89B64">${totSale>0?totMargin.toFixed(1)+'%':'—'}</td>
+      <td colspan="2" style="padding:11px 12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;font-size:11px">TOTAIS (${list.length} projeto(s))</td>
+      <td style="padding:11px 12px;text-align:right;font-weight:700;color:#C8BEAE">${fmt(tVsPrev)}</td>
+      <td style="padding:11px 12px;text-align:right;font-weight:700">${fmt(tVsReal)}</td>
+      <td style="padding:11px 12px;text-align:right;font-weight:700;color:#C8BEAE">${fmt(tCsPrev)}</td>
+      <td style="padding:11px 12px;text-align:right;font-weight:700">${fmt(tCsReal)}</td>
+      <td style="padding:11px 12px;text-align:right;font-weight:700;color:#C8BEAE">${tLuPrev>=0?'':'-'}${fmt(Math.abs(tLuPrev))}</td>
+      <td style="padding:11px 12px;text-align:right;font-weight:700;color:#B89B64">${tLuReal>=0?'':'-'}${fmt(Math.abs(tLuReal))}</td>
+      <td style="padding:11px 12px;text-align:right;font-weight:700">${tInvSold>0?tRoi.toFixed(1)+'%':'—'}</td>
+      <td style="padding:11px 12px;text-align:right;font-weight:700;color:#B89B64">${tDl>=0?'+':'-'}${fmt(Math.abs(tDl))}</td>
     </tr>`;
 }
 
