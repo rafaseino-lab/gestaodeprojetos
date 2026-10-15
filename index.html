@@ -4979,8 +4979,6 @@ function buildProjectCard(p,statusMeta){
       <span style="background:${statusMeta.bg};color:${statusMeta.color};padding:3px 9px;border-radius:11px;font-size:11px;font-weight:700">${statusMeta.icon} ${statusMeta.label}</span></div>
     ${typeBadge?`<div style="padding:6px 14px 0">${typeBadge}</div>`:''}
     <div class="pc-body">
-      <div class="pc-pl"><span>Cronograma</span><span>${pct}%</span></div>
-      <div class="pc-bo"><div class="pc-bi" style="width:${pct}%;background:${pct===100?'#237A50':pct>50?'#B89B64':'#292824'}"></div></div>
       <div class="pc-br"><span>Estimado</span><strong style="color:#292824">${fmt(est)}</strong></div>
       <div class="pc-br"><span>Realizado</span><strong style="color:#B89B64">${fmt(act)}</strong></div>
       <div class="pc-br"><span>Variação</span><strong style="color:${vColor}">${vTx}</strong></div>
@@ -9379,8 +9377,9 @@ function calcProjectFinancials(pid){
   const sale=+prop.final_sale_price||0;
   const selling=+prop.selling_costs||0;
   const lenderSale=+prop.lender_costs_sale||0;
-  // Total investido (client's perspective): EMD + Cash + Other Costs + Commission + Invoices Op + Costs + Recurring + Docs + High End
-  const totalInvested=emd+cash+otherAcq+commission+invoicesOp+dec+doc+he+rec;
+  // Custo total (modelo dona do deal) = compra (cash+emd+other+commission) + OBRA (actCosts/realizado) + extras + venda.
+  // actCosts é o Realizado dos budget_items (a obra). invoicesOp fica em 0 nesse modelo (não há repasse de cliente).
+  const totalInvested=emd+cash+otherAcq+commission+invoicesOp+actCosts+dec+doc+he+rec;
   const grossProfit=sale-selling-lenderSale;
   const netProfit=sale>0?(grossProfit-totalInvested):0;
   const roi=totalInvested>0&&sale>0?(netProfit/totalInvested*100):0;
