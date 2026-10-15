@@ -156,7 +156,7 @@ h1{font-weight:300}  /* Light 300 = títulos principais (igual manual) */
 .port-hdr p{font-size:13px;color:var(--gray3);margin-top:3px}
 
 /* KPI ROW */
-.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:22px}
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:14px;margin-bottom:22px}
 .kpi{background:var(--white);border-radius:10px;padding:15px 17px;box-shadow:var(--shadow);border-top:3px solid var(--blue)}
 .kpi.kg{border-top-color:var(--p3)}.kpi.ko{border-top-color:var(--p2)}
 .kpi.kr{border-top-color:var(--p1)}.kpi.kp{border-top-color:var(--gold)}
@@ -392,15 +392,15 @@ h1{font-weight:300}  /* Light 300 = títulos principais (igual manual) */
 
 <!-- PORTFOLIO -->
 <div id="view-portfolio">
-  <div class="port-hdr"><div><h2>Todos os projetos</h2><p id="port-sub">Loading projects...</p></div></div>
+  <div class="port-hdr"><div><h2>Todos os projetos</h2><p id="port-sub">Carregando projetos...</p></div></div>
   <div class="kpi-row">
-    <div class="kpi"><label>📁 Total</label><div class="val" id="pk-total">—</div></div>
-    <div class="kpi ko"><label><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>Em andamento</label><div class="val" id="pk-prog">—</div></div>
-    <div class="kpi kg"><label>✅ Concluído</label><div class="val" id="pk-done">—</div></div>
-    <div class="kpi" style="border-left-color:#7B5E8B"><label>🔧 Reforma concluída</label><div class="val" id="pk-rehab">—</div></div>
-    <div class="kpi" style="border-left-color:var(--blue)"><label>🏷️ À venda</label><div class="val" id="pk-sale">—</div></div>
-    <div class="kpi" style="border-left-color:var(--gold)"><label><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px"><path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8.9 3.2 2 4.2V18a2 2 0 0 0 4 0v-1.8c.6.1 1.3.2 2 .2 2.2 0 4.1-.5 5.5-1.4l1.5 1.5a1 1 0 0 0 1.7-.7V12c1.1-.5 2-1.5 2-3 0-2.2-1.5-4-3.7-4Z"/></svg>Vendido</label><div class="val" id="pk-sold">—</div></div>
-    <div class="kpi" style="border-left-color:#C62B2B"><label>⛔ Cancelado</label><div class="val" id="pk-cancelled">—</div></div>
+    <div class="kpi"><label>Total</label><div class="val" id="pk-total">—</div></div>
+    <div class="kpi ko"><label>Em andamento</label><div class="val" id="pk-prog">—</div></div>
+    <div class="kpi kg"><label>Concluído</label><div class="val" id="pk-done">—</div></div>
+    <div class="kpi" style="border-left-color:#7B5E8B"><label>Reforma concluída</label><div class="val" id="pk-rehab">—</div></div>
+    <div class="kpi" style="border-left-color:var(--blue)"><label>À venda</label><div class="val" id="pk-sale">—</div></div>
+    <div class="kpi" style="border-left-color:var(--gold)"><label>Vendido</label><div class="val" id="pk-sold">—</div></div>
+    <div class="kpi" style="border-left-color:#C62B2B"><label>Cancelado</label><div class="val" id="pk-cancelled">—</div></div>
   </div>
   <!-- Filtros de status -->
   <div id="port-filters" style="display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 14px;align-items:center">
@@ -4891,11 +4891,11 @@ function renderPortfolio(){
   const anyFilter=_portClientFilter||_portTypeFilter;
   document.getElementById('proj-count-lbl').textContent=
     anyFilter
-      ? `${totalShown} of ${totalAll} project${totalAll!==1?'s':''}`
+      ? `${totalShown} de ${totalAll} projeto${totalAll!==1?'s':''}`
       : (cancelledCount>0
-          ? `${activeCount} of ${totalShown} active`
-          : `${totalAll} project${totalAll!==1?'s':''}`);
-  document.getElementById('port-sub').textContent='Last updated: '+new Date().toLocaleString();
+          ? `${activeCount} de ${totalShown} ativo(s)`
+          : `${totalAll} projeto${totalAll!==1?'s':''}`);
+  document.getElementById('port-sub').textContent='Atualizado: '+new Date().toLocaleString();
   document.getElementById('pk-total').textContent=totalShown;
   document.getElementById('pk-prog').textContent=groups.in_progress.length;
   document.getElementById('pk-done').textContent=groups.completed.length;
@@ -4917,7 +4917,7 @@ function renderPortfolio(){
     section.className='proj-section';
     section.innerHTML=`
       <div class="proj-section-hdr">
-        <h3>${meta.icon} ${meta.label}</h3>
+        <h3>${meta.label}</h3>
         <span class="cnt">${list.length}</span>
       </div>
       <div class="proj-grid" id="grid-${st}"></div>`;
@@ -4925,7 +4925,7 @@ function renderPortfolio(){
     const grid=section.querySelector('#grid-'+st);
     if(list.length===0){
       grid.parentElement.innerHTML=section.querySelector('.proj-section-hdr').outerHTML+
-        `<div class="proj-section-empty">No projects ${meta.label.toLowerCase()}</div>`;
+        `<div class="proj-section-empty">Nenhum projeto · ${meta.label.toLowerCase()}</div>`;
       return;
     }
     list.forEach(p=>grid.appendChild(buildProjectCard(p,meta)));
@@ -4948,7 +4948,7 @@ function renderPortfolio(){
     if(lastGrid){
       const ac=document.createElement('div');
       ac.className='add-card';
-      ac.innerHTML=`<div style="font-size:32px;color:var(--gray3)">＋</div><p>New Project</p>`;
+      ac.innerHTML=`<div style="font-size:32px;color:var(--gray3)">＋</div><p>Novo projeto</p>`;
       ac.onclick=openNewModal;
       lastGrid.appendChild(ac);
     }
@@ -4963,7 +4963,7 @@ function buildProjectCard(p,statusMeta){
   const act=calcRoomTotal(p.id,'actual');
   const v2=act-est;
   const vColor=v2>0?'#B33F36':v2<0?'#237A50':'#292824';
-  const vTx=v2>0?'⚠ Over '+fmt(v2):v2<0?'✅ Under '+fmt(Math.abs(v2)):'On budget';
+  const vTx=v2>0?'Acima +'+fmt(v2):v2<0?'Abaixo -'+fmt(Math.abs(v2)):'No orçamento';
   // Project type badge (if defined)
   const typeMeta=p.project_type?PROJECT_TYPE_META[p.project_type]:null;
   const typeBadge=typeMeta
@@ -5034,11 +5034,11 @@ function projectStatus(pid){
 
 const STATUS_META={
   in_progress:      {label:'Em andamento',     icon:'🔄', color:'#B89B64', bg:'#EEE5D3'},
-  completed:        {label:'Completed',       icon:'✅', color:'#237A50', bg:'#E7F2EB'},
-  rehab_completed:  {label:'Rehab Completed', icon:'🔧', color:'#7B5E8B', bg:'#EDE5F1'},
+  completed:        {label:'Concluído',       icon:'✅', color:'#237A50', bg:'#E7F2EB'},
+  rehab_completed:  {label:'Reforma concluída', icon:'🔧', color:'#7B5E8B', bg:'#EDE5F1'},
   for_sale:         {label:'À venda',        icon:'🏷️', color:'#292824', bg:'#F6F3ED'},
-  sold:             {label:'Sold',            icon:'💰', color:'#B89B64', bg:'#EEE5D3'},
-  cancelled:        {label:'Cancelled',       icon:'⛔', color:'#C62B2B', bg:'#FDF2F0'},
+  sold:             {label:'Vendido',            icon:'💰', color:'#B89B64', bg:'#EEE5D3'},
+  cancelled:        {label:'Cancelado',       icon:'⛔', color:'#C62B2B', bg:'#FDF2F0'},
 };
 
 // Project type labels (used in dropdowns and badges)
