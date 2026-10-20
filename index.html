@@ -789,7 +789,6 @@ h1{font-weight:300}  /* Light 300 = títulos principais (igual manual) */
 
           <!-- Profit summary -->
           <div>
-            <div style="font-size:13px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px">Resumo de lucro</div>
             <div class="dgrid" style="grid-template-columns:repeat(2,1fr);gap:14px">
               <div class="kpi" style="border-left-color:var(--blue);background:#F6F3ED"><div class="kpi-l"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>Lucro estimado</div><div class="kpi-v" id="pft-est">$0</div><div class="kpi-l" style="margin-top:4px;font-size:10px">ARV (ou venda final, se vendido) − custos de venda − orçado da obra</div></div>
               <div class="kpi" style="border-left-color:var(--gold);background:#EEE5D3"><div class="kpi-l"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/></svg>Lucro bruto</div><div class="kpi-v" id="pft-gross">$0</div><div class="kpi-l" style="margin-top:4px;font-size:10px">Venda final − custos de venda − custos do credor</div></div>
@@ -8420,14 +8419,15 @@ function recalcProfit(){
   const docTotal=calcExtraSubtotal('documents');
   const heTotal=calcExtraSubtotal('high_end');
   const extraTotal=decTotal+recTotal+docTotal+heTotal;
-  // Total investido = EMD + Cash + Other Costs + Commission + INVOICES OPERACIONAIS + Costs + Recurring + Documents + High End
-  // (mudou de "Actual Spent" para soma das invoices Operacionais emitidas ao cliente)
+  // Total investido (modelo dona do deal) = EMD + Cash + Outros custos + Comissão + OBRA (realizado) + extras
+  // IMPORTANTE: inclui a obra (Realizado dos budget_items) — mesma conta do Financeiro (calcProjectFinancials).
   const emd=+p.emd_cash||0;
   const cash=+p.cash||0;
   const otherAcq=+p.other_costs||0;
   const commission=+p.commission||0;
   const invoicesOp=calcProjectInvoicesOperational(CID);
-  const totalInvested=emd+cash+otherAcq+commission+invoicesOp+decTotal+recTotal+docTotal+heTotal;
+  const obraReal=calcRoomTotal(CID,'actual'); // obra realizada (Realizado) — faltava no total investido
+  const totalInvested=emd+cash+otherAcq+commission+invoicesOp+obraReal+decTotal+recTotal+docTotal+heTotal;
   const tiEl=document.getElementById('pi-total-invested');
   if(tiEl) tiEl.textContent=fmt(totalInvested);
   // Estimated profit:
@@ -13483,8 +13483,8 @@ async function deleteClient(id){
 //   recurring_detail_months → 1 linha por (project, item, year_offset, month) com amount
 // year_offset: 0=Ano 1, 1=Ano 2, 2=Ano 3, 3=Ano 4
 const RC_ITEMS=[
-  'Landscape','Energy','Water','Gas','Club','HOA','Internet','Pool',
-  'Loan payment','Insurance','Annual Taxes 1','Annual Taxes 2','Annual Taxes 3'
+  'Paisagismo','Energia','Água','Gás','Clube','HOA','Internet','Piscina',
+  'Parcela do empréstimo','Seguro','Impostos anuais 1','Impostos anuais 2','Impostos anuais 3'
 ];
 // Normaliza o nome do item recorrente pro nome oficial (ignora maiúsc/minúsc e espaços)
 // Evita duplicar "Landscape" vs "landscape" vs " landscape ".
