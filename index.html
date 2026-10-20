@@ -8426,8 +8426,10 @@ function recalcProfit(){
   const otherAcq=+p.other_costs||0;
   const commission=+p.commission||0;
   const invoicesOp=calcProjectInvoicesOperational(CID);
-  const obraReal=calcRoomTotal(CID,'actual'); // obra realizada (Realizado) — faltava no total investido
-  const totalInvested=emd+cash+otherAcq+commission+invoicesOp+obraReal+decTotal+recTotal+docTotal+heTotal;
+  const obraReal=calcRoomTotal(CID,'actual'); // obra realizada (Realizado)
+  // FONTE ÚNICA de P&L (plOwner) — garante os MESMOS números do Financeiro/DRE
+  const _pl=plOwner({emd,cash,otherAcq,commission,invoicesOp,obra:obraReal,extras:decTotal+recTotal+docTotal+heTotal,sale,selling,lenderSale});
+  const totalInvested=_pl.totalInvested;
   const tiEl=document.getElementById('pi-total-invested');
   if(tiEl) tiEl.textContent=fmt(totalInvested);
   // Estimated profit:
@@ -8439,15 +8441,15 @@ function recalcProfit(){
   const estEl = document.getElementById('pft-est');
   estEl.textContent = salePrice ? (estProfit>=0?'':'-')+fmt(Math.abs(estProfit)) : '—';
   estEl.style.color = salePrice ? (estProfit>=0?'var(--p3)':'var(--p1)') : 'var(--gray3)';
-  // Gross profit = Final Sale - Selling - Lender(sale)
-  const grossProfit=sale?(sale-selling-lenderSale):0;
+  // Gross profit (via plOwner) = Venda − custos de venda − custos do credor
+  const grossProfit=sale?_pl.grossProfit:0;
   const grossEl=document.getElementById('pft-gross');
   if(grossEl){
     grossEl.textContent=sale?(grossProfit>=0?'':'-')+fmt(Math.abs(grossProfit)):'—';
     grossEl.style.color=sale?(grossProfit>=0?'var(--gold)':'var(--p1)'):'var(--gray3)';
   }
-  // Actual profit = Final Sale - Total investido - Selling - Lender(sale)
-  const actProfit=sale?(sale-totalInvested-selling-lenderSale):0;
+  // Actual profit (via plOwner) = Lucro bruto − total investido
+  const actProfit=sale?_pl.netProfit:0;
   const actEl=document.getElementById('pft-act');
   actEl.textContent=sale?(actProfit>=0?'':'-')+fmt(Math.abs(actProfit)):'—';
   actEl.style.color=sale?(actProfit>=0?'var(--p3)':'var(--p1)'):'var(--gray3)';
@@ -8455,7 +8457,7 @@ function recalcProfit(){
   const totalInvest=totalInvested;
   const roiEl=document.getElementById('pft-roi');
   if(sale && totalInvest>0){
-    const roi=(actProfit/totalInvest)*100;
+    const roi=_pl.roi;
     roiEl.textContent=(roi>=0?'+':'')+roi.toFixed(1)+'%';
     roiEl.style.color=roi>=0?'var(--p3)':'var(--p1)';
   } else {
@@ -8554,14 +8556,13 @@ function generateReport(){
   const sale=+p.final_sale_price||0;
   const refund=calcProjectInvoicesRefund(CID);
   const sellingCosts=+p.selling_costs||0;
-  // Total investido = EMD + Cash + Other Costs + Commission + Operational Invoices + Costs (DEC Invoice) + Recurring + Documents + High End
-  // (same formula used on screen — uses client-paid invoices, not Actual Spent)
+  // Total investido pela FONTE ÚNICA (plOwner) — inclui a OBRA (Realizado), igual às demais telas
   const invoicesOp=calcProjectInvoicesOperational(CID);
-  const totalInvestido=emd+cash+otherAcq+commission+invoicesOp+decExtraTotal+recTotal+docTotal+heTotal;
-  // Gross Profit = Final Sale − Selling − Lender(sale)
-  const grossProfit=sale-sellingCosts-lenderSale;
-  // Net Profit = Gross Profit − Total investido (= Actual Profit)
-  const lucroLiquido=grossProfit-totalInvestido;
+  const obraReal=calcRoomTotal(CID,'actual');
+  const _plR=plOwner({emd,cash,otherAcq,commission,invoicesOp,obra:obraReal,extras:decExtraTotal+recTotal+docTotal+heTotal,sale,selling:sellingCosts,lenderSale});
+  const totalInvestido=_plR.totalInvested;
+  const grossProfit=_plR.grossProfit;
+  const lucroLiquido=sale>0?_plR.netProfit:(grossProfit-totalInvestido);
   const pctClient=+p.pct_client||0;
   const pctDec=+p.pct_dec||0;
   const lucroClient=lucroLiquido*pctClient/100;
@@ -9231,6 +9232,29 @@ function calcProjectInvoicesRefund(pid){
     .reduce((s,i)=>s+(+i.amount||0),0);
 }
 
+// ══════════════════════════════════════════════════════════════════════
+// plOwner — NÚCLEO ÚNICO do cálculo de lucro no modelo DONA DO DEAL.
+// Função PURA (sem DOM, sem estado global). TODA tela/relatório que precise
+// de investido/lucro/ROI de um projeto vendido deve passar por aqui, pra não
+// existir "dois lucros diferentes". Valores em dólares.
+//   obra   = Realizado da obra (soma dos budget_items.actual)
+//   extras = dec + documentos + high end + recorrentes
+//   invoicesOp fica 0 no modelo dona do deal (não há repasse de cliente)
+// Investido = EMD + Cash + Outros + Comissão + Obra + extras (+ invoicesOp)
+// Lucro bruto = Venda − custos de venda − custos do credor
+// Lucro líq.  = Lucro bruto − Investido ; ROI = Lucro líq. / Investido
+function plOwner(i){
+  i=i||{};
+  const emd=+i.emd||0, cash=+i.cash||0, other=+i.otherAcq||0, comm=+i.commission||0;
+  const invoicesOp=+i.invoicesOp||0, obra=+i.obra||0, extras=+i.extras||0;
+  const sale=+i.sale||0, selling=+i.selling||0, lenderSale=+i.lenderSale||0;
+  const totalInvested = emd+cash+other+comm+invoicesOp+obra+extras;
+  const grossProfit = sale - selling - lenderSale;
+  const netProfit = sale>0 ? (grossProfit - totalInvested) : 0;
+  const roi = (totalInvested>0 && sale>0) ? (netProfit/totalInvested*100) : 0;
+  return {totalInvested, grossProfit, netProfit, roi};
+}
+
 // Returns full financial breakdown for a single project
 function calcProjectFinancials(pid){
   const proj=projects.find(p=>p.id===pid);
@@ -9273,12 +9297,10 @@ function calcProjectFinancials(pid){
   const sale=+prop.final_sale_price||0;
   const selling=+prop.selling_costs||0;
   const lenderSale=+prop.lender_costs_sale||0;
-  // Custo total (modelo dona do deal) = compra (cash+emd+other+commission) + OBRA (actCosts/realizado) + extras + venda.
-  // actCosts é o Realizado dos budget_items (a obra). invoicesOp fica em 0 nesse modelo (não há repasse de cliente).
-  const totalInvested=emd+cash+otherAcq+commission+invoicesOp+actCosts+dec+doc+he+rec;
-  const grossProfit=sale-selling-lenderSale;
-  const netProfit=sale>0?(grossProfit-totalInvested):0;
-  const roi=totalInvested>0&&sale>0?(netProfit/totalInvested*100):0;
+  // Modelo dona do deal — cálculo pela FONTE ÚNICA (plOwner). obra = Realizado; extras = dec+doc+he+rec.
+  const {totalInvested,grossProfit,netProfit,roi}=plOwner({
+    emd,cash,otherAcq,commission,invoicesOp,obra:actCosts,extras:dec+doc+he+rec,sale,selling,lenderSale
+  });
   return {isRehab:false,emd,cash,otherAcq,commission,sale,selling,lenderSale,actCosts,dec,doc,he,rec,invoicesOp,totalInvested,grossProfit,netProfit,roi};
 }
 
