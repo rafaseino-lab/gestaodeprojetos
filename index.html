@@ -16819,8 +16819,11 @@ function renderBudgetEditorModal(){
               <div style="font-size:9px;color:#999;margin-top:2px;font-style:italic">${b.converted_to_project_id?'estime com IA ou puxe do orçamento de obra do projeto':'estime com IA pelo endereço + m² (ou digite)'}</div>
             </div>
             <div>
-              <label style="font-size:10px;font-weight:700;color:#647078;display:block;margin-bottom:3px">Closing Costs ($)</label>
-              <input type="text" inputmode="decimal" value="${_money(b.closing_costs)}" oninput="moneyInput(this,'closing_costs')" placeholder="0" style="width:100%;padding:7px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:5px;outline:none;font-family:inherit;font-variant-numeric:tabular-nums">
+              <label style="font-size:10px;font-weight:700;color:#647078;display:block;margin-bottom:3px">Closing Costs <span style="font-weight:500;color:#999">(% da venda → $ automático)</span></label>
+              <div style="display:flex;gap:6px">
+                <input type="text" inputmode="decimal" value="${(+b.closing_costs>0&&+b.arv>0)?((+b.closing_costs/+b.arv*100).toFixed(2)):''}" oninput="setClosingPct(this.value)" placeholder="% venda" title="Digite a % sobre o preço de venda — o valor em $ é calculado automaticamente" style="width:42%;padding:7px 8px;font-size:13px;border:1.5px solid var(--gray2);border-radius:5px;outline:none;font-family:inherit;text-align:right">
+                <input id="bm-closing-val" type="text" inputmode="decimal" value="${_money(b.closing_costs)}" oninput="moneyInput(this,'closing_costs')" placeholder="0" title="Valor em $ (calculado pela %, ou digite direto)" style="width:58%;padding:7px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:5px;outline:none;font-family:inherit;font-variant-numeric:tabular-nums">
+              </div>
             </div>
           </div>
         </div>
@@ -16957,12 +16960,31 @@ function moneyInputLine(el, idx){
   el.value=(intp?Number(intp).toLocaleString('en-US'):'')+dec;
 }
 
+// Closing Costs como % do preço de venda (ARV) — calcula o $ automaticamente na célula.
+function setClosingPct(pct){
+  if(!_bdgCurrent) return;
+  const p=parseFloat(String(pct).replace(',','.'))||0;
+  _bdgCurrent.closing_pct=p;
+  const arv=+_bdgCurrent.arv||0;
+  const val=Math.round(arv*(p/100)*100)/100;
+  _bdgCurrent.closing_costs=val;
+  const el=document.getElementById('bm-closing-val');
+  if(el) el.value=_money(val);
+  refreshBudgetLiveCalcs();
+}
 function updateBudgetField(field, value){
   if(!_bdgCurrent) return;
   if(['purchase_price','arv','rehab_estimate','closing_costs','hm_loan_amount','hm_down_pct','hm_interest_pct','hm_pct','hm_closing_costs','commission_agent_pct','commission_closing_pct','cash_months','hm_months'].includes(field)){
     _bdgCurrent[field]=+value||0;
   } else {
     _bdgCurrent[field]=value;
+  }
+  // Se a venda (ARV) mudou e há uma % de closing definida, recalcula o $ do closing automaticamente.
+  if(field==='arv' && (+_bdgCurrent.closing_pct||0)>0){
+    const val=Math.round((+_bdgCurrent.arv||0)*((+_bdgCurrent.closing_pct)/100)*100)/100;
+    _bdgCurrent.closing_costs=val;
+    const el=document.getElementById('bm-closing-val');
+    if(el) el.value=_money(val);
   }
   // DON'T re-render entire modal — only refresh the live numbers (totals + per-line values)
   // This keeps cursor focus and avoids typing lag
