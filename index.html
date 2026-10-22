@@ -142,32 +142,58 @@ h2{font-weight:600}
 #app{display:none}
 
 /* TOP NAV */
-.topnav{background:var(--navy);padding:0 24px;display:flex;align-items:center;
-  justify-content:space-between;height:54px;position:sticky;top:0;z-index:200;
-  box-shadow:0 2px 8px rgba(0,0,0,.25)}
-.tn-brand{display:flex;align-items:center;gap:10px;cursor:pointer}
-.tn-brand h1{color:#fff;font-size:15px;font-weight:800}
-.tn-brand span{color:rgba(255,255,255,.4);font-size:12px}
-.tn-center{color:var(--gold);font-size:13px;font-weight:700;display:none}
-.back-btn{display:none;align-items:center;gap:6px;color:rgba(255,255,255,.7);font-size:12px;
-  cursor:pointer;padding:5px 12px;border-radius:6px;border:1px solid rgba(255,255,255,.2);transition:all .15s}
-.back-btn:hover{background:rgba(255,255,255,.1);color:#fff}
+.topnav{background:#fff;padding:0 22px;display:flex;align-items:center;
+  justify-content:space-between;height:56px;position:sticky;top:0;z-index:200;
+  border-bottom:1px solid var(--gp-borda)}
+.tn-brand{display:none;align-items:center;gap:8px;cursor:pointer}
+.tn-brand h1{color:var(--gp-grafite);font-size:15px;font-weight:700}
+.tn-brand span{color:var(--gp-cinza);font-size:12px}
+.tn-brand svg{stroke:var(--gp-petroleo)}
+.tn-center{color:var(--gp-grafite);font-size:14px;font-weight:700;display:none}
+.back-btn{display:none;align-items:center;gap:6px;color:var(--gp-cinza);font-size:12px;
+  cursor:pointer;padding:6px 12px;border-radius:8px;border:1px solid var(--gp-borda);transition:all .15s}
+.back-btn:hover{background:var(--gp-areia);color:var(--gp-grafite)}
 .tn-right{display:flex;gap:8px;align-items:center}
-.user-chip{background:rgba(255,255,255,.1);color:rgba(255,255,255,.8);font-size:11px;
-  padding:5px 12px;border-radius:20px;display:flex;align-items:center;gap:6px}
-.online-dot{width:7px;height:7px;border-radius:50%;background:#4CAF50;flex-shrink:0}
+.user-chip{background:var(--gp-areia);color:var(--gp-cinza);font-size:11px;
+  padding:6px 12px;border-radius:20px;display:flex;align-items:center;gap:6px}
+.online-dot{width:7px;height:7px;border-radius:50%;background:#2E7D4F;flex-shrink:0}
+@media(max-width:860px){ .tn-brand{display:flex} }
 
 /* PORTFOLIO */
 #view-portfolio{padding:26px}
 #view-home,#view-clients,#view-vendors,#view-invoices,#view-fixed,#view-financial,#view-working-capital,#view-dre{padding:26px;display:none}
 /* Global tabs bar */
-.gtabs{background:#fff;border-bottom:1.5px solid var(--gray2);padding:0 26px;display:flex;gap:4px;flex-wrap:wrap;align-items:stretch;position:sticky;top:0;z-index:50;box-shadow:0 1px 3px rgba(0,0,0,.04)}
-.gtab{padding:14px 18px;font-size:13px;font-weight:600;color:var(--gray3);cursor:pointer;border-bottom:3px solid transparent;transition:all .15s;white-space:nowrap;font-family:inherit;background:transparent;border-left:0;border-right:0;border-top:0}
-.gtab:hover{color:var(--blue);background:#F3F0EA}
-.gtab.active{color:var(--blue);border-bottom-color:var(--gold);background:#F3F0EA}
-.gtab .ico{margin-right:6px;display:inline-flex;align-items:center;justify-content:center;vertical-align:middle}
+/* ═══ MENU LATERAL (navegação global) ═══ */
+.gtabs{background:var(--gp-petroleo);padding:0 0 10px;display:flex;flex-direction:column;gap:1px;align-items:stretch;position:fixed;left:0;top:0;bottom:0;width:236px;z-index:300;overflow-y:auto;box-shadow:2px 0 14px rgba(24,53,65,.10)}
+.snav-brand{display:flex;align-items:center;gap:11px;padding:20px 20px 18px;color:#fff;cursor:pointer;flex-shrink:0}
+.snav-brand .bn{font-weight:700;font-size:15px;line-height:1.15;letter-spacing:.3px}
+.snav-brand .bn small{display:block;font-weight:500;font-size:9.5px;letter-spacing:2px;color:rgba(255,255,255,.5);margin-top:3px}
+.snav-sec{padding:12px 22px 5px;font-size:10px;font-weight:700;letter-spacing:1.2px;color:rgba(255,255,255,.35);text-transform:uppercase}
+.gtab{padding:11px 20px;font-size:13.5px;font-weight:600;color:rgba(255,255,255,.72);cursor:pointer;border:0;border-left:3px solid transparent;transition:background .15s,color .15s;white-space:nowrap;font-family:inherit;background:transparent;text-align:left;display:flex;align-items:center;gap:12px;width:100%}
+.gtab:hover{color:#fff;background:rgba(255,255,255,.06)}
+.gtab.active{color:#fff;background:rgba(203,112,79,.16);border-left-color:var(--gp-terracota)}
+.gtab .ico{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
 .gtab .ico svg{display:block}
 .gtab.hidden-tab{display:none}
+.snav-foot{margin-top:auto;padding:14px 18px 6px;border-top:1px solid rgba(255,255,255,.12);display:flex;flex-direction:column;gap:9px;flex-shrink:0}
+.snav-user{display:flex;align-items:center;gap:8px;color:rgba(255,255,255,.7);font-size:11.5px;min-width:0}
+.snav-user span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.snav-signout{background:transparent;border:1px solid rgba(255,255,255,.22);color:rgba(255,255,255,.85);border-radius:8px;padding:8px 12px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s}
+.snav-signout:hover{background:rgba(255,255,255,.08);color:#fff}
+.nav-burger{display:none;background:transparent;border:0;cursor:pointer;color:var(--gp-grafite);padding:6px;margin-right:2px;align-items:center}
+.nav-backdrop{display:none;position:fixed;inset:0;background:rgba(24,53,65,.4);z-index:290}
+/* conteúdo deslocado pra direita quando o menu lateral está ativo */
+#app{padding-left:0}
+body.nav-on #app{padding-left:236px}
+body.nav-on.in-project #app{padding-left:0}
+body.in-project .gtabs{display:none!important}
+@media(max-width:860px){
+  body.nav-on #app{padding-left:0}
+  .gtabs{transform:translateX(-100%);transition:transform .22s ease;width:264px}
+  body.nav-open .gtabs{transform:translateX(0)}
+  body.nav-open .nav-backdrop{display:block}
+  .nav-burger{display:inline-flex}
+}
 .home-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:24px}
 .home-card{background:#fff;border:1px solid var(--gray2);border-radius:10px;padding:18px 20px;box-shadow:var(--shadow);border-left:4px solid var(--blue)}
 .home-card.gold{border-left-color:var(--gold)}
@@ -410,6 +436,7 @@ h2{font-weight:600}
 
 <!-- TOP NAV -->
 <div class="topnav">
+  <button class="nav-burger" onclick="document.body.classList.toggle('nav-open')" aria-label="Abrir menu"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
   <div class="tn-brand" onclick="goView('home')">
     <svg width="26" height="26" viewBox="0 0 48 48" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink:0">
       <path d="M15 37V11h8.5a7.5 7.5 0 0 1 0 15H15"/>
@@ -432,6 +459,15 @@ h2{font-weight:600}
 
 <!-- GLOBAL TABS (CEO only) -->
 <div class="gtabs ceo-only" id="gtabs" style="display:none">
+  <div class="snav-brand" onclick="goView('home')">
+    <svg width="34" height="34" viewBox="0 0 48 48" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink:0">
+      <path d="M15 37V11h8.5a7.5 7.5 0 0 1 0 15H15"/>
+      <path d="M35 18.5a9 9 0 1 0 .6 10.6"/>
+      <path d="M35.5 29H30.5"/>
+    </svg>
+    <div class="bn">Gestão de Projetos<small>PLANEJAR · CONSTRUIR</small></div>
+  </div>
+  <div class="snav-sec">Menu</div>
   <button class="gtab" data-view="home" onclick="goView('home')"><span class="ico"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>Início</button>
   <button class="gtab" data-view="portfolio" onclick="goView('portfolio')"><span class="ico"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></span>Projetos</button>
   <button class="gtab" data-view="budgets" onclick="goView('budgets')"><span class="ico"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle"><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="8" x2="8" y1="14" y2="14"/><line x1="12" x2="12" y1="14" y2="18"/></svg></span>Orçamento</button>
@@ -443,9 +479,14 @@ h2{font-weight:600}
   <button class="gtab" data-view="livros" onclick="goView('livros')" style="display:none"><span class="ico"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg></span>Livros</button>
   <button class="gtab" data-view="dre" onclick="goView('dre')" style="display:none"><span class="ico"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle"><line x1="12" x2="12" y1="20" y2="10"/><line x1="18" x2="18" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="16"/></svg></span>DRE</button>
   <button class="gtab" data-view="fluxo" onclick="goView('fluxo')" style="display:none"><span class="ico"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle"><path d="M3 3v18h18"/><rect x="7" y="10" width="3" height="8"/><rect x="12" y="6" width="3" height="12"/><rect x="17" y="13" width="3" height="5"/></svg></span>Fluxo de Caixa</button>
+  <div class="snav-foot">
+    <div class="snav-user"><div class="online-dot"></div><span id="snav-user-email">—</span></div>
+    <button class="snav-signout" onclick="doLogout()">Sair</button>
+  </div>
   <!-- Working Capital removido do menu (aba desativada; dados/colunas mantidos no banco). Para reativar, restaure este botão. -->
   <!-- <button class="gtab" data-view="working-capital" onclick="goView('working-capital')"><span class="ico"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></span>Working Capital</button> -->
 </div>
+<div class="nav-backdrop" onclick="document.body.classList.remove('nav-open')"></div>
 
 <!-- PORTFOLIO -->
 <div id="view-portfolio">
@@ -2513,6 +2554,7 @@ function isSupervisor(){
 function applyCEOVisibility(){
   const ceo=isCEO();
   const sup=isSupervisor();
+  document.body.classList.toggle('nav-on', ceo||sup); // ativa o deslocamento do conteúdo p/ o menu lateral
   // CEO-only items
   document.querySelectorAll('.ceo-only').forEach(el=>{
     if(el.id==='gtabs'){
@@ -2560,6 +2602,7 @@ async function init(){
       // Time → admin
       CURRENT_USER=session.user;
       document.getElementById('user-email-lbl').textContent=session.user.email;
+      {const _su=document.getElementById('snav-user-email'); if(_su) _su.textContent=session.user.email;}
       applyCEOVisibility();
       setLoading(true,'Loading projects...');
       await loadAllData();
@@ -2591,6 +2634,7 @@ async function doLogin(){
   if(error){showLoginErr('Invalid email or password.');return;}
   CURRENT_USER=data.user;
   document.getElementById('user-email-lbl').textContent=data.user.email;
+  {const _su=document.getElementById('snav-user-email'); if(_su) _su.textContent=data.user.email;}
   applyCEOVisibility();
   setLoading(true,'Loading projects...');
   await loadAllData();
@@ -4228,6 +4272,8 @@ function goView(view){
     view='portfolio';
   }
   CID=null;
+  document.body.classList.remove('in-project'); // volta a mostrar o menu lateral global
+  document.body.classList.remove('nav-open');    // fecha a gaveta no mobile
   // Hide ALL views
   ['view-portfolio','view-project','view-home','view-clients','view-client-detail','view-vendors','view-invoices','view-fixed','view-lancar','view-financial','view-livros','view-fluxo','view-working-capital','view-dre','view-budgets','view-auditoria','view-panorama','view-piso','view-lixeira'].forEach(v=>{
     const el=document.getElementById(v);
@@ -5168,6 +5214,8 @@ function openProject(id){
     if(el) el.style.display='none';
   });
   document.getElementById('view-project').style.display='block';
+  document.body.classList.add('in-project'); // esconde o menu lateral global (o projeto tem o seu próprio)
+  document.body.classList.remove('nav-open');
   document.getElementById('back-btn').style.display='flex';
   document.getElementById('tn-pname').style.display='block';
   document.getElementById('tn-pname').textContent=p.name;
