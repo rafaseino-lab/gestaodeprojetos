@@ -15975,7 +15975,7 @@ const BUDGET_DEFAULT_LINES=[
   {name:'<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#CB704F" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Rehab',                                kind:'cost',    base:0,    months_cash:1, months_hm:1, is_extra:false, formula:'rehab'},
   {name:'🛟 Contingência (% sobre a obra)',  kind:'cost',    base:0,    months_cash:1, months_hm:1, is_extra:false, formula:'contingency', pct:0.10},
   {name:'<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#237A50" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19.2 2.96a1 1 0 0 1 1.8.5c0 8.72-6.05 13.21-10 13.54"/><path d="M2 21c0-3 1.85-5.36 5.08-6"/></svg>Corte de grama',                       kind:'cost',    base:120,  months_cash:4, months_hm:6, is_extra:false, lock_to_hm_months:true},
-  {name:'<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#CB704F" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/></svg>Comissão venda + closing costs',     kind:'closing', base:0,    months_cash:1, months_hm:1, is_extra:false, formula:'commission_6'},
+  {name:'<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#CB704F" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/></svg>Comissão de venda',     kind:'closing', base:0,    months_cash:1, months_hm:1, is_extra:false, formula:'commission_6'},
   {name:'<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#CB704F" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M10.42 12.61a2.1 2.1 0 1 1 2.97 2.97L7.95 21 4 22l.99-3.95z"/></svg>Contribuição no closing',              kind:'closing', base:0,    months_cash:1, months_hm:1, is_extra:false},
   {name:'<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#CB704F" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/></svg>Imposto pró rata',                     kind:'closing', base:1000, months_cash:1, months_hm:1, is_extra:false},
 ];
@@ -16069,16 +16069,16 @@ function isLineLocked(line){
 // Returns: { cash: {invested, profit, profit_pct, descontos_closing, sale}, hm: {...}, lines: [...] }
 // Loan do Hard Money — fonte única.
 //  • A CASA entra a hmPct (ex 85%) → o cliente cobre os 15% de entrada.
-//  • O REHAB, quando financiado (hm_includes_rehab), entra a 100% (sem entrada).
-//  • Juro e origination incidem sobre o loan TOTAL (casa + rehab).
+//  • O REHAB, quando financiado (hm_includes_rehab), entra pela MESMA % do HM (ex 70%);
+//    o restante (30%) é desembolso do cliente. Juro/origination incidem sobre o loan TOTAL.
 function budgetHouseLoan(b){
   const purchase=+b.purchase_price||0, hmPct=+b.hm_pct||0;
   if(hmPct<=0) return Math.min(+b.hm_loan_amount||0, purchase);
   return purchase*hmPct;
 }
 function budgetHmLoan(b){
-  const rehab=+b.rehab_estimate||0;
-  return budgetHouseLoan(b) + (b.hm_includes_rehab ? rehab : 0);
+  const rehab=+b.rehab_estimate||0, hmPct=+b.hm_pct||0;
+  return budgetHouseLoan(b) + (b.hm_includes_rehab ? rehab*hmPct : 0);
 }
 // Split do lucro: 30% Empresa / 70% cliente
 const BUDGET_DEC_PCT = 0.30;
@@ -16088,7 +16088,13 @@ function calcBudgetSummary(b){
   const purchase=+b.purchase_price||0;
   const arv=+b.arv||0;
   const rehab=+b.rehab_estimate||0;
-  const closingCosts=+b.closing_costs||0;
+  // Closing separado: % sobre a COMPRA (entra no investido) e % sobre a VENDA (sai no fechamento).
+  const closingBuyPct=+b.closing_buy_pct||0;   // em % (ex.: 2 = 2%)
+  const closingSellPct=+b.closing_sell_pct||0; // em %
+  const closingBuy = purchase*(closingBuyPct/100);
+  const closingSell = arv*(closingSellPct/100);
+  // Legado: orçamentos antigos só têm closing_costs ($). Se não há % definida, trata como closing de compra.
+  const legacyClosing = (closingBuyPct===0 && closingSellPct===0) ? (+b.closing_costs||0) : 0;
   // Split do lucro DEC/cliente — ajustável por orçamento (padrão BUDGET_DEC_PCT = 30%)
   const decPct=(b.dec_pct!=null && !isNaN(+b.dec_pct)) ? Math.max(0,Math.min(1,+b.dec_pct)) : BUDGET_DEC_PCT;
   const hmDownPct=+b.hm_down_pct||0;
@@ -16141,10 +16147,10 @@ function calcBudgetSummary(b){
       valCash = hasOverride ? base : (arv*commissionPct);
       valHm   = valCash;
     } else if(line.formula==='rehab'){
-      // 🔨 Rehab: cash sempre. No HM, se financiado (hm_includes_rehab), NÃO é
-      //   cash — vira parte do loan (financiado a 100%, sem entrada).
+      // 🔨 Rehab: cash sempre. No HM, se financiado (hm_includes_rehab), o loan cobre
+      //   a % do HM (ex 70%) e o cliente desembolsa o restante (30%).
       valCash = hasOverride ? base : rehab;
-      valHm   = b.hm_includes_rehab ? 0 : valCash;
+      valHm   = b.hm_includes_rehab ? valCash*(1-hmPct) : valCash;
     } else if(line.formula==='contingency'){
       // 🛟 Contingência: % sobre a obra (rehab). Desembolso nos dois cenários
       //   (financiador não cobre contingência). O % fica na própria linha
@@ -16174,9 +16180,12 @@ function calcBudgetSummary(b){
       hmEmpresa+=valHm;
     }
   });
-  // Add fixed closing_costs to both (general closing fees)
-  cashEmpresa+=closingCosts;
-  hmEmpresa+=closingCosts;
+  // Closing de COMPRA → desembolso na aquisição (entra no investido dos dois cenários)
+  cashEmpresa+=closingBuy+legacyClosing;
+  hmEmpresa+=closingBuy+legacyClosing;
+  // Closing de VENDA → sai no fechamento da venda (desconto nos dois cenários)
+  cashDescontos+=closingSell;
+  hmDescontos+=closingSell;
   // HM-specific: closing fee (fixed $ amount paid only when using HM loan)
   if(hmLoan>0) hmEmpresa+=hmClosingFee;
   // In the HM scenario, the HM principal MUST be repaid at the sale closing
@@ -16221,16 +16230,15 @@ function calcBudgetClientView(b, scenario){
   const rehab    = +b.rehab_estimate || 0;
   const hmPct    = +b.hm_pct || 0;
   const hmLoan = budgetHmLoan(b);
-  const commAgentPct   = b.commission_agent_pct   !=null ? +b.commission_agent_pct   : 0.05;
-  const commClosingPct = b.commission_closing_pct !=null ? +b.commission_closing_pct : 0.01;
-  const commissionPct  = commAgentPct + commClosingPct;
-  const saleCosts = arv * commissionPct;
-  
   // From calcBudgetSummary (consistent with budget report)
   const invested = scenarioData.invested;
   const profit = scenarioData.profit;
   const profitPct = scenarioData.profit_pct;
   const descontos = scenarioData.descontos_closing;
+  // "Custos da venda" = TODOS os descontos do fechamento (comissão + impostos + closing de venda),
+  // exceto o principal do HM (mostrado em separado como "Hard Money devolvido").
+  // Assim a conta do cliente fecha: Líquido − Investimento (− HM) = Sobra.
+  const saleCosts = Math.max(0, descontos - (isHM ? hmLoan : 0));
   
   return {
     scenario,
@@ -16431,12 +16439,30 @@ function openBudgetClientView(budgetId){
           <option value="both" ${mode==='both'?'selected':''}>Ambos (análise)</option>
         </select>
         <button onclick="bcvSaveMode('${budgetId}')" style="padding:7px 14px;background:#237A50;color:#fff;border:0;border-radius:5px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Salvar modo</button>
+        <button onclick="bcvPrint('${budgetId}')" style="padding:7px 14px;background:var(--gp-terracota-esc,#A94F32);color:#fff;border:0;border-radius:5px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Imprimir</button>
         <button onclick="document.getElementById('modal-client-view').remove()" style="padding:7px 14px;background:transparent;color:#647078;border:1.5px solid var(--gray2);border-radius:5px;cursor:pointer;font-size:12px;font-weight:600;font-family:inherit">Fechar</button>
       </div>
     </div>
     <div id="bcv-body" style="padding:0">${renderBudgetClientView(b, mode)}</div>
   </div>`;
   document.body.appendChild(m);
+}
+
+function bcvPrint(budgetId){
+  const b = budgets.find(x=>x.id===budgetId);
+  if(!b){toast('Orçamento não encontrado',false);return;}
+  const sel=document.getElementById('bcv-mode');
+  const mode=(sel&&sel.value)||b.client_view_mode||'hm';
+  const inner=renderBudgetClientView(b, mode);
+  const title=(b.name||'Orçamento').replace(/</g,'&lt;');
+  const w=window.open('','_blank','width=900,height=1000');
+  if(!w){toast('Permita pop-ups pra imprimir',false);return;}
+  w.document.write('<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><title>Proposta - '+title+'</title>'
+    +'<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">'
+    +'<style>*{box-sizing:border-box}body{font-family:Manrope,Arial,sans-serif;background:#F3F0EA;padding:22px;margin:0}@page{size:A4;margin:9mm}</style></head><body>'
+    +inner
+    +'<script>window.onload=function(){setTimeout(function(){window.print();},450);};<\/script></body></html>');
+  w.document.close();
 }
 
 function bcvChangeMode(budgetId, mode){
@@ -16819,11 +16845,16 @@ function renderBudgetEditorModal(){
               <div style="font-size:9px;color:#999;margin-top:2px;font-style:italic">${b.converted_to_project_id?'estime com IA ou puxe do orçamento de obra do projeto':'estime com IA pelo endereço + m² (ou digite)'}</div>
             </div>
             <div>
-              <label style="font-size:10px;font-weight:700;color:#647078;display:block;margin-bottom:3px">Closing Costs <span style="font-weight:500;color:#999">(% da venda → $ automático)</span></label>
-              <div style="display:flex;gap:6px">
-                <input type="text" inputmode="decimal" value="${(+b.closing_costs>0&&+b.arv>0)?((+b.closing_costs/+b.arv*100).toFixed(2)):''}" oninput="setClosingPct(this.value)" placeholder="% venda" title="Digite a % sobre o preço de venda — o valor em $ é calculado automaticamente" style="width:42%;padding:7px 8px;font-size:13px;border:1.5px solid var(--gray2);border-radius:5px;outline:none;font-family:inherit;text-align:right">
-                <input id="bm-closing-val" type="text" inputmode="decimal" value="${_money(b.closing_costs)}" oninput="moneyInput(this,'closing_costs')" placeholder="0" title="Valor em $ (calculado pela %, ou digite direto)" style="width:58%;padding:7px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:5px;outline:none;font-family:inherit;font-variant-numeric:tabular-nums">
+              <label style="font-size:10px;font-weight:700;color:#647078;display:block;margin-bottom:3px">Closing Costs <span style="font-weight:500;color:#999">(só a % → $ automático)</span></label>
+              <div style="display:flex;gap:6px;align-items:center;margin-bottom:5px">
+                <input type="text" inputmode="decimal" value="${+b.closing_buy_pct||''}" oninput="updateBudgetField('closing_buy_pct',this.value)" placeholder="% compra" title="% sobre o Preço de Compra (closing da aquisição)" style="width:46%;padding:7px 8px;font-size:12.5px;border:1.5px solid var(--gray2);border-radius:5px;outline:none;font-family:inherit;text-align:right">
+                <span id="bm-closing-buy-val" style="font-size:10.5px;color:#647078;white-space:nowrap">= $${(((+b.purchase_price||0)*((+b.closing_buy_pct||0)/100))).toLocaleString('en-US',{maximumFractionDigits:2})}</span>
               </div>
+              <div style="display:flex;gap:6px;align-items:center">
+                <input type="text" inputmode="decimal" value="${+b.closing_sell_pct||''}" oninput="updateBudgetField('closing_sell_pct',this.value)" placeholder="% venda" title="% sobre o Preço de Venda (closing da venda)" style="width:46%;padding:7px 8px;font-size:12.5px;border:1.5px solid var(--gray2);border-radius:5px;outline:none;font-family:inherit;text-align:right">
+                <span id="bm-closing-sell-val" style="font-size:10.5px;color:#647078;white-space:nowrap">= $${(((+b.arv||0)*((+b.closing_sell_pct||0)/100))).toLocaleString('en-US',{maximumFractionDigits:2})}</span>
+              </div>
+              <div style="font-size:9px;color:#999;margin-top:3px;font-style:italic">compra (sobre a compra) · venda (sobre a venda)</div>
             </div>
           </div>
         </div>
@@ -16841,7 +16872,7 @@ function renderBudgetEditorModal(){
               <div id="bm-hm-hint" style="font-size:10px;color:#999;margin-top:2px;font-style:italic">${(+b.hm_pct||0)>0?'= $'+budgetHmLoan(b).toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0})+' financiado':'use 0 para 100% cash'}</div>
               <label style="display:flex;align-items:center;gap:5px;font-size:10px;color:#647078;margin-top:5px;cursor:pointer" title="Se marcado, o Hard Money financia também o rehab (base = compra + rehab), não só a compra.">
                 <input type="checkbox" ${b.hm_includes_rehab?'checked':''} onchange="updateBudgetField('hm_includes_rehab',this.checked)" style="width:14px;height:14px;accent-color:#CB704F">
-                Loan cobre o rehab também
+                Financiar a obra também (pela % do HM)
               </label>
             </div>
             <div>
@@ -16960,32 +16991,24 @@ function moneyInputLine(el, idx){
   el.value=(intp?Number(intp).toLocaleString('en-US'):'')+dec;
 }
 
-// Closing Costs como % do preço de venda (ARV) — calcula o $ automaticamente na célula.
-function setClosingPct(pct){
+// Closing separado (compra × venda) — mostra o $ calculado ao lado de cada %.
+function _refreshClosingDisplays(){
   if(!_bdgCurrent) return;
-  const p=parseFloat(String(pct).replace(',','.'))||0;
-  _bdgCurrent.closing_pct=p;
-  const arv=+_bdgCurrent.arv||0;
-  const val=Math.round(arv*(p/100)*100)/100;
-  _bdgCurrent.closing_costs=val;
-  const el=document.getElementById('bm-closing-val');
-  if(el) el.value=_money(val);
-  refreshBudgetLiveCalcs();
+  const purchase=+_bdgCurrent.purchase_price||0, arv=+_bdgCurrent.arv||0;
+  const buy=Math.round(purchase*((+_bdgCurrent.closing_buy_pct||0)/100)*100)/100;
+  const sell=Math.round(arv*((+_bdgCurrent.closing_sell_pct||0)/100)*100)/100;
+  const eb=document.getElementById('bm-closing-buy-val'); if(eb) eb.textContent='= $'+(buy).toLocaleString('en-US',{maximumFractionDigits:2});
+  const es=document.getElementById('bm-closing-sell-val'); if(es) es.textContent='= $'+(sell).toLocaleString('en-US',{maximumFractionDigits:2});
 }
 function updateBudgetField(field, value){
   if(!_bdgCurrent) return;
-  if(['purchase_price','arv','rehab_estimate','closing_costs','hm_loan_amount','hm_down_pct','hm_interest_pct','hm_pct','hm_closing_costs','commission_agent_pct','commission_closing_pct','cash_months','hm_months'].includes(field)){
+  if(['purchase_price','arv','rehab_estimate','closing_costs','closing_buy_pct','closing_sell_pct','hm_loan_amount','hm_down_pct','hm_interest_pct','hm_pct','hm_closing_costs','commission_agent_pct','commission_closing_pct','cash_months','hm_months'].includes(field)){
     _bdgCurrent[field]=+value||0;
   } else {
     _bdgCurrent[field]=value;
   }
-  // Se a venda (ARV) mudou e há uma % de closing definida, recalcula o $ do closing automaticamente.
-  if(field==='arv' && (+_bdgCurrent.closing_pct||0)>0){
-    const val=Math.round((+_bdgCurrent.arv||0)*((+_bdgCurrent.closing_pct)/100)*100)/100;
-    _bdgCurrent.closing_costs=val;
-    const el=document.getElementById('bm-closing-val');
-    if(el) el.value=_money(val);
-  }
+  // Mantém o $ do closing (compra e venda) atualizado quando muda a %, a compra ou a venda.
+  if(['purchase_price','arv','closing_buy_pct','closing_sell_pct'].includes(field)) _refreshClosingDisplays();
   // DON'T re-render entire modal — only refresh the live numbers (totals + per-line values)
   // This keeps cursor focus and avoids typing lag
   refreshBudgetLiveCalcs();
@@ -17185,6 +17208,8 @@ async function saveBudget(){
     arv:+_bdgCurrent.arv||0,
     rehab_estimate:+_bdgCurrent.rehab_estimate||0,
     closing_costs:+_bdgCurrent.closing_costs||0,
+    closing_buy_pct:+_bdgCurrent.closing_buy_pct||0,
+    closing_sell_pct:+_bdgCurrent.closing_sell_pct||0,
     hm_down_pct:+_bdgCurrent.hm_down_pct||0,
     hm_interest_pct:+_bdgCurrent.hm_interest_pct||0,
     hm_loan_amount:+_bdgCurrent.hm_loan_amount||0,
