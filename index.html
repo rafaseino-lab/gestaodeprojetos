@@ -8830,6 +8830,93 @@ function generateReport(){
   w.document.close();
 }
 
+// ═══ IMPRESSÃO DO ORÇAMENTO (Orçado × Realizado por fase) ═══════════════
+function generateBudgetReport(){
+  if(!CID||!isCEO()){toast('Apenas CEO pode gerar relatório',false);return;}
+  const proj=projects.find(x=>x.id===CID);
+  if(!proj){toast('Projeto não encontrado',false);return;}
+  const prop=propertyMap[CID]||{};
+  const $$=n=>'$ '+(+n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const noEmoji=s=>String(s||'').replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{2190}-\u{21FF}\u{2B00}-\u{2BFF}️]/gu,'').trim();
+  const bm=budgetMap[CID]||{};
+  let totEst=0,totAct=0,sections='';
+  (typeof GROUPS!=='undefined'?GROUPS:[]).forEach(g=>{
+    const items=Object.values(bm[g.id]||{});
+    let gEst=0,gAct=0,rows='';
+    items.forEach(d=>{
+      const est=+d.est||0, act=+d.actual||0;
+      if(est===0&&act===0) return;
+      gEst+=est; gAct+=act;
+      const v=act-est;
+      const name=noEmoji(d.item_name)||d.item_slug||'—';
+      rows+=`<tr><td>${String(name).replace(/</g,'&lt;')}</td><td class="val">${$$(est)}</td><td class="val">${$$(act)}</td><td class="val" style="color:${v>0?'#C0432F':v<0?'#2E7D4F':'#647078'}">${v>0?'+':''}${$$(v)}</td></tr>`;
+    });
+    if(!rows) return;
+    totEst+=gEst; totAct+=gAct;
+    const gv=gAct-gEst;
+    sections+=`<div class="section-title">${noEmoji(g.name)||g.id}</div>
+      <table><thead><tr><th>Item</th><th class="val">Orçado</th><th class="val">Realizado</th><th class="val">Variação</th></tr></thead>
+      <tbody>${rows}<tr class="total-row"><td>Subtotal</td><td class="val">${$$(gEst)}</td><td class="val">${$$(gAct)}</td><td class="val">${gv>0?'+':''}${$$(gv)}</td></tr></tbody></table>`;
+  });
+  if(!sections) sections='<p style="text-align:center;color:#999;font-style:italic;padding:40px 10px">Nenhum item de orçamento lançado neste projeto.</p>';
+  const totVar=totAct-totEst;
+  const today=new Date().toLocaleDateString('pt-BR');
+  const projName=proj.name||'(sem nome)';
+  const address=proj.address||'';
+  const reportHTML=`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><title>Orçamento - ${projName}</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Manrope','Helvetica Neue',Arial,sans-serif;color:#183541;padding:30px;background:#fff;font-size:10pt;line-height:1.4}
+  .header{display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #263238;padding-bottom:18px;margin-bottom:22px;gap:20px}
+  .h-center{flex:1;text-align:center}
+  .h-center .title{color:#263238;font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase}
+  .h-center .subtitle{color:#647078;font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-top:3px}
+  .h-right{text-align:right;font-size:11px;color:#647078;min-width:150px}
+  .h-right strong{color:#183541}
+  .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 20px;margin-bottom:22px;font-size:12px;background:#F3F0EA;padding:14px 18px;border-radius:4px;border-left:3px solid #CB704F}
+  .info-grid strong{color:#263238;font-weight:700}
+  .section-title{background:#263238;color:#DFE4E5;padding:9px 14px;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-top:18px;border-radius:3px 3px 0 0}
+  table{width:100%;border-collapse:collapse;margin-bottom:6px;font-size:12px}
+  thead th{background:#F5EFE7;padding:8px 10px;text-align:left;border-bottom:2px solid #DFE4E5;color:#263238;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.4px}
+  thead th.val{text-align:right;width:120px}
+  tbody td{padding:7px 10px;border-bottom:1px solid #DFE4E5;color:#183541}
+  tbody td.val{text-align:right;font-weight:600}
+  tbody tr:nth-child(even) td{background:#FBF9F6}
+  .total-row td{background:#263238!important;color:#DFE4E5!important;font-weight:700;text-transform:uppercase;font-size:11px;border:0}
+  .summary{margin-top:22px;border:2px solid #263238;border-radius:4px;overflow:hidden}
+  .summary-row{display:flex;justify-content:space-between;padding:10px 16px;border-bottom:1px solid #DFE4E5;font-size:12px}
+  .summary-row:last-child{border-bottom:none}
+  .summary-row strong{color:#263238}
+  .summary-row.final{background:#183541;color:#DFE4E5;font-weight:700;font-size:14px;text-transform:uppercase}
+  .summary-row.final span{color:#CB704F;font-size:15px}
+  .footer{margin-top:30px;padding-top:14px;border-top:1px solid #DFE4E5;text-align:center;font-size:10px;color:#647078}
+  .footer strong{color:#263238}
+  @page{size:A4;margin:14mm}
+</style></head><body>
+  <div class="header">
+    <div>${KRAFTED_WORDMARK}</div>
+    <div class="h-center"><div class="title">Orçamento da Obra</div><div class="subtitle">Orçado × Realizado</div></div>
+    <div class="h-right"><div><strong>Emitido em:</strong> ${today}</div></div>
+  </div>
+  <div class="info-grid">
+    <div><strong>Projeto:</strong> ${projName}</div>
+    <div><strong>Endereço:</strong> ${address||'—'}</div>
+  </div>
+  ${sections}
+  <div class="summary">
+    <div class="summary-row"><strong>Total orçado</strong><span>${$$(totEst)}</span></div>
+    <div class="summary-row"><strong>Total realizado</strong><span>${$$(totAct)}</span></div>
+    <div class="summary-row final"><strong>Variação</strong><span>${totVar>0?'+':''}${$$(totVar)}${totEst>0?' ('+(totVar>=0?'+':'')+(totVar/totEst*100).toFixed(1)+'%)':''}</span></div>
+  </div>
+  <div class="footer"><strong>GESTÃO DE PROJETOS</strong> · Documento gerado automaticamente em ${today} · ${address||projName}</div>
+  <script>window.onload=function(){setTimeout(function(){window.print();},300);};<\/script>
+</body></html>`;
+  const w=window.open('','_blank','width=800,height=900');
+  if(!w){toast('Permita pop-ups pra gerar o relatório',false);return;}
+  w.document.write(reportHTML);
+  w.document.close();
+}
+
 // ═══ DRE (CEO ONLY) ════════════════════════════════════════════════════
 // Period: 'YYYY-MM' string
 let _dreMode='month';
@@ -16666,13 +16753,10 @@ function renderBudgetEditorModal(){
       <button onclick="closeBudgetEditor()" style="background:transparent;border:1px solid rgba(255,255,255,0.3);color:#fff;width:32px;height:32px;border-radius:6px;cursor:pointer;font-size:18px">×</button>
     </div>
     <div style="padding:20px 24px;max-height:calc(100vh - 200px);overflow-y:auto">
-      <!-- Cliente vinculado -->
+      <!-- Nome do projeto -->
       <div style="margin-bottom:14px">
-        <label style="font-size:11px;font-weight:700;color:#647078;letter-spacing:.4px;text-transform:uppercase;display:block;margin-bottom:4px">👤 Cliente vinculado <span style="font-weight:500;color:#999;text-transform:none;letter-spacing:0">(opcional · análise interna pode ficar sem)</span></label>
-        <select onchange="_bdgCurrent.client_id=this.value||null" style="width:100%;padding:8px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:6px;outline:none;background:#fff;font-family:inherit;cursor:pointer">
-          <option value="">— Sem cliente (análise interna) —</option>
-          ${(clients||[]).slice().sort((a,b)=>(a.name||'').localeCompare(b.name||'')).map(c=>`<option value="${c.id}" ${b.client_id===c.id?'selected':''}>${(c.name||'').replace(/</g,'&lt;')}</option>`).join('')}
-        </select>
+        <label style="font-size:11px;font-weight:700;color:#647078;letter-spacing:.4px;text-transform:uppercase;display:block;margin-bottom:4px"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#CB704F" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Nome do projeto</label>
+        <input id="bm-name" type="text" value="${(b.name&&b.name!=='Novo Orçamento'?b.name:'').replace(/"/g,'&quot;')}" placeholder="ex: Residencial Aurora" style="width:100%;padding:8px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:6px;outline:none;font-family:inherit" oninput="_bdgCurrent.name=this.value">
       </div>
       <!-- Endereço + Status -->
       <div style="display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:18px">
