@@ -16071,14 +16071,17 @@ function isLineLocked(line){
 //  • A CASA entra a hmPct (ex 85%) → o cliente cobre os 15% de entrada.
 //  • O REHAB, quando financiado (hm_includes_rehab), entra pela MESMA % do HM (ex 70%);
 //    o restante (30%) é desembolso do cliente. Juro/origination incidem sobre o loan TOTAL.
+// % financiado da COMPRA e da OBRA, separados. Fallback p/ hm_pct legado (mesma % nos dois).
+function hmPurchasePct(b){ const v=b.hm_purchase_pct; return (v!=null && v!=='' && !isNaN(+v)) ? +v : (+b.hm_pct||0); }
+function hmRehabPct(b){ const v=b.hm_rehab_pct; return (v!=null && v!=='' && !isNaN(+v)) ? +v : (+b.hm_pct||0); }
 function budgetHouseLoan(b){
-  const purchase=+b.purchase_price||0, hmPct=+b.hm_pct||0;
+  const purchase=+b.purchase_price||0, hmPct=hmPurchasePct(b);
   if(hmPct<=0) return Math.min(+b.hm_loan_amount||0, purchase);
   return purchase*hmPct;
 }
 function budgetHmLoan(b){
-  const rehab=+b.rehab_estimate||0, hmPct=+b.hm_pct||0;
-  return budgetHouseLoan(b) + (b.hm_includes_rehab ? rehab*hmPct : 0);
+  const rehab=+b.rehab_estimate||0, rPct=hmRehabPct(b);
+  return budgetHouseLoan(b) + (b.hm_includes_rehab ? rehab*rPct : 0);
 }
 // Split do lucro: 30% Empresa / 70% cliente
 const BUDGET_DEC_PCT = 0.30;
@@ -16097,6 +16100,8 @@ function calcBudgetSummary(b){
   const legacyClosing = (closingBuyPct===0 && closingSellPct===0) ? (+b.closing_costs||0) : 0;
   // Split do lucro DEC/cliente — ajustável por orçamento (padrão BUDGET_DEC_PCT = 30%)
   const decPct=(b.dec_pct!=null && !isNaN(+b.dec_pct)) ? Math.max(0,Math.min(1,+b.dec_pct)) : BUDGET_DEC_PCT;
+  // Teto de ARV (LTV): lenders da FL emprestam ~70-75% do ARV. Default 70%.
+  const arvCap=(b.arv_ltv_cap!=null && !isNaN(+b.arv_ltv_cap) && +b.arv_ltv_cap>0) ? +b.arv_ltv_cap : 0.70;
   const hmDownPct=+b.hm_down_pct||0;
   const hmInterestPct=+b.hm_interest_pct||0;
   const hmPct=+b.hm_pct||0;
@@ -16135,9 +16140,17 @@ function calcBudgetSummary(b){
       valCash = 0;
       valHm   = hasOverride ? base : hmLoan;
     } else if(line.formula==='hm_interest'){
-      // 📈 Juros do HM: só no cenário HM
+      // 📈 Juros do HM: só no cenário HM.
+      //   Dutch (padrão): juros sobre o empréstimo inteiro o prazo todo (conservador).
+      //   non-Dutch (draws): juros da compra o prazo todo + juros da obra em ~metade do prazo.
       valCash = 0;
-      valHm   = hasOverride ? base : (hmLoan*hmInterestPct/12)*mHm;
+      if(hasOverride){ valHm = base; }
+      else if(b.hm_interest_dutch===false){
+        const _hl=budgetHouseLoan(b); const _rl=Math.max(0, hmLoan-_hl);
+        valHm = (_hl*hmInterestPct/12)*mHm + (_rl*hmInterestPct/12)*(mHm/2);
+      } else {
+        valHm = (hmLoan*hmInterestPct/12)*mHm;
+      }
     } else if(line.formula==='hm_down'){
       // 📋 Down payment fee do HM: só no cenário HM
       valCash = 0;
@@ -16150,7 +16163,7 @@ function calcBudgetSummary(b){
       // 🔨 Rehab: cash sempre. No HM, se financiado (hm_includes_rehab), o loan cobre
       //   a % do HM (ex 70%) e o cliente desembolsa o restante (30%).
       valCash = hasOverride ? base : rehab;
-      valHm   = b.hm_includes_rehab ? valCash*(1-hmPct) : valCash;
+      valHm   = b.hm_includes_rehab ? valCash*(1-hmRehabPct(b)) : valCash;
     } else if(line.formula==='contingency'){
       // 🛟 Contingência: % sobre a obra (rehab). Desembolso nos dois cenários
       //   (financiador não cobre contingência). O % fica na própria linha
@@ -16204,7 +16217,7 @@ function calcBudgetSummary(b){
     gross_profit:grossProfit,
     purchase, arv, rehab, hm_loan:hmLoan,
     cash:{invested:cashInvested, profit:cashProfit, profit_pct:cashProfitPct, descontos_closing:cashDescontos, sale, dec_profit:cashProfit*decPct, client_profit:cashProfit*(1-decPct), client_pct:cashInvested>0?(cashProfit*(1-decPct)/cashInvested*100):0},
-    hm:  {invested:hmInvested, profit:hmProfit, profit_pct:hmProfitPct, descontos_closing:hmDescontos, sale, hm_loan:hmLoan, dec_profit:hmProfit*decPct, client_profit:hmProfit*(1-decPct), client_pct:hmInvested>0?(hmProfit*(1-decPct)/hmInvested*100):0},
+    hm:  {invested:hmInvested, profit:hmProfit, profit_pct:hmProfitPct, descontos_closing:hmDescontos, sale, hm_loan:hmLoan, arv_ltv:(arv>0?hmLoan/arv:0), arv_cap:arvCap, over_ltv:(arv>0 && hmLoan>arv*arvCap), dec_profit:hmProfit*decPct, client_profit:hmProfit*(1-decPct), client_pct:hmInvested>0?(hmProfit*(1-decPct)/hmInvested*100):0},
     dec_pct:decPct,
     lines, lineValues,
   };
@@ -16867,13 +16880,16 @@ function renderBudgetEditorModal(){
           </div>
           <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px">
             <div>
-              <label style="font-size:10px;font-weight:700;color:#CB704F;display:block;margin-bottom:3px">% HM Loan</label>
-              <input type="number" min="0" max="1" step="0.01" value="${b.hm_pct||''}" oninput="updateBudgetField('hm_pct',this.value)" placeholder="ex 0.70 = 70%" style="width:100%;padding:7px 10px;font-size:13px;border:1.5px solid #E6D599;border-radius:5px;outline:none;font-family:inherit;background:#F4E7E0">
-              <div id="bm-hm-hint" style="font-size:10px;color:#999;margin-top:2px;font-style:italic">${(+b.hm_pct||0)>0?'= $'+budgetHmLoan(b).toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0})+' financiado':'use 0 para 100% cash'}</div>
-              <label style="display:flex;align-items:center;gap:5px;font-size:10px;color:#647078;margin-top:5px;cursor:pointer" title="Se marcado, o Hard Money financia também o rehab (base = compra + rehab), não só a compra.">
+              <label style="font-size:10px;font-weight:700;color:#CB704F;display:block;margin-bottom:3px">% financiado da COMPRA</label>
+              <input type="number" min="0" max="1" step="0.01" value="${(b.hm_purchase_pct!=null&&b.hm_purchase_pct!=='')?b.hm_purchase_pct:(b.hm_pct||'')}" oninput="updateBudgetField('hm_purchase_pct',this.value)" placeholder="ex 0.90 = 90%" title="Quanto o lender financia da COMPRA (LTC). Mercado FL: ~85-90%." style="width:100%;padding:7px 10px;font-size:13px;border:1.5px solid #E6D599;border-radius:5px;outline:none;font-family:inherit;background:#F4E7E0">
+              <label style="display:flex;align-items:center;gap:5px;font-size:10px;color:#647078;margin-top:7px;cursor:pointer" title="Se marcado, o Hard Money financia também a obra (rehab).">
                 <input type="checkbox" ${b.hm_includes_rehab?'checked':''} onchange="updateBudgetField('hm_includes_rehab',this.checked)" style="width:14px;height:14px;accent-color:#CB704F">
-                Financiar a obra também (pela % do HM)
+                Financiar a obra também
               </label>
+              <label style="font-size:10px;font-weight:700;color:#CB704F;display:block;margin:7px 0 3px">% financiado da OBRA</label>
+              <input type="number" min="0" max="1" step="0.01" ${b.hm_includes_rehab?'':'disabled'} value="${(b.hm_rehab_pct!=null&&b.hm_rehab_pct!=='')?b.hm_rehab_pct:(b.hm_pct||'')}" oninput="updateBudgetField('hm_rehab_pct',this.value)" placeholder="ex 1.0 = 100%" title="Quanto o lender financia da OBRA (rehab). Mercado FL: muitas vezes ate 100%, liberado em draws." style="width:100%;padding:7px 10px;font-size:13px;border:1.5px solid #E6D599;border-radius:5px;outline:none;font-family:inherit;background:${b.hm_includes_rehab?'#F4E7E0':'#EEE'}">
+              <div id="bm-hm-hint" style="font-size:10px;color:#999;margin-top:3px;font-style:italic">${(budgetHmLoan(b)>0)?'= $'+budgetHmLoan(b).toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0})+' financiado':'use 0 para 100% cash'}</div>
+              <div id="bm-hm-ltv-warn" style="font-size:10px;margin-top:3px;font-weight:700;color:#B33F36;${(+b.arv>0 && budgetHmLoan(b)>(+b.arv)*((+b.arv_ltv_cap||0.70)))?'':'display:none'}">\u26a0 Empr\u00e9stimo acima de ${Math.round((+b.arv_ltv_cap||0.70)*100)}% do ARV \u2014 lender da FL dificilmente aprova.</div>
             </div>
             <div>
               <label title="Tempo total de posse no cenário Hard Money — da compra até a venda fechar (obra + tempo pra vender). Controla os juros do HM, os custos de carrego e o ROI anualizado." style="font-size:10px;font-weight:700;color:#CB704F;display:block;margin-bottom:3px;cursor:help">Meses HM ⓘ</label>
@@ -16909,6 +16925,17 @@ function renderBudgetEditorModal(){
             <div>
               <label style="font-size:10px;font-weight:700;color:#647078;display:block;margin-bottom:3px">% Juros HM/ano</label>
               <input type="number" min="0" max="1" step="0.001" value="${b.hm_interest_pct||''}" oninput="updateBudgetField('hm_interest_pct',this.value)" placeholder="ex 0.099 = 9.9%" style="width:100%;padding:7px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:5px;outline:none;font-family:inherit">
+            </div>
+            <div>
+              <label style="font-size:10px;font-weight:700;color:#647078;display:block;margin-bottom:3px" title="Dutch = juros sobre o emprestimo inteiro o prazo todo (conservador). Draws (non-Dutch) = juros da obra so em ~metade do prazo, conforme o dinheiro e liberado.">Juros do HM sobre</label>
+              <select onchange="updateBudgetField('hm_interest_dutch', this.value==='dutch')" style="width:100%;padding:7px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:5px;outline:none;font-family:inherit;background:#fff">
+                <option value="dutch" ${b.hm_interest_dutch===false?'':'selected'}>Emprestimo cheio (Dutch)</option>
+                <option value="draws" ${b.hm_interest_dutch===false?'selected':''}>Liberacao em draws (non-Dutch)</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:10px;font-weight:700;color:#647078;display:block;margin-bottom:3px" title="Teto de alavancagem: lenders da FL emprestam ~70-75% do ARV. Avisa se passar disso.">% Teto ARV (LTV)</label>
+              <input type="number" min="0" max="1" step="0.01" value="${(b.arv_ltv_cap!=null&&b.arv_ltv_cap!=='')?b.arv_ltv_cap:'0.70'}" oninput="updateBudgetField('arv_ltv_cap',this.value)" placeholder="ex 0.70 = 70%" style="width:100%;padding:7px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:5px;outline:none;font-family:inherit">
             </div>
             <div>
               <label style="font-size:10px;font-weight:700;color:#647078;display:block;margin-bottom:3px">HM Closing Costs ($)</label>
@@ -17002,11 +17029,13 @@ function _refreshClosingDisplays(){
 }
 function updateBudgetField(field, value){
   if(!_bdgCurrent) return;
-  if(['purchase_price','arv','rehab_estimate','closing_costs','closing_buy_pct','closing_sell_pct','hm_loan_amount','hm_down_pct','hm_interest_pct','hm_pct','hm_closing_costs','commission_agent_pct','commission_closing_pct','cash_months','hm_months'].includes(field)){
+  if(['purchase_price','arv','rehab_estimate','closing_costs','closing_buy_pct','closing_sell_pct','hm_loan_amount','hm_down_pct','hm_interest_pct','hm_pct','hm_purchase_pct','hm_rehab_pct','arv_ltv_cap','hm_closing_costs','commission_agent_pct','commission_closing_pct','cash_months','hm_months'].includes(field)){
     _bdgCurrent[field]=+value||0;
   } else {
     _bdgCurrent[field]=value;
   }
+  // Mudar "financiar a obra" muda o input da OBRA (habilita/desabilita) -> re-render completo.
+  if(field==='hm_includes_rehab'){ renderBudgetEditorModal(); return; }
   // Mantém o $ do closing (compra e venda) atualizado quando muda a %, a compra ou a venda.
   if(['purchase_price','arv','closing_buy_pct','closing_sell_pct'].includes(field)) _refreshClosingDisplays();
   // DON'T re-render entire modal — only refresh the live numbers (totals + per-line values)
@@ -17057,7 +17086,7 @@ function useFormulaValue(idx){
   if(line.formula==='house_value')      value=purchase;
   else if(line.formula==='down_cash')   value=hmLoan>0 ? Math.max(0, purchase-budgetHouseLoan(b)) : purchase;
   else if(line.formula==='hm_principal')value=hmLoan;
-  else if(line.formula==='hm_interest') value=(hmLoan*hmInterestPct/12)*mHm;
+  else if(line.formula==='hm_interest') value=(b.hm_interest_dutch===false)?((budgetHouseLoan(b)*hmInterestPct/12)*mHm + (Math.max(0,hmLoan-budgetHouseLoan(b))*hmInterestPct/12)*(mHm/2)):((hmLoan*hmInterestPct/12)*mHm);
   else if(line.formula==='hm_down')     value=hmLoan*hmDownPct;
   else if(line.formula==='commission_6')value=arv*commPct;
   else if(line.formula==='rehab')       value=rehab;
@@ -17090,9 +17119,17 @@ function refreshBudgetLiveCalcs(){
   // 1. Update HM hint text "= $125,300 financiado"
   const hmHintEl=document.getElementById('bm-hm-hint');
   if(hmHintEl){
-    hmHintEl.textContent = hmPct>0
-      ? `= ${$$(hmLoan)} financiado${b.hm_includes_rehab?' (compra + rehab)':''}`
+    hmHintEl.textContent = hmLoan>0
+      ? `= ${$$(hmLoan)} financiado${b.hm_includes_rehab?' (compra + obra)':''}`
       : 'use 0 para 100% cash';
+  }
+  // Aviso de teto de ARV (LTV) ao vivo
+  const _ltvWarn=document.getElementById('bm-hm-ltv-warn');
+  if(_ltvWarn){
+    const _cap=(+b.arv_ltv_cap||0.70);
+    const _over=(arv>0 && hmLoan>arv*_cap);
+    _ltvWarn.style.display=_over?'':'none';
+    if(_over) _ltvWarn.textContent=`\u26a0 Empr\u00e9stimo acima de ${Math.round(_cap*100)}% do ARV \u2014 lender da FL dificilmente aprova.`;
   }
   // 2. Update per-line displayed values (FONTE ÚNICA — calcBudgetSummary)
   const _sum=calcBudgetSummary(b);
@@ -17207,13 +17244,19 @@ async function saveBudget(){
     purchase_price:+_bdgCurrent.purchase_price||0,
     arv:+_bdgCurrent.arv||0,
     rehab_estimate:+_bdgCurrent.rehab_estimate||0,
-    closing_costs:+_bdgCurrent.closing_costs||0,
+    // Blindagem: se usa closing em % (compra ou venda), zera o campo legado p/ nunca mais "pular".
+    closing_costs:(((+_bdgCurrent.closing_buy_pct||0)>0)||((+_bdgCurrent.closing_sell_pct||0)>0))?0:(+_bdgCurrent.closing_costs||0),
     closing_buy_pct:+_bdgCurrent.closing_buy_pct||0,
     closing_sell_pct:+_bdgCurrent.closing_sell_pct||0,
     hm_down_pct:+_bdgCurrent.hm_down_pct||0,
     hm_interest_pct:+_bdgCurrent.hm_interest_pct||0,
     hm_loan_amount:+_bdgCurrent.hm_loan_amount||0,
-    hm_pct:+_bdgCurrent.hm_pct||0,
+    // hm_pct legado espelha a % da compra (consumido na criacao de projeto / Property & Finance)
+    hm_pct:(_bdgCurrent.hm_purchase_pct!=null&&_bdgCurrent.hm_purchase_pct!=='')?(+_bdgCurrent.hm_purchase_pct||0):(+_bdgCurrent.hm_pct||0),
+    hm_purchase_pct:(_bdgCurrent.hm_purchase_pct!=null&&_bdgCurrent.hm_purchase_pct!=='')?(+_bdgCurrent.hm_purchase_pct||0):null,
+    hm_rehab_pct:(_bdgCurrent.hm_rehab_pct!=null&&_bdgCurrent.hm_rehab_pct!=='')?(+_bdgCurrent.hm_rehab_pct||0):null,
+    hm_interest_dutch:_bdgCurrent.hm_interest_dutch!==false,
+    arv_ltv_cap:(_bdgCurrent.arv_ltv_cap!=null&&_bdgCurrent.arv_ltv_cap!=='')?(+_bdgCurrent.arv_ltv_cap||0):null,
     hm_includes_rehab:_bdgCurrent.hm_includes_rehab===true,
     hm_closing_costs:+_bdgCurrent.hm_closing_costs||0,
     commission_agent_pct:_bdgCurrent.commission_agent_pct!=null?+_bdgCurrent.commission_agent_pct:0.05,
@@ -17235,10 +17278,10 @@ async function saveBudget(){
     : sb.from('budgets').insert(pl).select().single();
   let result=await _doSave(payload);
   // Resiliência: se alguma coluna nova ainda não existe no banco, salva sem ela
-  if(result.error && /column .* does not exist|hm_includes_rehab|dec_pct/i.test(result.error.message||'')){
-    const p2={...payload}; delete p2.hm_includes_rehab; delete p2.dec_pct;
+  if(result.error && /column .* does not exist|hm_includes_rehab|dec_pct|hm_purchase_pct|hm_rehab_pct|hm_interest_dutch|arv_ltv_cap/i.test(result.error.message||'')){
+    const p2={...payload}; delete p2.hm_includes_rehab; delete p2.dec_pct; delete p2.hm_purchase_pct; delete p2.hm_rehab_pct; delete p2.hm_interest_dutch; delete p2.arv_ltv_cap;
     result=await _doSave(p2);
-    if(!result.error) toast('Salvo (rode o SQL das colunas hm_includes_rehab / dec_pct p/ guardar essas opções)',true);
+    if(!result.error) toast('Salvo (rode o SQL das colunas novas p/ guardar % compra/obra, Dutch e teto ARV)',true);
   }
   if(result.error){console.error('saveBudget',result.error);toast('Erro ao salvar: '+result.error.message,false);if(_sb){_sb.disabled=false;_sb.textContent=_sbt;}return;}
   // Update in-memory
