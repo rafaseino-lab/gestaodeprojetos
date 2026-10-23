@@ -4340,12 +4340,20 @@ async function doBackupNow(btn){
     if(rerr) throw rerr;
     const pull=async t=>((await sb.from(t).select('*').limit(100000)).data||[]);
     const dump={when:new Date().toISOString(), source:'manual', backup_id:rid,
+      budgets:await pull('budgets'),
       budget_items:await pull('budget_items'),
       budget_attachments:await pull('budget_attachments'),
       vendor_notes:await pull('vendor_notes'),
+      vendors:await pull('vendors'),
       property_info:await pull('property_info'),
       projects:await pull('projects'),
-      extra_costs:await pull('extra_costs')};
+      extra_costs:await pull('extra_costs'),
+      invoices:await pull('invoices'),
+      invoice_items:await pull('invoice_items'),
+      fin_transactions:await pull('fin_transactions'),
+      fin_statements:await pull('fin_statements'),
+      fixed_costs:await pull('fixed_costs'),
+      clients:await pull('clients')};
     const blob=new Blob([JSON.stringify(dump)],{type:'application/json'});
     const url=URL.createObjectURL(blob); const a=document.createElement('a');
     a.href=url; a.download='dec_backup_FULL_'+dump.when.replace(/[:.]/g,'-').slice(0,19)+'.json';
@@ -15968,7 +15976,7 @@ const BUDGET_DEFAULT_LINES=[
   {name:'<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#237A50" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v4"/><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v6"/><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.5 0-4.5-1-5.6-3l-3.4-6c-.7-1-.4-2.3.7-3v0c.9-.6 2.1-.3 3 .5l1.3 2"/></svg>Cash (entrada do cliente)',           kind:'cost',    base:0,    months_cash:1, months_hm:1, is_extra:false, formula:'down_cash'},
   {name:'<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#CB704F" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><line x1="3" x2="21" y1="22" y2="22"/><line x1="6" x2="6" y1="18" y2="11"/><line x1="10" x2="10" y1="18" y2="11"/><line x1="14" x2="14" y1="18" y2="11"/><line x1="18" x2="18" y1="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg>Hard Money (financiado)',             kind:'cost',    base:0,    months_cash:1, months_hm:1, is_extra:false, formula:'hm_principal'},
   {name:'<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#CB704F" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>Juros do Hard Money',                  kind:'cost',    base:0,    months_cash:0, months_hm:4, is_extra:false, formula:'hm_interest', lock_to_hm_months:true},
-  {name:'<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#CB704F" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>Down payment Hard Money',              kind:'closing', base:0,    months_cash:0, months_hm:1, is_extra:false, formula:'hm_down'},
+  {name:'<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#CB704F" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>Pontos do Hard Money',              kind:'closing', base:0,    months_cash:0, months_hm:1, is_extra:false, formula:'hm_down'},
   {name:'<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#CB704F" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Água/Luz',                             kind:'cost',    base:250,  months_cash:4, months_hm:6, is_extra:false, lock_to_hm_months:true},
   {name:'🏛️ IPTU / Property tax (mensal)',  kind:'cost',    base:0,    months_cash:4, months_hm:6, is_extra:false, lock_to_hm_months:true},
   {name:'🛡️ Seguro do imóvel (mensal)',     kind:'cost',    base:0,    months_cash:4, months_hm:6, is_extra:false, lock_to_hm_months:true},
@@ -16098,6 +16106,8 @@ function normalizeBudgetLines(lines){
   // já que o closing da venda agora é linha própria.
   const _defComm = BUDGET_DEFAULT_LINES.find(l=>l && l.formula==='commission_6');
   if(_defComm) out.forEach(l=>{ if(l && l.formula==='commission_6' && l.name!==_defComm.name) l.name=_defComm.name; });
+  const _defDown = BUDGET_DEFAULT_LINES.find(l=>l && l.formula==='hm_down');
+  if(_defDown) out.forEach(l=>{ if(l && l.formula==='hm_down' && l.name!==_defDown.name) l.name=_defDown.name; });
   // Ordem: "Closing de venda" logo ACIMA da "Comissão de venda".
   const _ci = out.findIndex(l=>l&&l.formula==='commission_6');
   const _si = out.findIndex(l=>l&&l.formula==='closing_sell');
@@ -16944,7 +16954,7 @@ function renderBudgetEditorModal(){
               <input type="number" min="0" max="1" step="0.001" value="${b.commission_agent_pct!=null?b.commission_agent_pct:0.05}" oninput="updateBudgetField('commission_agent_pct',this.value)" placeholder="ex 0.06 = 6%" style="width:100%;padding:7px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:5px;outline:none;font-family:inherit">
             </div>
             <div>
-              <label style="font-size:10px;font-weight:700;color:#647078;display:block;margin-bottom:3px">% Down HM</label>
+              <label style="font-size:10px;font-weight:700;color:#647078;display:block;margin-bottom:3px" title="Pontos / taxa de originação do Hard Money (% sobre o empréstimo). Não é a entrada — a entrada é o % financiado da compra.">% Pontos HM</label>
               <input type="number" min="0" max="1" step="0.001" value="${b.hm_down_pct||''}" oninput="updateBudgetField('hm_down_pct',this.value)" placeholder="ex 0.02 = 2%" style="width:100%;padding:7px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:5px;outline:none;font-family:inherit">
             </div>
             <div>
@@ -17513,9 +17523,9 @@ function downloadBudgetExcel(){
   r.push(['HM Loan', hmLoan]);
   r.push(['% HM Loan', hmPct]);
   r.push(['HM Closing Costs', +b.hm_closing_costs||0]);
-  r.push(['% Down HM', hmDownPct]);
+  r.push(['% Pontos HM', hmDownPct]);
   r.push(['% Juros HM/ano', hmInterestPct]);
-  r.push(['% Comissão Agente', commAgentPctX]);
+  r.push(['% Comissão de venda', commAgentPctX]);
   r.push(['% Closing Venda', commClosingPctX]);
   r.push(['Meses Cash', b.cash_months]);
   r.push(['Meses HM', b.hm_months]);
