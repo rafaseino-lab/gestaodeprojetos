@@ -16098,6 +16098,14 @@ function normalizeBudgetLines(lines){
   // já que o closing da venda agora é linha própria.
   const _defComm = BUDGET_DEFAULT_LINES.find(l=>l && l.formula==='commission_6');
   if(_defComm) out.forEach(l=>{ if(l && l.formula==='commission_6' && l.name!==_defComm.name) l.name=_defComm.name; });
+  // Ordem: "Closing de venda" logo ACIMA da "Comissão de venda".
+  const _ci = out.findIndex(l=>l&&l.formula==='commission_6');
+  const _si = out.findIndex(l=>l&&l.formula==='closing_sell');
+  if(_ci>=0 && _si>=0 && _si!==_ci-1){
+    const _cell = out.splice(_si,1)[0];
+    const _ci2 = out.findIndex(l=>l&&l.formula==='commission_6');
+    out.splice(_ci2,0,_cell);
+  }
   return out;
 }
 function calcBudgetSummary(b){
