@@ -16086,8 +16086,18 @@ function budgetHmLoan(b){
 // Split do lucro: 30% Empresa / 70% cliente
 const BUDGET_DEC_PCT = 0.30;
 
+// Garante que TODO custo computado tenha uma linha visível: injeta as linhas
+// de Closing de compra e de venda se faltarem (idempotente). Assim nada fica oculto.
+function normalizeBudgetLines(lines){
+  const out = Array.isArray(lines) ? lines.slice() : [];
+  const has = f => out.some(l => l && l.formula===f);
+  const insertAfter=(formula,newLine)=>{ const i=out.findIndex(l=>l&&l.formula===formula); if(i>=0) out.splice(i+1,0,newLine); else out.push(newLine); };
+  if(!has('closing_buy'))  insertAfter('hm_down',      {name:'📄 Closing de compra (% compra)', kind:'cost',    base:0, months_cash:1, months_hm:1, is_extra:false, formula:'closing_buy'});
+  if(!has('closing_sell')) insertAfter('commission_6', {name:'📄 Closing de venda (% venda)',   kind:'closing', base:0, months_cash:1, months_hm:1, is_extra:false, formula:'closing_sell'});
+  return out;
+}
 function calcBudgetSummary(b){
-  const lines=b.cost_lines && b.cost_lines.length>0 ? b.cost_lines : BUDGET_DEFAULT_LINES;
+  const lines=normalizeBudgetLines(b.cost_lines && b.cost_lines.length>0 ? b.cost_lines : BUDGET_DEFAULT_LINES);
   const purchase=+b.purchase_price||0;
   const arv=+b.arv||0;
   const rehab=+b.rehab_estimate||0;
@@ -16156,8 +16166,17 @@ function calcBudgetSummary(b){
       valCash = 0;
       valHm   = hasOverride ? base : (hmLoan*hmDownPct);
     } else if(line.formula==='commission_6'){
-      // 🏷️ Comissão: % agent + % closing of ARV
-      valCash = hasOverride ? base : (arv*commissionPct);
+      // 🏷️ Comissão de venda: SÓ a comissão do corretor (% agente). O closing da venda
+      //   tem linha própria (closing_sell) — evita cobrar closing em dois lugares.
+      valCash = hasOverride ? base : (arv*commAgentPct);
+      valHm   = valCash;
+    } else if(line.formula==='closing_buy'){
+      // 📄 Closing da COMPRA: % sobre a compra (+ legado se não houver %). Entra no investido.
+      valCash = hasOverride ? base : (purchase*(closingBuyPct/100) + legacyClosing);
+      valHm   = valCash;
+    } else if(line.formula==='closing_sell'){
+      // 📄 Closing da VENDA: % sobre a venda (ARV). Sai no fechamento (desconto).
+      valCash = hasOverride ? base : (arv*(closingSellPct/100));
       valHm   = valCash;
     } else if(line.formula==='rehab'){
       // 🔨 Rehab: cash sempre. No HM, se financiado (hm_includes_rehab), o loan cobre
@@ -16193,12 +16212,8 @@ function calcBudgetSummary(b){
       hmEmpresa+=valHm;
     }
   });
-  // Closing de COMPRA → desembolso na aquisição (entra no investido dos dois cenários)
-  cashEmpresa+=closingBuy+legacyClosing;
-  hmEmpresa+=closingBuy+legacyClosing;
-  // Closing de VENDA → sai no fechamento da venda (desconto nos dois cenários)
-  cashDescontos+=closingSell;
-  hmDescontos+=closingSell;
+  // Closing de compra/venda agora são LINHAS visíveis (closing_buy / closing_sell),
+  // já somadas no loop acima — não somar de novo aqui (evita duplicidade).
   // HM-specific: closing fee (fixed $ amount paid only when using HM loan)
   if(hmLoan>0) hmEmpresa+=hmClosingFee;
   // In the HM scenario, the HM principal MUST be repaid at the sale closing
@@ -16671,6 +16686,8 @@ function renderBudgetEditorModal(){
   if(existing) existing.remove();
   const b=_bdgCurrent;
   if(!b) return;
+  // Garante que as linhas de closing (compra/venda) existam e apareçam na tabela
+  b.cost_lines = normalizeBudgetLines(b.cost_lines||[]);
   const calc=calcBudgetSummary(b);
   const $fmt=n=>'$'+(+n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
   const modal=document.createElement('div');
@@ -16911,12 +16928,8 @@ function renderBudgetEditorModal(){
           </summary>
           <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:10px">
             <div>
-              <label style="font-size:10px;font-weight:700;color:#647078;display:block;margin-bottom:3px">% Comissão Agente</label>
-              <input type="number" min="0" max="1" step="0.001" value="${b.commission_agent_pct!=null?b.commission_agent_pct:0.05}" oninput="updateBudgetField('commission_agent_pct',this.value)" placeholder="ex 0.05 = 5%" style="width:100%;padding:7px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:5px;outline:none;font-family:inherit">
-            </div>
-            <div>
-              <label style="font-size:10px;font-weight:700;color:#647078;display:block;margin-bottom:3px">% Closing Venda</label>
-              <input type="number" min="0" max="1" step="0.001" value="${b.commission_closing_pct!=null?b.commission_closing_pct:0.01}" oninput="updateBudgetField('commission_closing_pct',this.value)" placeholder="ex 0.01 = 1%" style="width:100%;padding:7px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:5px;outline:none;font-family:inherit">
+              <label style="font-size:10px;font-weight:700;color:#647078;display:block;margin-bottom:3px" title="Comissão do corretor na venda (só agente). O closing da venda é a linha própria, lá em cima em Closing Costs (% venda).">% Comissão de venda</label>
+              <input type="number" min="0" max="1" step="0.001" value="${b.commission_agent_pct!=null?b.commission_agent_pct:0.05}" oninput="updateBudgetField('commission_agent_pct',this.value)" placeholder="ex 0.06 = 6%" style="width:100%;padding:7px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:5px;outline:none;font-family:inherit">
             </div>
             <div>
               <label style="font-size:10px;font-weight:700;color:#647078;display:block;margin-bottom:3px">% Down HM</label>
@@ -17088,7 +17101,9 @@ function useFormulaValue(idx){
   else if(line.formula==='hm_principal')value=hmLoan;
   else if(line.formula==='hm_interest') value=(b.hm_interest_dutch===false)?((budgetHouseLoan(b)*hmInterestPct/12)*mHm + (Math.max(0,hmLoan-budgetHouseLoan(b))*hmInterestPct/12)*(mHm/2)):((hmLoan*hmInterestPct/12)*mHm);
   else if(line.formula==='hm_down')     value=hmLoan*hmDownPct;
-  else if(line.formula==='commission_6')value=arv*commPct;
+  else if(line.formula==='commission_6')value=arv*commAgentPct;
+  else if(line.formula==='closing_buy')value=(+b.purchase_price||0)*((+b.closing_buy_pct||0)/100);
+  else if(line.formula==='closing_sell')value=(+b.arv||0)*((+b.closing_sell_pct||0)/100);
   else if(line.formula==='rehab')       value=rehab;
   if(value<=0){toast('Preencha os dados do imóvel primeiro',false);return;}
   // Round to 2 decimal places
