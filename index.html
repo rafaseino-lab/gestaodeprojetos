@@ -17238,6 +17238,11 @@ async function saveBudget(){
   const _nm=(_bdgCurrent.name||'').trim();
   const _addr=(_bdgCurrent.address||'').trim();
   const _finalName=(_nm && _nm!=='Novo Orçamento') ? _nm : (_addr || 'Orçamento sem nome');
+  // FIX: resolve o fallback de % compra/obra AGORA, p/ nunca gravar em branco (null)
+  // — antes o "% da obra" mostrado na tela (herdado do hm_pct) não era capturado e virava null ao salvar.
+  const _legacyPct=+_bdgCurrent.hm_pct||0;
+  const _ppSave=(_bdgCurrent.hm_purchase_pct!=null&&_bdgCurrent.hm_purchase_pct!=='')?(+_bdgCurrent.hm_purchase_pct||0):_legacyPct;
+  const _rpSave=(_bdgCurrent.hm_rehab_pct!=null&&_bdgCurrent.hm_rehab_pct!=='')?(+_bdgCurrent.hm_rehab_pct||0):_legacyPct;
   const payload={
     name:_finalName,
     address:_bdgCurrent.address||'',
@@ -17252,9 +17257,9 @@ async function saveBudget(){
     hm_interest_pct:+_bdgCurrent.hm_interest_pct||0,
     hm_loan_amount:+_bdgCurrent.hm_loan_amount||0,
     // hm_pct legado espelha a % da compra (consumido na criacao de projeto / Property & Finance)
-    hm_pct:(_bdgCurrent.hm_purchase_pct!=null&&_bdgCurrent.hm_purchase_pct!=='')?(+_bdgCurrent.hm_purchase_pct||0):(+_bdgCurrent.hm_pct||0),
-    hm_purchase_pct:(_bdgCurrent.hm_purchase_pct!=null&&_bdgCurrent.hm_purchase_pct!=='')?(+_bdgCurrent.hm_purchase_pct||0):null,
-    hm_rehab_pct:(_bdgCurrent.hm_rehab_pct!=null&&_bdgCurrent.hm_rehab_pct!=='')?(+_bdgCurrent.hm_rehab_pct||0):null,
+    hm_pct:_ppSave,
+    hm_purchase_pct:_ppSave,
+    hm_rehab_pct:_rpSave,
     hm_interest_dutch:_bdgCurrent.hm_interest_dutch!==false,
     arv_ltv_cap:(_bdgCurrent.arv_ltv_cap!=null&&_bdgCurrent.arv_ltv_cap!=='')?(+_bdgCurrent.arv_ltv_cap||0):null,
     hm_includes_rehab:_bdgCurrent.hm_includes_rehab===true,
