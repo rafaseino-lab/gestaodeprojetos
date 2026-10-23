@@ -781,6 +781,11 @@ body.in-project .gtabs{display:none!important}
         <!-- Card 2: Acquisition -->
         <div class="card">
           <div class="card-title">💰 Aquisição (Compra)</div>
+          <div style="margin:-2px 0 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <input type="file" id="alta-buy-file" accept="application/pdf,image/*" style="display:none" onchange="readAlta('purchase',this)">
+            <button type="button" onclick="document.getElementById('alta-buy-file').click()" style="background:#CB704F;color:#fff;border:0;border-radius:7px;padding:7px 13px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">📄 Ler ALTA de compra &middot; IA preenche</button>
+            <span id="alta-buy-status" style="font-size:11px;color:#647078"></span>
+          </div>
 
           <!-- Preço do atacadista (auto-calc) — EMD + Cash + Hard Money -->
           <div style="margin-bottom:18px">
@@ -813,6 +818,11 @@ body.in-project .gtabs{display:none!important}
         <!-- Card 4: Sale & Profit -->
         <div class="card" style="margin-top:16px">
           <div class="card-title"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--dec-gold)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg>Venda &amp; Lucro</div>
+          <div style="margin:-2px 0 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <input type="file" id="alta-sell-file" accept="application/pdf,image/*" style="display:none" onchange="readAlta('sale',this)">
+            <button type="button" onclick="document.getElementById('alta-sell-file').click()" style="background:#CB704F;color:#fff;border:0;border-radius:7px;padding:7px 13px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">📄 Ler ALTA de venda &middot; IA preenche</button>
+            <span id="alta-sell-status" style="font-size:11px;color:#647078"></span>
+          </div>
           <div class="fgrid">
             <div class="fg"><label>Valor após reforma ($) <span style="font-size:10px;color:var(--gray3)">— ARV</span></label><input id="pi-arv" type="number" min="0" step="0.01" placeholder="ex.: 320000.00" oninput="debouncePI()"></div>
             <div class="fg"><label>Preço final de venda ($)</label><input id="pi-sale" type="number" min="0" step="0.01" placeholder="preencher quando vender" oninput="debouncePI()"></div>
@@ -4625,6 +4635,48 @@ async function addFinAccount(){
   if(ins.error){console.error(ins.error);toast('Erro: '+ins.error.message,false);return;}
   finAccounts.push(ins.data);
   _renderLivros();
+}
+
+const ALTA_EDGE_URL = `${SURL}/functions/v1/read-alta`;
+function _isoToBR(iso){ if(!iso||typeof iso!=='string') return ''; const m=iso.match(/^(\d{4})-(\d{2})-(\d{2})/); return m?(m[3]+'/'+m[2]+'/'+m[1]):''; }
+function _setPInum(id,val){ const el=document.getElementById(id); if(el && val!=null && !isNaN(+val) && +val>0){ el.value=''+(+val); } }
+// Agentes de leitura da ALTA Settlement Statement (compra e venda) -> preenchem Imóvel & Finanças
+async function readAlta(mode, inputEl){
+  if(!isCEO()){toast('CEO only',false);return;}
+  const file=inputEl&&inputEl.files&&inputEl.files[0];
+  const st=document.getElementById(mode==='sale'?'alta-sell-status':'alta-buy-status');
+  if(!file) return;
+  if(file.size>15*1024*1024){ if(st){st.style.color='#B33F36';st.textContent='Arquivo maior que 15MB';} inputEl.value=''; return; }
+  if(st){ st.style.color='#647078'; st.textContent='🤖 Lendo a ALTA... ~15s'; }
+  try{
+    const {data:{session}}=await sb.auth.getSession();
+    const token=(session&&session.access_token)||SKEY;
+    const b64=await _fileToBase64(file);
+    const resp=await fetch(ALTA_EDGE_URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token,'apikey':SKEY},body:JSON.stringify({file_base64:b64,file_type:file.type,mode})});
+    const out=await resp.json();
+    if(!resp.ok||!out.success) throw new Error(out.error||out.message||('HTTP '+resp.status));
+    const d=out.data||{};
+    if(mode==='purchase'){
+      _setPInum('pi-emd-cash', d.emd);
+      _setPInum('pi-cash', d.buyer_cash);
+      _setPInum('pi-hard-money', d.loan_amount);
+      _setPInum('pi-other-costs', d.other_closing_costs);
+      _setPInum('pi-commission', d.commission);
+      const dt=_isoToBR(d.date); if(dt){ const e=document.getElementById('pi-purch-date'); if(e) e.value=dt; }
+      if(typeof onAcqInput==='function') onAcqInput();
+    } else {
+      _setPInum('pi-sale', d.sale_price);
+      const sell=(d.selling_costs_total!=null&&+d.selling_costs_total>0)?+d.selling_costs_total:((+d.commission||0)+(+d.seller_closing_costs||0));
+      _setPInum('pi-selling', sell);
+      const dt=_isoToBR(d.date); if(dt){ const e=document.getElementById('pi-sale-date'); if(e) e.value=dt; }
+      if(typeof debouncePI==='function') debouncePI();
+    }
+    if(typeof savePI==='function') await savePI();
+    const warns=(d.confidence_warnings||[]);
+    if(st){ st.style.color='#237A50'; st.textContent='✓ Preenchido — confira os valores'+(warns.length?(' · '+warns.join('; ')):'.'); }
+  }catch(e){
+    if(st){ st.style.color='#B33F36'; st.textContent='⚠ '+((e&&e.message)||e); }
+  } finally { if(inputEl) inputEl.value=''; }
 }
 
 async function readStatementPDF(){
