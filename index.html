@@ -16094,6 +16094,10 @@ function normalizeBudgetLines(lines){
   const insertAfter=(formula,newLine)=>{ const i=out.findIndex(l=>l&&l.formula===formula); if(i>=0) out.splice(i+1,0,newLine); else out.push(newLine); };
   if(!has('closing_buy'))  insertAfter('hm_down',      {name:'📄 Closing de compra (% compra)', kind:'cost',    base:0, months_cash:1, months_hm:1, is_extra:false, formula:'closing_buy'});
   if(!has('closing_sell')) insertAfter('commission_6', {name:'📄 Closing de venda (% venda)',   kind:'closing', base:0, months_cash:1, months_hm:1, is_extra:false, formula:'closing_sell'});
+  // Corrige rótulo antigo da comissão ("Comissão venda + closing costs") p/ o nome padrão,
+  // já que o closing da venda agora é linha própria.
+  const _defComm = BUDGET_DEFAULT_LINES.find(l=>l && l.formula==='commission_6');
+  if(_defComm) out.forEach(l=>{ if(l && l.formula==='commission_6' && l.name!==_defComm.name) l.name=_defComm.name; });
   return out;
 }
 function calcBudgetSummary(b){
@@ -16275,7 +16279,7 @@ function calcBudgetClientView(b, scenario){
     hardMoney: isHM ? hmLoan : 0,
     downPayment: isHM ? Math.max(0, purchase - budgetHouseLoan(b)) : purchase,
     rehab,
-    closingHM: isHM && hmLoan>0 ? 2250 : 0,
+    closingHM: isHM ? (+b.hm_closing_costs||0) : 0,
     clientInvested: invested,
     sale: arv,
     saleCosts,
@@ -16949,10 +16953,6 @@ function renderBudgetEditorModal(){
             <div>
               <label style="font-size:10px;font-weight:700;color:#647078;display:block;margin-bottom:3px" title="Teto de alavancagem: lenders da FL emprestam ~70-75% do ARV. Avisa se passar disso.">% Teto ARV (LTV)</label>
               <input type="number" min="0" max="1" step="0.01" value="${(b.arv_ltv_cap!=null&&b.arv_ltv_cap!=='')?b.arv_ltv_cap:'0.70'}" oninput="updateBudgetField('arv_ltv_cap',this.value)" placeholder="ex 0.70 = 70%" style="width:100%;padding:7px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:5px;outline:none;font-family:inherit">
-            </div>
-            <div>
-              <label style="font-size:10px;font-weight:700;color:#647078;display:block;margin-bottom:3px">HM Closing Costs ($)</label>
-              <div style="padding:7px 10px;font-size:13px;background:#F4E7E0;border:1.5px solid #E6D599;border-radius:5px;font-family:inherit;color:#647078;font-weight:600">$2,250.00 (custo fixo)</div>
             </div>
             <div>
               <label style="font-size:10px;font-weight:700;color:#647078;display:block;margin-bottom:3px">% Contingência (obra)</label>
