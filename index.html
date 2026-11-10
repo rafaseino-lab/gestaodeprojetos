@@ -16034,7 +16034,10 @@ async function openLancarModal(preProj){
       </div>
       <label style="font-size:11px;font-weight:700;color:#647078;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px">Category</label>
       <select id="lc-dest" onchange="_lancarDestChange()" style="width:100%;padding:9px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:6px;margin-bottom:14px;font-family:inherit">
-        <option value="obra">🏠 Work cost (Real costs)</option>
+        <optgroup label="🏠 Work cost (Real costs) — choose the phase">
+          ${((typeof STD_STAGES!=='undefined'?STD_STAGES:[])||[]).map(st=>`<option value="phase:${st.label.replace(/"/g,'&quot;')}">${st.label}</option>`).join('')}
+          <option value="obra">General / other work cost</option>
+        </optgroup>
         <option value="utilities">💡 Utilities / Recurring (passed to the client)</option>
         <option value="overhead">🏢 Company overhead</option>
       </select>
@@ -16052,7 +16055,6 @@ async function openLancarModal(preProj){
       <div style="margin-bottom:12px"><label style="font-size:11px;font-weight:700;color:#647078">Description / item</label><input id="lc-desc" type="text" placeholder="e.g. Vinyl floor" style="width:100%;padding:8px 10px;border:1.5px solid var(--gray2);border-radius:6px;font-family:inherit"></div>
       <div id="lc-f-proj" style="margin-bottom:12px"><label style="font-size:11px;font-weight:700;color:#647078">Project (work)</label><select id="lc-proj" style="width:100%;padding:8px 10px;border:1.5px solid var(--gray2);border-radius:6px;font-family:inherit">${projOpts}</select></div>
       <div id="lc-f-cat" style="margin-bottom:12px"><label style="font-size:11px;font-weight:700;color:#647078">Category</label><select id="lc-cat" style="width:100%;padding:8px 10px;border:1.5px solid var(--gray2);border-radius:6px;font-family:inherit"><option value="material">Material</option><option value="labor">Labor</option></select></div>
-      <div id="lc-f-phase" style="margin-bottom:12px"><label style="font-size:11px;font-weight:700;color:#647078">Phase (construction)</label><select id="lc-phase" style="width:100%;padding:8px 10px;border:1.5px solid var(--gray2);border-radius:6px;font-family:inherit">${phaseOpts}</select></div>
       <div id="lc-f-conta" style="margin-bottom:12px;display:none"><label style="font-size:11px;font-weight:700;color:#647078">Recurring bill (official item)</label><select id="lc-conta" style="width:100%;padding:8px 10px;border:1.5px solid var(--gray2);border-radius:6px;font-family:inherit">${rcOpts}</select></div>
       <div id="lc-f-ohcat" style="margin-bottom:12px;display:none"><label style="font-size:11px;font-weight:700;color:#647078">Overhead category</label><input id="lc-ohcat" type="text" placeholder="e.g. Accountant, Fuel, Software" style="width:100%;padding:8px 10px;border:1.5px solid var(--gray2);border-radius:6px;font-family:inherit"></div>
       <div id="lc-f-acct" style="margin-bottom:12px;display:none"><label style="font-size:11px;font-weight:700;color:#647078">Bank account (where it came from)</label><select id="lc-acct" style="width:100%;padding:8px 10px;border:1.5px solid var(--gray2);border-radius:6px;font-family:inherit">${acctOpts}</select></div>
@@ -16069,11 +16071,11 @@ async function openLancarModal(preProj){
   }
 }
 function _lancarDestChange(){
-  const d=(document.getElementById('lc-dest')||{}).value;
+  const _dv=(document.getElementById('lc-dest')||{}).value;
+  const d=(_dv.indexOf('phase:')===0)?'obra':_dv;
   const show=(id,on)=>{const e=document.getElementById(id); if(e) e.style.display=on?'':'none';};
   show('lc-f-proj', d==='obra'||d==='utilities');
   show('lc-f-cat', d==='obra');
-  show('lc-f-phase', d==='obra');
   show('lc-f-conta', d==='utilities');
   show('lc-f-ohcat', d==='overhead');
   show('lc-f-acct', false);
@@ -16089,7 +16091,9 @@ async function _lcAddVendor(){
 }
 async function lancarSubmit(){
   if(!isCEO()) return;
-  const dest=(document.getElementById('lc-dest')||{}).value;
+  const _destRaw=(document.getElementById('lc-dest')||{}).value;
+  const phaseSel=(_destRaw.indexOf('phase:')===0)?_destRaw.slice(6):'';
+  const dest=(_destRaw.indexOf('phase:')===0)?'obra':_destRaw;
   const date=(document.getElementById('lc-date')||{}).value;
   const amount=Math.round((parseFloat((document.getElementById('lc-amount')||{}).value)||0)*100)/100;
   const vendor=((document.getElementById('lc-vendor')||{}).value||'').trim();
@@ -16116,7 +16120,7 @@ async function lancarSubmit(){
       const cat=(document.getElementById('lc-cat')||{}).value||'material';
       const gid=(typeof GROUPS!=='undefined'&&GROUPS[0])?GROUPS[0].id:null;
       const islug=(slug(nm)||'nota')+'-'+(Date.now().toString(36)+Math.random().toString(36).slice(2,6));
-      const r=await sb.from('budget_items').insert({project_id:pid,room_id:gid,item_slug:islug,item_name:nm,est:0,actual:amount,est_note:'',actual_note:((function(){var ph=((document.getElementById('lc-phase')||{}).value||'').trim();return (ph?('Phase: '+ph):'')+(vendor?((ph?' · ':'')+'Vendor: '+vendor):'');})()),est_supplier:'',actual_supplier:vendor||'',est_qty:0,actual_qty:1,est_unit_cost:amount,actual_unit_cost:amount,category:cat});
+      const r=await sb.from('budget_items').insert({project_id:pid,room_id:gid,item_slug:islug,item_name:nm,est:0,actual:amount,est_note:'',actual_note:((phaseSel?('Phase: '+phaseSel):'')+(vendor?((phaseSel?' · ':'')+'Vendor: '+vendor):'')),est_supplier:'',actual_supplier:vendor||'',est_qty:0,actual_qty:1,est_unit_cost:amount,actual_unit_cost:amount,category:cat});
       if(r.error) return fail('Error (work): '+r.error.message);
       // anexa a nota, se veio do upload
       if(_lcUpload && _lcUpload.storage_path){ try{
