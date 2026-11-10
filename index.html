@@ -15087,6 +15087,10 @@ async function applyBudgetAsBaseline(){
 
 // ═══ CONSTRUCTION STAGE (Florida new-construction) — Gantt-style tracker ═══
 const STD_STAGES=[
+ {id:'lot',        label:'Lot Acquisition'},
+ {id:'survey',     label:'Survey'},
+ {id:'architect',  label:'Architect / Design'},
+ {id:'preplanning',label:'Pre-Planning'},
  {id:'permits',    label:'Permits & Plans'},
  {id:'site',       label:'Site Work & Clearing'},
  {id:'foundation', label:'Foundation / Slab'},
@@ -16013,6 +16017,7 @@ async function openLancarModal(preProj){
   const projOpts='<option value="">— choose work —</option>'+(projects||[]).slice().sort((a,b)=>_obraKey(a.address||a.name).localeCompare(_obraKey(b.address||b.name))).map(p=>`<option value="${p.id}">${((p.address||p.name||'')).replace(/</g,'&lt;')}</option>`).join('');
   const acctOpts='<option value="">— choose account —</option>'+((typeof finAccounts!=='undefined'?finAccounts:[])||[]).map(a=>`<option value="${a.id}">${(a.name||'').replace(/</g,'&lt;')}</option>`).join('');
   const rcOpts='<option value="">— choose item —</option>'+((typeof RC_ITEMS!=='undefined'?RC_ITEMS:[])||[]).map(n=>`<option value="${n}">${n}</option>`).join('');
+  const phaseOpts='<option value="">— phase (optional) —</option>'+((typeof STD_STAGES!=='undefined'?STD_STAGES:[])||[]).map(st=>`<option value="${st.label.replace(/"/g,'&quot;')}">${st.label}</option>`).join('');
   const today=new Date().toISOString().slice(0,10);
   const vendorDl=(vendors||[]).slice().sort((a,b)=>(a.name||'').localeCompare(b.name||'')).map(v=>`<option value="${(v.name||'').replace(/"/g,'&quot;')}">`).join('');
   m.innerHTML=`<div class="modal" style="max-width:560px;padding:0">
@@ -16047,6 +16052,7 @@ async function openLancarModal(preProj){
       <div style="margin-bottom:12px"><label style="font-size:11px;font-weight:700;color:#647078">Description / item</label><input id="lc-desc" type="text" placeholder="e.g. Vinyl floor" style="width:100%;padding:8px 10px;border:1.5px solid var(--gray2);border-radius:6px;font-family:inherit"></div>
       <div id="lc-f-proj" style="margin-bottom:12px"><label style="font-size:11px;font-weight:700;color:#647078">Project (work)</label><select id="lc-proj" style="width:100%;padding:8px 10px;border:1.5px solid var(--gray2);border-radius:6px;font-family:inherit">${projOpts}</select></div>
       <div id="lc-f-cat" style="margin-bottom:12px"><label style="font-size:11px;font-weight:700;color:#647078">Category</label><select id="lc-cat" style="width:100%;padding:8px 10px;border:1.5px solid var(--gray2);border-radius:6px;font-family:inherit"><option value="material">Material</option><option value="labor">Labor</option></select></div>
+      <div id="lc-f-phase" style="margin-bottom:12px"><label style="font-size:11px;font-weight:700;color:#647078">Phase (construction)</label><select id="lc-phase" style="width:100%;padding:8px 10px;border:1.5px solid var(--gray2);border-radius:6px;font-family:inherit">${phaseOpts}</select></div>
       <div id="lc-f-conta" style="margin-bottom:12px;display:none"><label style="font-size:11px;font-weight:700;color:#647078">Recurring bill (official item)</label><select id="lc-conta" style="width:100%;padding:8px 10px;border:1.5px solid var(--gray2);border-radius:6px;font-family:inherit">${rcOpts}</select></div>
       <div id="lc-f-ohcat" style="margin-bottom:12px;display:none"><label style="font-size:11px;font-weight:700;color:#647078">Overhead category</label><input id="lc-ohcat" type="text" placeholder="e.g. Accountant, Fuel, Software" style="width:100%;padding:8px 10px;border:1.5px solid var(--gray2);border-radius:6px;font-family:inherit"></div>
       <div id="lc-f-acct" style="margin-bottom:12px;display:none"><label style="font-size:11px;font-weight:700;color:#647078">Bank account (where it came from)</label><select id="lc-acct" style="width:100%;padding:8px 10px;border:1.5px solid var(--gray2);border-radius:6px;font-family:inherit">${acctOpts}</select></div>
@@ -16067,6 +16073,7 @@ function _lancarDestChange(){
   const show=(id,on)=>{const e=document.getElementById(id); if(e) e.style.display=on?'':'none';};
   show('lc-f-proj', d==='obra'||d==='utilities');
   show('lc-f-cat', d==='obra');
+  show('lc-f-phase', d==='obra');
   show('lc-f-conta', d==='utilities');
   show('lc-f-ohcat', d==='overhead');
   show('lc-f-acct', false);
@@ -16109,7 +16116,7 @@ async function lancarSubmit(){
       const cat=(document.getElementById('lc-cat')||{}).value||'material';
       const gid=(typeof GROUPS!=='undefined'&&GROUPS[0])?GROUPS[0].id:null;
       const islug=(slug(nm)||'nota')+'-'+(Date.now().toString(36)+Math.random().toString(36).slice(2,6));
-      const r=await sb.from('budget_items').insert({project_id:pid,room_id:gid,item_slug:islug,item_name:nm,est:0,actual:amount,est_note:'',actual_note:vendor?('Vendor: '+vendor):'',est_supplier:'',actual_supplier:vendor||'',est_qty:0,actual_qty:1,est_unit_cost:amount,actual_unit_cost:amount,category:cat});
+      const r=await sb.from('budget_items').insert({project_id:pid,room_id:gid,item_slug:islug,item_name:nm,est:0,actual:amount,est_note:'',actual_note:((function(){var ph=((document.getElementById('lc-phase')||{}).value||'').trim();return (ph?('Phase: '+ph):'')+(vendor?((ph?' · ':'')+'Vendor: '+vendor):'');})()),est_supplier:'',actual_supplier:vendor||'',est_qty:0,actual_qty:1,est_unit_cost:amount,actual_unit_cost:amount,category:cat});
       if(r.error) return fail('Error (work): '+r.error.message);
       // anexa a nota, se veio do upload
       if(_lcUpload && _lcUpload.storage_path){ try{
