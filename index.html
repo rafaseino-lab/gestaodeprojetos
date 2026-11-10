@@ -672,7 +672,7 @@ body.in-project .gtabs{display:none!important}
         </div>
         <div class="card">
           <div class="card-title">Details</div>
-          <div class="fgrid"><div class="fg"><label>Project Name <span style="font-size:10px;color:var(--gray3)">— synced from Address (auto)</span></label><input id="pf-name" readonly style="background:#F3F0EA;color:var(--gray3);cursor:not-allowed"></div><div class="fg"><label>Costmer *</label>
+          <div class="fgrid"><div class="fg"><label>Project Name <span style="font-size:10px;color:var(--gray3)">— editable</span></label><input id="pf-name" oninput="debouncePF()"></div><div class="fg"><label>Customer *</label>
             <div style="display:flex;gap:6px">
               <select id="pf-customer" onchange="debouncePF()" style="flex:1"></select>
               <button class="btn btn-ghost" style="padding:7px 12px;font-size:12px;white-space:nowrap" onclick="openClientModal()">+ New</button>
@@ -7965,12 +7965,12 @@ function debouncePF(){clearTimeout(_debPF);_debPF=setTimeout(savePF,600);}
 
 async function savePF(){
   if(!CID) return;
-  // Project Name is auto-synced from Address (v8.51)
+  // Name and Address are independent. Name defaults to the address only when left blank.
   const address=v('pf-address').trim();
-  const syncedName=address || v('pf-name') || '(no address)';
-  // Reflect in the read-only Project Name field
+  const nameVal=v('pf-name').trim();
+  const syncedName=nameVal || address || '(no address)';
   const nameEl=document.getElementById('pf-name');
-  if(nameEl) nameEl.value=syncedName;
+  if(nameEl && !nameVal) nameEl.value=syncedName; // only auto-fill when the name is empty
   const isCancelled=!!document.getElementById('pf-cancelled')?.checked;
   // Find existing cancelled_at to preserve it (only set when transitioning false → true)
   const existing=projects.find(x=>x.id===CID)||{};
