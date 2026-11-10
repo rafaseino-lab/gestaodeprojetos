@@ -1725,7 +1725,7 @@ body.in-project .gtabs{display:none!important}
       <div style="font-size:11px;color:var(--gray3);margin-top:2px">Emails each client the invoices they have not paid yet. Runs automatically every Monday (when the schedule is active).</div>
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <button onclick="runInvoiceReminders(true)" style="padding:7px 14px;font-size:12px;font-weight:700;background:#fff;border:1.5px solid var(--gray2);border-radius:6px;cursor:pointer;color:#647078;font-family:inherit">👁️ Simular</button>
+      <button onclick="runInvoiceReminders(true)" style="padding:7px 14px;font-size:12px;font-weight:700;background:#fff;border:1.5px solid var(--gray2);border-radius:6px;cursor:pointer;color:#647078;font-family:inherit">👁️ Simulate</button>
       <button onclick="runInvoiceReminders(false)" style="padding:7px 14px;font-size:12px;font-weight:700;background:linear-gradient(135deg,#263238,#647078);color:#fff;border:0;border-radius:6px;cursor:pointer;font-family:inherit">🔔 Enviar agora</button>
     </div>
   </div>
@@ -2724,7 +2724,7 @@ async function sendInvestorMagicLink(){
   const msg=document.getElementById('inv-login-msg');
   const btn=document.getElementById('inv-send-btn');
   if(!email || !email.includes('@')){ msg.style.color='#B33F36'; msg.textContent='Enter a valid email.'; return; }
-  btn.disabled=true; msg.style.color='#647078'; msg.textContent='Enviando...';
+  btn.disabled=true; msg.style.color='#647078'; msg.textContent='Sending...';
   const redirect=window.location.origin+window.location.pathname+'?portal=1';
   const {error}=await sb.auth.signInWithOtp({email, options:{emailRedirectTo:redirect}});
   btn.disabled=false;
@@ -8063,7 +8063,7 @@ async function uploadCoverPhoto(input){
   const st=document.getElementById('cover-status');
   if(!f.type.startsWith('image/')){ if(st) st.textContent='Invalid file — send an image.'; input.value=''; return; }
   if(f.size>10*1024*1024){ if(st) st.textContent='Image too large (max 10MB).'; input.value=''; return; }
-  if(st) st.textContent='Enviando…';
+  if(st) st.textContent='Sending…';
   const safe=f.name.replace(/[^a-zA-Z0-9._-]/g,'_');
   const path=`${CID}/cover/${Date.now()}_${safe}`;
   const {error:upErr}=await sb.storage.from(COVER_BUCKET).upload(path,f,{contentType:f.type,upsert:false});
@@ -10018,7 +10018,7 @@ function renderVendorExpenses(){
   if(sortBy==='total') list.sort((a,b)=>b.total-a.total);
   else list.sort((a,b)=>(a.name||'').localeCompare(b.name||'','pt',{sensitivity:'base'}));
 
-  if(cnt) cnt.textContent='— '+list.length+' fornecedor(es)';
+  if(cnt) cnt.textContent='— '+list.length+' vendor(s)';
   if(list.length===0){
     tb.innerHTML='<tr><td colspan="4" style="padding:22px;text-align:center;color:var(--gray3);font-style:italic">No expense posted with a vendor.</td></tr>';
     if(tf) tf.innerHTML='';
@@ -10277,7 +10277,7 @@ function renderHome(){
       <div class="home-card red">
         <div class="lbl">Total projects</div>
         <div class="val">${projects.length}</div>
-        <div class="sub">${clients.length} cliente(s) · ${vendors.length} fornecedor(es)</div>
+        <div class="sub">${clients.length} client(s) · ${vendors.length} vendor(s)</div>
       </div>`;
   }
   // Render revenue chart (últimos 12 meses — por venda realizada)
@@ -12656,7 +12656,7 @@ function renderInsuranceAlerts(){
     <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
       <span>🛡️ Seguros vencendo <span style="font-weight:500;text-transform:none;font-size:11px;color:var(--gray3)">— próximos ${INS_ALERT_DAYS} dias (e vencidos)</span></span>
       <span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-        <button onclick="runInsuranceAlerts(true)" style="padding:5px 12px;font-size:11px;font-weight:700;background:#fff;border:1.5px solid var(--gray2);border-radius:5px;cursor:pointer;color:#647078;font-family:inherit">👁️ Simular</button>
+        <button onclick="runInsuranceAlerts(true)" style="padding:5px 12px;font-size:11px;font-weight:700;background:#fff;border:1.5px solid var(--gray2);border-radius:5px;cursor:pointer;color:#647078;font-family:inherit">👁️ Simulate</button>
         <button onclick="runInsuranceAlerts(false)" style="padding:5px 12px;font-size:11px;font-weight:700;background:linear-gradient(135deg,#263238,#647078);color:#fff;border:0;border-radius:5px;cursor:pointer;font-family:inherit">🔔 Send reminders</button>
         <span style="font-size:13px;font-weight:800;color:#CB704F">${list.length}</span>
       </span>
@@ -12682,7 +12682,7 @@ async function runInsuranceAlerts(dryRun){
   const list=insuranceExpiringList(INS_ALERT_DAYS);
   if(list.length===0){toast('No insurance expiring in the window',false);return;}
   if(!dryRun && !confirm(`Enviar e-mail de cobrança de seguro?\n\nSerão notificados apenas vendors ATIVOS, com e-mail cadastrado, cuja apólice mais recente vence em até ${INS_ALERT_DAYS} dias (ou já venceu).\n\nQuem já foi avisado nos últimos 7 dias é ignorado.`)) return;
-  toast(dryRun?'Simulando…':'Enviando…',true);
+  toast(dryRun?'Simulating…':'Sending…',true);
   try{
     const {data:{session}}=await sb.auth.getSession();
     const token=session&&session.access_token;
@@ -12713,7 +12713,7 @@ const INVREM_EDGE_URL = `${SURL}/functions/v1/invoice-reminders`;
 async function runInvoiceReminders(dryRun){
   if(!isCEO()){toast('Apenas CEO pode disparar lembretes',false);return;}
   if(!dryRun && !confirm('Send a reminder of open invoices?\n\nEach client with a registered email gets the list of their invoices still open (unpaid).')) return;
-  toast(dryRun?'Simulando…':'Enviando…',true);
+  toast(dryRun?'Simulating…':'Sending…',true);
   try{
     const {data:{session}}=await sb.auth.getSession();
     const token=session&&session.access_token;
@@ -12791,7 +12791,7 @@ function renderVendors(){
       insLabel=`<span style="color:var(--p3);font-weight:700">${cnt.insurances}</span> <span style="font-size:10px;color:var(--p3)">✓</span>`;
     }
     return `<tr style="border-bottom:1px solid #DFE4E5">
-      <td style="padding:10px 12px;font-weight:600;color:var(--navy)">${escHtml(v.name||'')}</td>
+      <td style="padding:10px 12px;font-weight:600;color:var(--navy)">${escHtml(v.name||'')} <span id="vn-rate-${v.id}" style="font-size:12px;margin-left:6px;white-space:nowrap"></span></td>
       <td style="padding:10px 12px;color:var(--text);font-size:12px">${v.specialty||'<span style="color:var(--gray3)">—</span>'}</td>
       <td style="padding:10px 8px">${_vendorCategorySelect(v)}</td>
       <td style="padding:10px 12px;color:var(--text);font-size:12px">${v.phone||'<span style="color:var(--gray3)">—</span>'}</td>
@@ -12810,8 +12810,29 @@ function renderVendors(){
       </td>
     </tr>`;
   }).join('');
+  _vnLoadRatingBadges(list);
 }
 
+async function _vnLoadRatingBadges(list){
+  try{
+    if(!list||!list.length) return;
+    var r=await sb.from("daily_log_vendors").select("vendor_id,prazo,qualidade,comportamento");
+    var agg={};
+    (r.data||[]).forEach(function(x){
+      var a=agg[x.vendor_id]||(agg[x.vendor_id]={n:0,sum:0,onN:0,onGood:0});
+      [x.prazo,x.qualidade,x.comportamento].forEach(function(v){ if(v){ a.n++; a.sum+=v; } });
+      if(x.prazo){ a.onN++; if(x.prazo===3) a.onGood++; }
+    });
+    function face(avg){ if(avg>=2.5) return "👍"; if(avg>=1.75) return "👌"; return "👎"; }
+    list.forEach(function(v){
+      var el=document.getElementById("vn-rate-"+v.id); if(!el) return;
+      var a=agg[v.id];
+      if(!a||!a.n){ el.innerHTML='<span style="color:var(--gray3);font-weight:500">— no rating</span>'; return; }
+      var avg=a.sum/a.n, onPct=a.onN?Math.round(a.onGood/a.onN*100):null;
+      el.innerHTML='<span title="Average rating from the Site Log" style="background:#F3F0EA;border:1px solid var(--gray2);border-radius:10px;padding:1px 8px;font-weight:700">'+face(avg)+(onPct!=null?(" "+onPct+"% on time"):"")+' <span style="color:var(--gray3);font-weight:500">('+a.n+')</span></span>';
+    });
+  }catch(e){ console.warn("rating badges",e); }
+}
 
 // ===== Desempenho do fornecedor + relatório semanal =====
 function _vpFace(n){ if(!n) return "—"; if(n>=2.5) return "👍"; if(n>=1.75) return "👌"; return "👎"; }
@@ -13248,7 +13269,7 @@ function renderClients(){
       (c.phone||'').toLowerCase().includes(q)
     );
   }
-  document.getElementById('cl-count').textContent='— '+list.length+' cliente(s)';
+  document.getElementById('cl-count').textContent='— '+list.length+' client(s)';
   if(list.length===0){
     tbody.innerHTML=`<tr><td colspan="7" style="padding:24px;text-align:center;color:var(--gray3);font-style:italic">No client registered. Click <strong>+ New client</strong> to get started.</td></tr>`;
     return;
