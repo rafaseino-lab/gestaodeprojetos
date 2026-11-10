@@ -744,7 +744,7 @@ body.in-project .gtabs{display:none!important}
             </div>
           </div>
           <div class="fg" style="margin-top:10px">
-            <label>O que foi feito hoje?</label>
+            <label>What was done today?</label>
             <textarea id="dl-content" placeholder="Describe the work done, key notes, issues found, decisions made..." style="width:100%;min-height:100px;padding:10px 12px;font-size:13px;border:1.5px solid var(--gray2);border-radius:6px;outline:none;font-family:inherit;resize:vertical"></textarea>
           </div>
           <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
@@ -753,9 +753,11 @@ body.in-project .gtabs{display:none!important}
               📷 Attach photos (max 5)
               <input id="dl-photos" type="file" accept="image/*" multiple style="display:none" onchange="dlOnPhotosChange(this)">
             </label>
+            <button onclick="dlAddVendorPicker()" style="padding:7px 14px;background:#fff;color:#263238;border:1.5px solid #647078;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit">👷 Rate a vendor</button>
             <span id="dl-photos-count" style="font-size:11px;color:var(--gray3);font-style:italic"></span>
           </div>
           <div id="dl-tasks-selected" style="margin-top:10px"></div>
+          <div id="dl-vendors-selected" style="margin-top:10px"></div>
           <div id="dl-photos-preview" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"></div>
           <div style="margin-top:14px;display:flex;gap:10px;justify-content:flex-end">
             <button onclick="dlReset()" style="padding:8px 16px;background:transparent;color:#647078;border:1.5px solid var(--gray2);border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;font-family:inherit">Clear</button>
@@ -12802,11 +12804,76 @@ function renderVendors(){
         <button onclick="openVendorDocsModal('${v.id}','insurance')" style="padding:4px 10px;font-size:11px;background:#F3F0EA;border:1px solid var(--gray2);border-radius:5px;cursor:pointer">${insLabel} 🛡️</button>
       </td>
       <td style="padding:10px 12px;text-align:center">
+        <button onclick="openVendorPerf('${v.id}')" title="Performance & history" style="padding:5px 10px;font-size:11px;background:transparent;border:1px solid var(--gray2);border-radius:5px;cursor:pointer;margin-right:4px">📊</button>
         <button onclick="openVendorModal('${v.id}')" style="padding:5px 10px;font-size:11px;background:transparent;border:1px solid var(--gray2);border-radius:5px;cursor:pointer;color:var(--blue);margin-right:4px">✏️</button>
         <button onclick="deleteVendor('${v.id}')" style="padding:5px 10px;font-size:11px;background:transparent;border:1px solid var(--gray2);border-radius:5px;cursor:pointer;color:var(--p1)">🗑️</button>
       </td>
     </tr>`;
   }).join('');
+}
+
+
+// ===== Desempenho do fornecedor + relatório semanal =====
+function _vpFace(n){ if(!n) return "—"; if(n>=2.5) return "👍"; if(n>=1.75) return "👌"; return "👎"; }
+function _vpProjName(pid){ var p=(projects||[]).find(function(x){return x.id===pid;}); return p?(p.name||"—"):"—"; }
+function _vpAvg(rows,f){ var v=rows.map(function(x){return x[f];}).filter(function(n){return n;}); if(!v.length) return null; return v.reduce(function(a,b){return a+b;},0)/v.length; }
+async function _vpFetch(id){
+  var r=await sb.from("daily_log_vendors").select("prazo,qualidade,comportamento,note,log_id").eq("vendor_id",id);
+  var rows=r.data||[];
+  var ids=Array.from(new Set(rows.map(function(x){return x.log_id;})));
+  var logs={};
+  if(ids.length){ var lr=await sb.from("daily_logs").select("id,log_date,project_id").in("id",ids); (lr.data||[]).forEach(function(l){logs[l.id]=l;}); }
+  return rows.map(function(x){ var l=logs[x.log_id]||{}; return {prazo:x.prazo,qualidade:x.qualidade,comportamento:x.comportamento,note:x.note,date:l.log_date||"",project_id:l.project_id}; })
+    .sort(function(a,b){ return (b.date||"").localeCompare(a.date||""); });
+}
+async function openVendorPerf(id){
+  var v=(vendors||[]).find(function(x){return x.id===id;}); if(!v){toast("Vendor not found",false);return;}
+  var rows=await _vpFetch(id);
+  var onTime=(function(){ var p=rows.map(function(x){return x.prazo;}).filter(function(n){return n;}); if(!p.length) return null; return Math.round(p.filter(function(n){return n===3;}).length/p.length*100); })();
+  var stat=function(lbl,a){ return `<div style="flex:1;min-width:120px;background:#F3F0EA;border-radius:8px;padding:10px 12px;text-align:center"><div style="font-size:11px;color:#647078;text-transform:uppercase;letter-spacing:.4px">${lbl}</div><div style="font-size:22px;font-weight:800;color:#263238;margin-top:2px">${a}</div></div>`; };
+  var hist=rows.length? rows.map(function(x){
+    return `<div style="border-bottom:1px solid #EFEFEF;padding:9px 0"><div style="display:flex;justify-content:space-between;font-size:12px"><strong>${x.date?new Date(x.date+'T00:00:00').toLocaleDateString('en-US'):'—'}</strong><span style="color:#647078">${escHtml(_vpProjName(x.project_id))}</span></div>
+      <div style="font-size:13px;margin-top:3px">On time ${_vpFace(x.prazo)} · Quality ${_vpFace(x.qualidade)} · Behavior ${_vpFace(x.comportamento)}</div>
+      ${x.note?`<div style="font-size:12px;color:#444;margin-top:2px;font-style:italic">“${escHtml(x.note)}”</div>`:""}</div>`;
+  }).join("") : `<div style="color:#999;font-style:italic;padding:16px;text-align:center">No ratings yet. Rate this vendor in the Site Log.</div>`;
+  var m=document.createElement("div"); m.id="vp-modal";
+  m.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:flex-start;justify-content:center;padding:24px;overflow:auto";
+  m.innerHTML=`<div style="background:#fff;border-radius:12px;max-width:620px;width:100%;margin:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)">
+    <div style="background:linear-gradient(135deg,#263238,#647078);padding:16px 20px;color:#fff;display:flex;justify-content:space-between;align-items:center">
+      <div><div style="font-size:16px;font-weight:800">📊 ${escHtml(v.name||"")}</div><div style="font-size:12px;opacity:.85">${escHtml(v.specialty||"")}</div></div>
+      <button onclick="document.getElementById('vp-modal').remove()" style="background:transparent;border:1px solid rgba(255,255,255,.3);color:#fff;width:30px;height:30px;border-radius:6px;cursor:pointer">×</button>
+    </div>
+    <div style="padding:18px 20px">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px">
+        ${stat("On time", onTime==null?"—":onTime+"%")}
+        ${stat("Quality", _vpFace(_vpAvg(rows,"qualidade")))}
+        ${stat("Behavior", _vpFace(_vpAvg(rows,"comportamento")))}
+        ${stat("Ratings", rows.length)}
+      </div>
+      <button onclick="vendorWeeklyReport('${id}')" style="width:100%;margin:6px 0 14px;padding:10px;background:#CB704F;color:#fff;border:0;border-radius:8px;cursor:pointer;font-weight:700;font-family:inherit">🖨️ Weekly report (last 7 days)</button>
+      <div style="font-size:11px;font-weight:700;color:#647078;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">History</div>
+      <div style="max-height:40vh;overflow:auto">${hist}</div>
+    </div>
+  </div>`;
+  document.body.appendChild(m);
+}
+async function vendorWeeklyReport(id){
+  var v=(vendors||[]).find(function(x){return x.id===id;}); if(!v) return;
+  var rows=await _vpFetch(id);
+  var today=new Date(); var from=new Date(today.getTime()-6*86400000); var fs=from.toISOString().slice(0,10);
+  var wk=rows.filter(function(x){ return x.date && x.date>=fs; });
+  var body=wk.length? wk.map(function(x){
+    return `<tr><td>${x.date?new Date(x.date+'T00:00:00').toLocaleDateString('en-US'):'—'}</td><td>${escHtml(_vpProjName(x.project_id))}</td><td style="text-align:center">${_vpFace(x.prazo)}</td><td style="text-align:center">${_vpFace(x.qualidade)}</td><td style="text-align:center">${_vpFace(x.comportamento)}</td><td>${escHtml(x.note||"")}</td></tr>`;
+  }).join("") : `<tr><td colspan="6" style="text-align:center;color:#999;padding:16px">No records this week.</td></tr>`;
+  var html=`<!doctype html><html><head><meta charset="utf-8"><title>Weekly report — ${escHtml(v.name||"")}</title>
+  <style>body{font-family:Arial,sans-serif;color:#263238;padding:30px;max-width:820px;margin:auto}h1{font-size:20px;margin:0}h2{font-size:15px;color:#647078;margin:4px 0 0}table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px}th,td{border:1px solid #DFE4E5;padding:7px 9px;text-align:left}th{background:#F3F0EA}.muted{color:#647078;font-size:12px}</style></head>
+  <body><h1>Weekly Vendor Report</h1><h2>${escHtml(v.name||"")}${v.specialty?(" · "+escHtml(v.specialty)):""}</h2>
+  <div class="muted" style="margin-top:6px">Period: ${new Date(fs+'T00:00:00').toLocaleDateString('en-US')} – ${today.toLocaleDateString('en-US')} · 👍 Good · 👌 OK · 👎 Bad</div>
+  <table><thead><tr><th>Date</th><th>Project</th><th>On time</th><th>Quality</th><th>Behavior</th><th>Note</th></tr></thead><tbody>${body}</tbody></table>
+  <p class="muted" style="margin-top:18px">Generated by Project Management · ${today.toLocaleDateString('en-US')}</p>
+  <script>window.onload=function(){setTimeout(function(){window.print();},300);};<\/script></body></html>`;
+  var w=window.open("","_blank","width=900,height=1000"); if(!w){toast("Allow pop-ups to generate the report",false);return;}
+  w.document.write(html); w.document.close();
 }
 
 function openVendorModal(id){
@@ -17850,6 +17917,83 @@ function dlRemoveNewPhoto(i){
   dlRenderPhotosPreview();
 }
 
+
+// ===== Diário: avaliação de fornecedor do dia (prazo/qualidade/comportamento) =====
+let _dlVendorRatings=[];
+function _dlVName(id){ var v=(vendors||[]).find(function(x){return x.id===id}); return v?(v.name||"Vendor"):"Vendor"; }
+function dlAddVendorPicker(){
+  if(!vendors||vendors.length===0){ toast("No vendor registered yet. Add one in Vendors first.",false); return; }
+  var used=new Set(_dlVendorRatings.map(function(r){return r.vendor_id;}));
+  var avail=vendors.slice().sort(function(a,b){return (a.name||"").localeCompare(b.name||"");}).filter(function(v){return !used.has(v.id);});
+  if(avail.length===0){ toast("All vendors are already on this entry.",false); return; }
+  var opts=avail.map(function(v){return `<option value="${v.id}">${escHtml(v.name||"")}${v.specialty?(" · "+escHtml(v.specialty)):""}</option>`;}).join("");
+  var m=document.createElement("div"); m.id="dl-vpick";
+  m.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px";
+  m.innerHTML=`<div style="background:#fff;border-radius:12px;max-width:440px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3)">
+    <div style="background:linear-gradient(135deg,#263238,#647078);padding:14px 18px;color:#fff;font-size:14px;font-weight:800">👷 Which vendor worked today?</div>
+    <div style="padding:18px">
+      <select id="dl-vpick-sel" style="width:100%;padding:10px 12px;font-size:14px;border:1.5px solid var(--gray2);border-radius:6px;font-family:inherit">${opts}</select>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px">
+        <button onclick="document.getElementById('dl-vpick').remove()" style="padding:8px 16px;background:transparent;color:#647078;border:1.5px solid var(--gray2);border-radius:6px;cursor:pointer;font-weight:600;font-family:inherit">Cancel</button>
+        <button onclick="dlAddVendor(document.getElementById('dl-vpick-sel').value)" style="padding:8px 20px;background:linear-gradient(135deg,#263238,#647078);color:#fff;border:0;border-radius:6px;cursor:pointer;font-weight:700;font-family:inherit">Add</button>
+      </div>
+    </div>
+  </div>`;
+  document.body.appendChild(m);
+}
+function dlAddVendor(id){
+  if(!id) return;
+  if(!_dlVendorRatings.find(function(r){return r.vendor_id===id;})) _dlVendorRatings.push({vendor_id:id,name:_dlVName(id),prazo:0,qualidade:0,comportamento:0,note:""});
+  var el=document.getElementById("dl-vpick"); if(el) el.remove();
+  dlRenderVendorsRatings();
+}
+function dlSetRating(i,field,val){ if(_dlVendorRatings[i]){ _dlVendorRatings[i][field]=(_dlVendorRatings[i][field]===val?0:val); dlRenderVendorsRatings(); } }
+function dlSetVendorNote(i,val){ if(_dlVendorRatings[i]) _dlVendorRatings[i].note=val; }
+function dlRemoveVendor(i){ _dlVendorRatings.splice(i,1); dlRenderVendorsRatings(); }
+function _dlRateBtns(i,field,cur){
+  return [[3,"👍","#237A50"],[2,"👌","#CB704F"],[1,"👎","#B33F36"]].map(function(o){
+    var on=cur===o[0];
+    return `<button onclick="dlSetRating(${i},'${field}',${o[0]})" title="${o[0]===3?'Good':(o[0]===2?'OK':'Bad')}" style="font-size:17px;line-height:1;padding:3px 7px;border-radius:6px;cursor:pointer;border:1.5px solid ${on?o[2]:'#DFE4E5'};background:${on?'#fff':'#fff'};filter:${on?'none':'grayscale(0.7) opacity(0.5)'}">${o[1]}</button>`;
+  }).join("");
+}
+function dlRenderVendorsRatings(){
+  var el=document.getElementById("dl-vendors-selected"); if(!el) return;
+  if(_dlVendorRatings.length===0){ el.innerHTML=""; return; }
+  el.innerHTML=`<div style="padding:10px 12px;background:#EEF1F0;border-left:3px solid #647078;border-radius:5px">
+    <div style="font-size:11px;font-weight:700;color:#4a5560;letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px">👷 Vendors rated today</div>`
+   + _dlVendorRatings.map(function(r,i){
+     return `<div style="background:#fff;border:1px solid #DFE4E5;border-radius:8px;padding:10px;margin-bottom:8px">
+       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><strong style="font-size:13px;color:#263238">${escHtml(r.name)}</strong>
+       <button onclick="dlRemoveVendor(${i})" style="background:transparent;border:0;color:#B33F36;font-size:17px;cursor:pointer;line-height:1">×</button></div>
+       <div style="display:flex;gap:18px;flex-wrap:wrap">
+         <div style="font-size:11px;color:#647078">On time<div style="display:flex;gap:4px;margin-top:3px">${_dlRateBtns(i,"prazo",r.prazo)}</div></div>
+         <div style="font-size:11px;color:#647078">Quality<div style="display:flex;gap:4px;margin-top:3px">${_dlRateBtns(i,"qualidade",r.qualidade)}</div></div>
+         <div style="font-size:11px;color:#647078">Behavior<div style="display:flex;gap:4px;margin-top:3px">${_dlRateBtns(i,"comportamento",r.comportamento)}</div></div>
+       </div>
+       <input value="${(r.note||'').replace(/"/g,'&quot;')}" oninput="dlSetVendorNote(${i},this.value)" placeholder="Quick note (e.g. arrived late, did little)" style="width:100%;margin-top:8px;padding:6px 9px;font-size:12px;border:1px solid var(--gray2);border-radius:5px;font-family:inherit">
+     </div>`;
+   }).join("")
+   + `</div>`;
+}
+async function dlSaveVendorRatings(logId){
+  if(!logId) return;
+  try{
+    await sb.from("daily_log_vendors").delete().eq("log_id",logId);
+    var rows=_dlVendorRatings.filter(function(r){return r.vendor_id;}).map(function(r){
+      return {log_id:logId, project_id:CID, vendor_id:r.vendor_id, prazo:r.prazo||null, qualidade:r.qualidade||null, comportamento:r.comportamento||null, note:(r.note||"").trim()||null};
+    });
+    if(rows.length) await sb.from("daily_log_vendors").insert(rows);
+  }catch(e){ console.warn("save vendor ratings",e); }
+}
+async function dlLoadVendorRatings(logId){
+  _dlVendorRatings=[];
+  try{
+    var r=await sb.from("daily_log_vendors").select("vendor_id,prazo,qualidade,comportamento,note").eq("log_id",logId);
+    (r.data||[]).forEach(function(x){ _dlVendorRatings.push({vendor_id:x.vendor_id,name:_dlVName(x.vendor_id),prazo:x.prazo||0,qualidade:x.qualidade||0,comportamento:x.comportamento||0,note:x.note||""}); });
+  }catch(e){}
+  dlRenderVendorsRatings();
+}
+
 function dlReset(){
   const today=new Date().toISOString().slice(0,10);
   document.getElementById('dl-date').value=today;
@@ -17857,8 +18001,10 @@ function dlReset(){
   _dlSelectedTasks=[];
   _dlNewPhotos=[];
   _dlEditingId=null;
+  _dlVendorRatings=[];
   dlRenderSelectedTasks();
   dlRenderPhotosPreview();
+  dlRenderVendorsRatings();
 }
 
 function dlEditEntry(id){
@@ -17870,6 +18016,7 @@ function dlEditEntry(id){
   _dlSelectedTasks=Array.isArray(e.tasks_done)?[...e.tasks_done]:[];
   _dlNewPhotos=[]; // photos are added separately; existing photos remain
   _dlEditingId=id;
+  dlLoadVendorRatings(id);
   dlRenderSelectedTasks();
   dlRenderPhotosPreview();
   // Scroll to form
@@ -17930,6 +18077,8 @@ async function dlSaveEntry(){
     }
     logId=data.id;
   }
+  // Save vendor ratings for this entry
+  await dlSaveVendorRatings(logId);
   // Upload new photos (if any)
   if(_dlNewPhotos.length>0 && logId){
     const startPos=(_dlPhotosByLog[logId]||[]).length;
