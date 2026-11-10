@@ -15105,48 +15105,94 @@ const STD_STAGES=[
  {id:'co',         label:'Final Inspection / CO'},
  {id:'punch',      label:'Punch List & Closeout'},
 ];
-function _projConstrStage(){ var p=(projects||[]).find(function(x){return x.id===CID;})||{}; return p.constr_stage||''; }
-async function setConstrStage(id){
+function _projGantt(){ var p=(projects||[]).find(function(x){return x.id===CID;})||{}; var g=p.constr_gantt; return (g&&typeof g==='object')?g:{}; }
+function _cgParse(d){ if(!d) return null; var t=Date.parse(d+'T12:00:00'); return isNaN(t)?null:new Date(t); }
+function _cgDays(a,b){ return Math.round((b-a)/86400000); }
+function _cgFmtMon(d){ return d.toLocaleDateString('en-US',{month:'short',year:'2-digit'}); }
+async function setConstrDate(stageId, which, val){
   if(!CID) return;
-  var i=(projects||[]).findIndex(function(x){return x.id===CID;});
-  if(i>=0) projects[i].constr_stage=id;
+  var i=(projects||[]).findIndex(function(x){return x.id===CID;}); if(i<0) return;
+  var g=Object.assign({}, projects[i].constr_gantt||{});
+  var cur=Object.assign({}, g[stageId]||{});
+  cur[which]=val||null;
+  if(!cur.s && !cur.e){ delete g[stageId]; } else { g[stageId]=cur; }
+  projects[i].constr_gantt=g;
   renderConstructionStages();
-  try{ await sb.from('projects').update({constr_stage:id}).eq('id',CID); if(typeof showSaved==='function') showSaved(); }catch(e){ console.warn('constr_stage',e); }
+  try{ await sb.from('projects').update({constr_gantt:g}).eq('id',CID); if(typeof showSaved==='function') showSaved(); }catch(e){ console.warn('constr_gantt',e); }
 }
-async function clearConstrStage(){
+async function clearConstrGantt(){
   if(!CID) return;
-  var i=(projects||[]).findIndex(function(x){return x.id===CID;}); if(i>=0) projects[i].constr_stage='';
+  if(!confirm('Clear all construction phase dates for this project?')) return;
+  var i=(projects||[]).findIndex(function(x){return x.id===CID;}); if(i<0) return;
+  projects[i].constr_gantt={};
   renderConstructionStages();
-  try{ await sb.from('projects').update({constr_stage:null}).eq('id',CID); }catch(e){}
+  try{ await sb.from('projects').update({constr_gantt:{}}).eq('id',CID); }catch(e){}
 }
 function renderConstructionStages(){
   var el=document.getElementById('d-constr'); if(!el) return;
-  var cur=_projConstrStage();
-  var idx=STD_STAGES.findIndex(function(st){return st.id===cur;});
-  var total=STD_STAGES.length;
-  var pct = idx<0 ? 0 : Math.round(((idx+0.5)/total)*100);
-  var segs=STD_STAGES.map(function(st,i){
-    var state = idx<0 ? 'future' : (i<idx?'done':(i===idx?'current':'future'));
-    var bg = state==='done'?'#237A50':(state==='current'?'#CB704F':'#E3E6E4');
-    var col = state==='future'?'#8A959C':'#fff';
-    var ring = state==='current'?'box-shadow:0 0 0 3px rgba(203,112,79,.25);':'';
-    return '<button onclick="setConstrStage(\''+st.id+'\')" title="'+st.label.replace(/"/g,'&quot;')+'" '
-      +'style="flex:1 1 90px;min-width:84px;border:0;cursor:pointer;background:'+bg+';color:'+col+';'+ring
-      +'padding:9px 6px;border-radius:7px;font-family:inherit;font-size:11px;font-weight:700;line-height:1.2;display:flex;flex-direction:column;gap:3px;align-items:center;text-align:center">'
-      +'<span style="font-size:10px;opacity:.85">'+(i+1)+'</span>'
-      +'<span>'+st.label+'</span>'
-      +(state==='current'?'<span style="font-size:8.5px;background:rgba(255,255,255,.25);padding:1px 6px;border-radius:10px;margin-top:1px">IN PROGRESS</span>':'')
-      +'</button>';
+  var data=_projGantt();
+  var proj=(projects||[]).find(function(x){return x.id===CID;})||{};
+  var today=new Date(); today.setHours(12,0,0,0);
+  var all=[];
+  STD_STAGES.forEach(function(st){ var d=data[st.id]||{}; var s=_cgParse(d.s), e=_cgParse(d.e); if(s)all.push(+s); if(e)all.push(+e); });
+  var minD,maxD;
+  if(all.length){ minD=new Date(Math.min.apply(null,all)); maxD=new Date(Math.max.apply(null,all)); }
+  else { minD=_cgParse(proj.start_date)||new Date(today); maxD=_cgParse(proj.end_date)||new Date(today.getTime()+180*86400000); }
+  if(today<minD) minD=new Date(today);
+  if(today>maxD) maxD=new Date(today);
+  minD=new Date(minD.getFullYear(),minD.getMonth(),1,12);
+  maxD=new Date(maxD.getFullYear(),maxD.getMonth()+1,0,12);
+  var span=Math.max(1,_cgDays(minD,maxD));
+  var months=[]; var mc=new Date(minD.getFullYear(),minD.getMonth(),1,12);
+  while(mc<=maxD){
+    var mEnd=new Date(mc.getFullYear(),mc.getMonth()+1,0,12);
+    var segS=mc<minD?minD:mc, segE=mEnd>maxD?maxD:mEnd;
+    months.push({label:_cgFmtMon(mc), left:_cgDays(minD,segS)/span*100, width:(_cgDays(segS,segE)+1)/span*100, boundary:_cgDays(minD,mc)/span*100});
+    mc=new Date(mc.getFullYear(),mc.getMonth()+1,1,12);
+  }
+  var todayPct = (today>=minD&&today<=maxD)?(_cgDays(minD,today)/span*100):null;
+  var LBL=330;
+  function grid(){
+    return months.map(function(m){ return m.boundary>0?'<div style="position:absolute;top:0;bottom:0;left:'+m.boundary+'%;width:1px;background:#EBEFEC"></div>':''; }).join('')
+      + (todayPct!=null?'<div style="position:absolute;top:0;bottom:0;left:'+todayPct+'%;width:2px;background:#CB704F;z-index:2"></div>':'');
+  }
+  var head='<div style="display:flex;align-items:flex-end;margin-bottom:2px">'
+    +'<div style="width:'+LBL+'px;flex-shrink:0"></div>'
+    +'<div style="flex:1;position:relative;height:16px;min-width:360px">'+months.map(function(m){return '<div style="position:absolute;left:'+m.left+'%;width:'+m.width+'%;font-size:10px;color:var(--gray3);text-align:center;border-left:1px solid #EBEFEC;overflow:hidden">'+m.label+'</div>';}).join('')+'</div></div>';
+  var rowH=30;
+  var rows=STD_STAGES.map(function(st){
+    var d=data[st.id]||{}; var s=_cgParse(d.s), e=_cgParse(d.e);
+    var bar='';
+    if(s&&e&&e>=s){
+      var left=_cgDays(minD,s)/span*100, width=Math.max(1.2,(_cgDays(s,e)+1)/span*100);
+      var state = e<today?'done':(s<=today?'current':'future');
+      var bg = state==='done'?'#237A50':(state==='current'?'#CB704F':'#8FA8B8');
+      bar='<div title="'+st.label.replace(/"/g,"&quot;")+': '+(d.s||'')+' to '+(d.e||'')+'" style="position:absolute;top:6px;height:'+(rowH-14)+'px;left:'+left+'%;width:'+width+'%;background:'+bg+';border-radius:5px;min-width:6px;z-index:1"></div>';
+    }
+    return '<div style="display:flex;align-items:center;height:'+rowH+'px">'
+      +'<div style="width:'+LBL+'px;flex-shrink:0;display:flex;align-items:center;gap:4px">'
+        +'<span style="flex:1;font-size:11px;font-weight:600;color:#263238;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="'+st.label.replace(/"/g,"&quot;")+'">'+st.label+'</span>'
+        +'<input type="date" value="'+(d.s||'')+'" onchange="setConstrDate(\''+st.id+'\',\'s\',this.value)" title="Start" style="font-size:9px;padding:2px 2px;border:1px solid var(--gray2);border-radius:4px;width:86px">'
+        +'<input type="date" value="'+(d.e||'')+'" onchange="setConstrDate(\''+st.id+'\',\'e\',this.value)" title="End" style="font-size:9px;padding:2px 2px;border:1px solid var(--gray2);border-radius:4px;width:86px">'
+      +'</div>'
+      +'<div style="flex:1;position:relative;height:'+rowH+'px;border-bottom:1px solid #F3F5F4;min-width:360px">'+grid()+bar+'</div>'
+    +'</div>';
   }).join('');
+  var inprog=STD_STAGES.filter(function(st){var dd=data[st.id]||{};var s=_cgParse(dd.s),e=_cgParse(dd.e);return s&&e&&s<=today&&e>=today;});
   el.innerHTML='<div class="card" style="margin-top:16px">'
-    +'<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px">'
-      +'<div class="card-title" style="margin:0;border:0;padding:0">🏗️ Construction stage</div>'
-      +'<div style="font-size:12px;color:var(--gray3)">'+(idx<0?'Click the stage the build is in':('Current: <strong style="color:#CB704F">'+STD_STAGES[idx].label+'</strong> ('+(idx+1)+' of '+total+')'))+'</div>'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px">'
+      +'<div class="card-title" style="margin:0;border:0;padding:0">🏗️ Construction schedule (Gantt)</div>'
+      +'<div style="font-size:12px;color:var(--gray3)">'+(inprog.length?('In progress now: <strong style="color:#CB704F">'+inprog.map(function(st){return st.label;}).join(', ')+'</strong>'):'Set a start & end date per phase →')+'</div>'
     +'</div>'
-    +'<div style="background:var(--gray2);border-radius:5px;height:10px;overflow:hidden;margin-bottom:4px"><div style="height:100%;border-radius:5px;background:#237A50;width:'+pct+'%"></div></div>'
-    +'<div style="font-size:11px;color:var(--gray3);margin-bottom:12px">'+pct+'% of the build complete</div>'
-    +'<div style="display:flex;flex-wrap:wrap;gap:6px">'+segs+'</div>'
-    +'<div style="margin-top:10px;font-size:11px;color:var(--gray3)">Tap the stage the work is currently in — earlier stages turn green. '+(idx>=0?'<a href="javascript:void(0)" onclick="clearConstrStage()" style="color:#CB704F">Reset</a>':'')+'</div>'
+    +'<div style="overflow-x:auto">'+head+rows+'</div>'
+    +'<div style="margin-top:10px;font-size:11px;color:var(--gray3);display:flex;gap:14px;flex-wrap:wrap;align-items:center">'
+      +'<span><span style="display:inline-block;width:11px;height:11px;background:#237A50;border-radius:2px;vertical-align:middle"></span> Done</span>'
+      +'<span><span style="display:inline-block;width:11px;height:11px;background:#CB704F;border-radius:2px;vertical-align:middle"></span> In progress</span>'
+      +'<span><span style="display:inline-block;width:11px;height:11px;background:#8FA8B8;border-radius:2px;vertical-align:middle"></span> Upcoming</span>'
+      +'<span style="color:#CB704F;font-weight:700">| Today</span>'
+      +'<a href="javascript:void(0)" onclick="clearConstrGantt()" style="color:#CB704F;margin-left:auto">Clear dates</a>'
+    +'</div>'
+    +'<div style="margin-top:6px;font-size:11px;color:var(--gray3)">Phases can overlap — set dates that run in parallel and the bars will stack.</div>'
   +'</div>';
 }
 function renderDashboard(){
