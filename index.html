@@ -583,13 +583,14 @@ body.in-project .gtabs{display:none!important}
         <div id="d-baseline"></div>
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-bottom:16px">
           <div class="kpi" style="display:none"><label>Schedule</label><div class="val" id="d-sched">0%</div></div>
-          <div class="kpi kp"><label><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>Estimado</label><div class="val" id="d-est">$0</div></div>
+          <div class="kpi kp"><label><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>Estimated</label><div class="val" id="d-est">$0</div></div>
           <div class="kpi ko"><label><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"/><path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4z"/></svg>Real costs</label><div class="val" id="d-actual">$0</div></div>
           <div class="kpi" id="d-var-kpi"><label><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px"><line x1="12" x2="12" y1="20" y2="10"/><line x1="18" x2="18" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="16"/></svg>Variance</label><div class="val" id="d-var">$0</div><small id="d-var-lbl"></small></div>
         </div>
         <div class="two-col" style="grid-template-columns:1fr">
           <div class="card"><div class="card-title">Budget overview</div><div class="chart-wrap"><canvas id="d-chart"></canvas></div></div>
         </div>
+        <div id="d-constr"></div>
         <!-- Fases/Cronograma removidos da visão — ids mantidos ocultos p/ não quebrar o JS -->
         <div style="display:none">
           <div id="d-phases"></div>
@@ -15083,6 +15084,70 @@ async function applyBudgetAsBaseline(){
   renderBaselineAnalysis(p);
 }
 
+// ═══ CONSTRUCTION STAGE (Florida new-construction) — Gantt-style tracker ═══
+const STD_STAGES=[
+ {id:'permits',    label:'Permits & Plans'},
+ {id:'site',       label:'Site Work & Clearing'},
+ {id:'foundation', label:'Foundation / Slab'},
+ {id:'framing',    label:'Framing'},
+ {id:'roof',       label:'Roof Dry-in'},
+ {id:'roughin',    label:'Rough-ins (Plumb/Elec/HVAC)'},
+ {id:'windows',    label:'Windows & Doors'},
+ {id:'insulation', label:'Insulation'},
+ {id:'drywall',    label:'Drywall'},
+ {id:'trim_paint', label:'Interior Trim & Paint'},
+ {id:'cabinets',   label:'Cabinets & Countertops'},
+ {id:'flooring',   label:'Flooring'},
+ {id:'final_mep',  label:'Final MEP / Fixtures'},
+ {id:'flatwork',   label:'Driveway & Flatwork'},
+ {id:'landscape',  label:'Landscaping'},
+ {id:'co',         label:'Final Inspection / CO'},
+ {id:'punch',      label:'Punch List & Closeout'},
+];
+function _projConstrStage(){ var p=(projects||[]).find(function(x){return x.id===CID;})||{}; return p.constr_stage||''; }
+async function setConstrStage(id){
+  if(!CID) return;
+  var i=(projects||[]).findIndex(function(x){return x.id===CID;});
+  if(i>=0) projects[i].constr_stage=id;
+  renderConstructionStages();
+  try{ await sb.from('projects').update({constr_stage:id}).eq('id',CID); if(typeof showSaved==='function') showSaved(); }catch(e){ console.warn('constr_stage',e); }
+}
+async function clearConstrStage(){
+  if(!CID) return;
+  var i=(projects||[]).findIndex(function(x){return x.id===CID;}); if(i>=0) projects[i].constr_stage='';
+  renderConstructionStages();
+  try{ await sb.from('projects').update({constr_stage:null}).eq('id',CID); }catch(e){}
+}
+function renderConstructionStages(){
+  var el=document.getElementById('d-constr'); if(!el) return;
+  var cur=_projConstrStage();
+  var idx=STD_STAGES.findIndex(function(st){return st.id===cur;});
+  var total=STD_STAGES.length;
+  var pct = idx<0 ? 0 : Math.round(((idx+0.5)/total)*100);
+  var segs=STD_STAGES.map(function(st,i){
+    var state = idx<0 ? 'future' : (i<idx?'done':(i===idx?'current':'future'));
+    var bg = state==='done'?'#237A50':(state==='current'?'#CB704F':'#E3E6E4');
+    var col = state==='future'?'#8A959C':'#fff';
+    var ring = state==='current'?'box-shadow:0 0 0 3px rgba(203,112,79,.25);':'';
+    return '<button onclick="setConstrStage(\''+st.id+'\')" title="'+st.label.replace(/"/g,'&quot;')+'" '
+      +'style="flex:1 1 90px;min-width:84px;border:0;cursor:pointer;background:'+bg+';color:'+col+';'+ring
+      +'padding:9px 6px;border-radius:7px;font-family:inherit;font-size:11px;font-weight:700;line-height:1.2;display:flex;flex-direction:column;gap:3px;align-items:center;text-align:center">'
+      +'<span style="font-size:10px;opacity:.85">'+(i+1)+'</span>'
+      +'<span>'+st.label+'</span>'
+      +(state==='current'?'<span style="font-size:8.5px;background:rgba(255,255,255,.25);padding:1px 6px;border-radius:10px;margin-top:1px">IN PROGRESS</span>':'')
+      +'</button>';
+  }).join('');
+  el.innerHTML='<div class="card" style="margin-top:16px">'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px">'
+      +'<div class="card-title" style="margin:0;border:0;padding:0">🏗️ Construction stage</div>'
+      +'<div style="font-size:12px;color:var(--gray3)">'+(idx<0?'Click the stage the build is in':('Current: <strong style="color:#CB704F">'+STD_STAGES[idx].label+'</strong> ('+(idx+1)+' of '+total+')'))+'</div>'
+    +'</div>'
+    +'<div style="background:var(--gray2);border-radius:5px;height:10px;overflow:hidden;margin-bottom:4px"><div style="height:100%;border-radius:5px;background:#237A50;width:'+pct+'%"></div></div>'
+    +'<div style="font-size:11px;color:var(--gray3);margin-bottom:12px">'+pct+'% of the build complete</div>'
+    +'<div style="display:flex;flex-wrap:wrap;gap:6px">'+segs+'</div>'
+    +'<div style="margin-top:10px;font-size:11px;color:var(--gray3)">Tap the stage the work is currently in — earlier stages turn green. '+(idx>=0?'<a href="javascript:void(0)" onclick="clearConstrStage()" style="color:#CB704F">Reset</a>':'')+'</div>'
+  +'</div>';
+}
 function renderDashboard(){
   if(!CID) return;
   const p=projects.find(x=>x.id===CID); if(!p) return;
@@ -16181,7 +16246,7 @@ function sp(id,el,cls){
   document.querySelectorAll('.sb-lnk').forEach(a=>a.classList.remove('active','s1','s2','s3','s4'));
   document.getElementById('page-'+id).classList.add('active');
   if(el){el.classList.add('active');if(cls)el.classList.add(cls);}
-  if(id==='dash') renderDashboard();
+  if(id==='dash'){ renderDashboard(); try{renderConstructionStages();}catch(e){} }
   if(id==='gantt') renderGantt();
   if(id==='cmp') renderComparison();
   if(id==='info') renderPropertyResearchButtons('pf-research',false);
