@@ -5338,8 +5338,9 @@ function buildBudgetRooms(){
     card.className='broom-card';
     card.innerHTML=`<table class="bitbl"><thead><tr><th style="width:240px">Item</th><th style="width:155px">Categoria</th><th style="width:110px">Vendor</th><th style="width:55px">Qty</th><th style="width:90px">Unit cost ($)</th><th style="width:100px">Budgeted value ($)</th><th style="width:110px">Notas</th><th style="width:40px"></th></tr></thead><tbody id="tb-est-all"></tbody></table>
       <div style="padding:10px 15px;background:#F3F0EA;border-top:1px solid #DFE4E5">
-        <button class="btn btn-ghost" style="font-size:12px;padding:6px 12px" onclick="addItem('est')">+ Adicionar item</button>
+        <button class="btn btn-ghost" style="font-size:12px;padding:6px 12px" onclick="addItem('est')">+ Add item</button>
         <button class="btn" style="font-size:12px;padding:6px 12px;margin-left:8px;background:var(--kf-gold,#CB704F);color:#183541;border:0;border-radius:6px;cursor:pointer;font-weight:700" onclick="estimateBudgetAI()">✨ Estimate with AI</button>
+        <button class="btn" style="font-size:12px;padding:6px 12px;margin-left:8px;background:#263238;color:#fff;border:0;border-radius:6px;cursor:pointer;font-weight:700" onclick="openLancarModal(CID)">📤 Post bill</button>
       </div>`;
     estC.appendChild(card);
     renderEstimateFlat();
@@ -5353,7 +5354,8 @@ function buildBudgetRooms(){
     const thead=`<thead><tr><th style="width:240px">Item</th><th style="width:155px">Categoria</th><th style="width:100px">Vendor</th><th style="width:120px">Real costs ($)</th><th style="width:120px">Notas</th><th style="width:60px;text-align:center">📎</th><th style="width:40px"></th></tr></thead>`;
     card.innerHTML=`<table class="bitbl">${thead}<tbody id="tb-act-all"></tbody></table>
       <div style="padding:10px 15px;background:#F3F0EA;border-top:1px solid #DFE4E5">
-        <button class="btn btn-ghost" style="font-size:12px;padding:6px 12px" onclick="addItem('act')">+ Adicionar item</button>
+        <button class="btn btn-ghost" style="font-size:12px;padding:6px 12px" onclick="addItem('act')">+ Add item</button>
+        <button class="btn" style="font-size:12px;padding:6px 12px;margin-left:8px;background:#263238;color:#fff;border:0;border-radius:6px;cursor:pointer;font-weight:700" onclick="openLancarModal(CID)">📤 Post bill (AI reads the invoice)</button>
       </div>`;
     actC.appendChild(card);
     renderActualFlat();
@@ -15844,7 +15846,7 @@ async function lancarUploadFile(input){
     if(st){st.textContent='✓ lido: '+(d.vendor||'—')+' · '+fmtc(d.total);st.style.color='#237A50';}
   }catch(e){ if(st){st.textContent='⚠ não consegui ler — preencha manual';st.style.color='#C0392B';} _lcUpload=null; }
 }
-async function openLancarModal(){
+async function openLancarModal(preProj){
   if(!isCEO()) return;
   _lcUpload=null;
   try{ await loadFinData(); }catch(e){}
@@ -15897,6 +15899,11 @@ async function openLancarModal(){
   </div>`;
   m.classList.add('open');
   _lancarDestChange();
+  if(preProj){
+    var ds=document.getElementById('lc-dest'); if(ds) ds.value='obra';
+    _lancarDestChange();
+    var pp=document.getElementById('lc-proj'); if(pp) pp.value=preProj;
+  }
 }
 function _lancarDestChange(){
   const d=(document.getElementById('lc-dest')||{}).value;
