@@ -617,7 +617,7 @@ body.in-project .gtabs{display:none!important}
           <select id="act-vendor-filter" onchange="onActVendorFilterChange()" style="padding:6px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:6px;outline:none;background:#fff;font-family:inherit;cursor:pointer;min-width:220px;flex:1;max-width:300px">
             <option value="">— Todos os fornecedores —</option>
           </select>
-          <button id="act-vendor-clear" onclick="clearActVendorFilter()" style="display:none;padding:6px 12px;font-size:12px;background:#fff;border:1px solid var(--gray2);border-radius:6px;cursor:pointer;color:#C62B2B">✕ Limpar</button>
+          <button id="act-vendor-clear" onclick="clearActVendorFilter()" style="display:none;padding:6px 12px;font-size:12px;background:#fff;border:1px solid var(--gray2);border-radius:6px;cursor:pointer;color:#C62B2B">✕ Clear</button>
           <span id="act-vendor-count" style="font-size:11px;color:var(--gray3);font-style:italic"></span>
         </div>
 
@@ -1372,7 +1372,7 @@ body.in-project .gtabs{display:none!important}
           <select id="rcd-vendor-filter" onchange="onRcdVendorFilterChange()" style="padding:6px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:6px;outline:none;background:#fff;font-family:inherit;cursor:pointer;min-width:220px;flex:1;max-width:300px">
             <option value="">— Todos os fornecedores —</option>
           </select>
-          <button id="rcd-vendor-clear" onclick="clearRcdVendorFilter()" style="display:none;padding:6px 12px;font-size:12px;background:#fff;border:1px solid var(--gray2);border-radius:6px;cursor:pointer;color:#C62B2B">✕ Limpar</button>
+          <button id="rcd-vendor-clear" onclick="clearRcdVendorFilter()" style="display:none;padding:6px 12px;font-size:12px;background:#fff;border:1px solid var(--gray2);border-radius:6px;cursor:pointer;color:#C62B2B">✕ Clear</button>
           <span id="rcd-vendor-count" style="font-size:11px;color:var(--gray3);font-style:italic"></span>
         </div>
 
@@ -1403,37 +1403,38 @@ body.in-project .gtabs{display:none!important}
         <div class="card">
           <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:14px">
             <div class="card-title" style="margin:0;border:0;padding:0"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>Monthly entries
-              <span style="font-weight:500;text-transform:none;font-size:11px;color:var(--gray3);margin-left:8px">— 48 meses (4 anos)</span>
+              <span style="font-weight:500;text-transform:none;font-size:11px;color:var(--gray3);margin-left:8px">— 48 months (4 years)</span>
             </div>
             <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
               <div style="display:flex;align-items:center;gap:6px">
-                <label style="font-size:11px;font-weight:700;color:var(--gray3);text-transform:uppercase">Ano 1</label>
+                <label style="font-size:11px;font-weight:700;color:var(--gray3);text-transform:uppercase">Year 1</label>
                 <input id="rcd-year1" type="number" min="2000" max="2100" placeholder="2026" oninput="onRCYearChange()" style="padding:5px 8px;font-size:13px;border:1.5px solid var(--gray2);border-radius:6px;outline:none;width:80px;text-align:center">
               </div>
               <div style="display:flex;align-items:center;gap:6px">
-                <label style="font-size:11px;font-weight:700;color:var(--gray3);text-transform:uppercase">Ano 2</label>
+                <label style="font-size:11px;font-weight:700;color:var(--gray3);text-transform:uppercase">Year 2</label>
                 <input id="rcd-year2" type="number" min="2000" max="2100" placeholder="2027" oninput="onRCYearChange()" style="padding:5px 8px;font-size:13px;border:1.5px solid var(--gray2);border-radius:6px;outline:none;width:80px;text-align:center">
               </div>
               <div style="display:flex;align-items:center;gap:6px">
-                <label style="font-size:11px;font-weight:700;color:var(--gray3);text-transform:uppercase">Ano 3</label>
+                <label style="font-size:11px;font-weight:700;color:var(--gray3);text-transform:uppercase">Year 3</label>
                 <input id="rcd-year3" type="number" min="2000" max="2100" placeholder="2028" oninput="onRCYearChange()" style="padding:5px 8px;font-size:13px;border:1.5px solid var(--gray2);border-radius:6px;outline:none;width:80px;text-align:center">
               </div>
               <div style="display:flex;align-items:center;gap:6px">
-                <label style="font-size:11px;font-weight:700;color:var(--gray3);text-transform:uppercase">Ano 4</label>
+                <label style="font-size:11px;font-weight:700;color:var(--gray3);text-transform:uppercase">Year 4</label>
                 <input id="rcd-year4" type="number" min="2000" max="2100" placeholder="2029" oninput="onRCYearChange()" style="padding:5px 8px;font-size:13px;border:1.5px solid var(--gray2);border-radius:6px;outline:none;width:80px;text-align:center">
               </div>
-              <div style="font-size:13px;font-weight:700;color:var(--p3)">Total Geral: <span id="rcd-grand-total">$0</span></div>
+              <div style="font-size:13px;font-weight:700;color:var(--p3)">Grand Total: <span id="rcd-grand-total">$0</span></div>
             </div>
           </div>
 
           <!-- Year Tabs -->
           <div id="rcd-tabs" style="display:flex;gap:4px;margin-bottom:14px;border-bottom:2px solid #DFE4E5;flex-wrap:wrap">
-            <button class="rcd-tab" data-year="0" onclick="setRCDActiveYear(0)" style="padding:8px 16px;font-size:13px;font-weight:700;background:transparent;border:0;border-bottom:3px solid transparent;cursor:pointer;color:var(--gray3);transition:all .15s">Ano 1 <span id="rcd-tab-sub-0" style="font-size:11px;font-weight:500;color:var(--gray3);margin-left:4px"></span></button>
-            <button class="rcd-tab" data-year="1" onclick="setRCDActiveYear(1)" style="padding:8px 16px;font-size:13px;font-weight:700;background:transparent;border:0;border-bottom:3px solid transparent;cursor:pointer;color:var(--gray3);transition:all .15s">Ano 2 <span id="rcd-tab-sub-1" style="font-size:11px;font-weight:500;color:var(--gray3);margin-left:4px"></span></button>
-            <button class="rcd-tab" data-year="2" onclick="setRCDActiveYear(2)" style="padding:8px 16px;font-size:13px;font-weight:700;background:transparent;border:0;border-bottom:3px solid transparent;cursor:pointer;color:var(--gray3);transition:all .15s">Ano 3 <span id="rcd-tab-sub-2" style="font-size:11px;font-weight:500;color:var(--gray3);margin-left:4px"></span></button>
-            <button class="rcd-tab" data-year="3" onclick="setRCDActiveYear(3)" style="padding:8px 16px;font-size:13px;font-weight:700;background:transparent;border:0;border-bottom:3px solid transparent;cursor:pointer;color:var(--gray3);transition:all .15s">Ano 4 <span id="rcd-tab-sub-3" style="font-size:11px;font-weight:500;color:var(--gray3);margin-left:4px"></span></button>
+            <button class="rcd-tab" data-year="0" onclick="setRCDActiveYear(0)" style="padding:8px 16px;font-size:13px;font-weight:700;background:transparent;border:0;border-bottom:3px solid transparent;cursor:pointer;color:var(--gray3);transition:all .15s">Year 1 <span id="rcd-tab-sub-0" style="font-size:11px;font-weight:500;color:var(--gray3);margin-left:4px"></span></button>
+            <button class="rcd-tab" data-year="1" onclick="setRCDActiveYear(1)" style="padding:8px 16px;font-size:13px;font-weight:700;background:transparent;border:0;border-bottom:3px solid transparent;cursor:pointer;color:var(--gray3);transition:all .15s">Year 2 <span id="rcd-tab-sub-1" style="font-size:11px;font-weight:500;color:var(--gray3);margin-left:4px"></span></button>
+            <button class="rcd-tab" data-year="2" onclick="setRCDActiveYear(2)" style="padding:8px 16px;font-size:13px;font-weight:700;background:transparent;border:0;border-bottom:3px solid transparent;cursor:pointer;color:var(--gray3);transition:all .15s">Year 3 <span id="rcd-tab-sub-2" style="font-size:11px;font-weight:500;color:var(--gray3);margin-left:4px"></span></button>
+            <button class="rcd-tab" data-year="3" onclick="setRCDActiveYear(3)" style="padding:8px 16px;font-size:13px;font-weight:700;background:transparent;border:0;border-bottom:3px solid transparent;cursor:pointer;color:var(--gray3);transition:all .15s">Year 4 <span id="rcd-tab-sub-3" style="font-size:11px;font-weight:500;color:var(--gray3);margin-left:4px"></span></button>
           </div>
 
+          <div style="margin-bottom:10px"><button onclick="addRCItem()" style="padding:7px 14px;background:#fff;color:#263238;border:1.5px solid #CB704F;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit">+ Add item</button> <span style="font-size:11px;color:var(--gray3);margin-left:4px">tip: click an item name to rename it, × to remove</span></div>
           <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
             <table id="rcd-table" style="width:100%;border-collapse:collapse;font-size:12px;min-width:1400px">
               <thead id="rcd-thead"></thead>
@@ -13826,8 +13827,8 @@ async function deleteClient(id){
 //   recurring_detail_months → 1 linha por (project, item, year_offset, month) com amount
 // year_offset: 0=Ano 1, 1=Ano 2, 2=Ano 3, 3=Ano 4
 const RC_ITEMS=[
-  'Paisagismo','Energia','Água','Gás','Clube','HOA','Internet','Piscina',
-  'Parcela do empréstimo','Seguro','Impostos anuais 1','Impostos anuais 2','Impostos anuais 3'
+  'Landscape','Energy','Water','Gas','Club','HOA','Internet','Pool',
+  'Loan payment','Insurance','Annual Taxes 1','Annual Taxes 2','Annual Taxes 3'
 ];
 // Normaliza o nome do item recorrente pro nome oficial (ignora maiúsc/minúsc e espaços)
 // Evita duplicar "Landscape" vs "landscape" vs " landscape ".
@@ -14005,8 +14006,8 @@ function renderRecurringDetailHeader(){
   let html=`<tr style="background:#F3F0EA">
     <th style="padding:8px 6px;text-align:left;border-bottom:2px solid var(--gray2);position:sticky;left:0;background:#F3F0EA;z-index:1;min-width:140px">Item</th>
     <th style="padding:8px 6px;text-align:left;border-bottom:2px solid var(--gray2);min-width:120px">Account #</th>
-    <th style="padding:8px 6px;text-align:left;border-bottom:2px solid var(--gray2);min-width:130px">Empresa</th>
-    <th style="padding:8px 6px;text-align:left;border-bottom:2px solid var(--gray2);min-width:130px">Forma pgto</th>
+    <th style="padding:8px 6px;text-align:left;border-bottom:2px solid var(--gray2);min-width:130px">Company</th>
+    <th style="padding:8px 6px;text-align:left;border-bottom:2px solid var(--gray2);min-width:130px">Payment method</th>
     <th style="padding:8px 6px;text-align:left;border-bottom:2px solid var(--gray2);min-width:90px">Last 4</th>`;
   RC_MONTH_LABELS.forEach(lbl=>{
     html+=`<th style="padding:8px 6px;text-align:right;border-bottom:2px solid var(--gray2);min-width:75px;font-size:11px">${lbl}/${yShort}</th>`;
@@ -14025,7 +14026,7 @@ function renderRecurringDetail(){
   if(!tbody) return;
   const data=recurringMap[CID]||{};
   const yOff=_rcdActiveYear;
-  tbody.innerHTML=RC_ITEMS.map(itemName=>{
+  tbody.innerHTML=_rcCurrentList().map(itemName=>{
     const row=data[itemName]||{months:{}};
     const months=row.months||{};
     const wcFlags=row.wc_flags||{};
@@ -14056,7 +14057,12 @@ function renderRecurringDetail(){
       for(let m=1;m<=12;m++){ allYearsTotal+=+(months[_rcKey(y,m)])||0; }
     }
     return `<tr data-rc-item="${itemName.replace(/"/g,'&quot;')}">
-      <td style="padding:6px 6px;font-weight:600;border-bottom:1px solid #DFE4E5;position:sticky;left:0;background:#fff;z-index:1;font-size:12px">${escHtml(itemName)}</td>
+      <td style="padding:6px 6px;border-bottom:1px solid #DFE4E5;position:sticky;left:0;background:#fff;z-index:1;font-size:12px">
+        <div style="display:flex;align-items:center;gap:6px">
+          <span contenteditable="true" onfocus="this.style.borderBottomColor='var(--navy)'" onblur="this.style.borderBottomColor='transparent';renameRCItem('${itemName.replace(/'/g,"\\'")}',this)" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}" style="font-weight:600;outline:none;border-bottom:1px dashed transparent;display:inline-block;min-width:80px">${escHtml(itemName)}</span>
+          <button onclick="deleteRCItem('${itemName.replace(/'/g,"\\'")}')" title="Remove item" style="background:transparent;border:0;color:#B33F36;cursor:pointer;font-size:15px;line-height:1;flex-shrink:0">×</button>
+        </div>
+      </td>
       <td style="padding:4px 2px;border-bottom:1px solid #DFE4E5">
         <input type="text" value="${(row.account||'').replace(/"/g,'&quot;')}" placeholder="ex: 726388495"
           oninput="updateRCDMeta('${itemName.replace(/'/g,"\\'")}','account',this.value)"
@@ -14094,10 +14100,54 @@ function renderRecurringDetail(){
   if(_rcdVendorFilter) _applyRcdVendorFilter();
 }
 
+
+// ===== Recurring items: lista customizável por obra (add/excluir/renomear) =====
+function _rcCurrentList(){
+  var proj=(projects||[]).find(function(x){return x.id===CID;})||{};
+  if(Array.isArray(proj.rcd_items) && proj.rcd_items.length) return proj.rcd_items.slice();
+  var data=recurringMap[CID]||{};
+  var extra=Object.keys(data).filter(function(k){ return RC_ITEMS.indexOf(k)<0; });
+  return RC_ITEMS.concat(extra);
+}
+async function _rcSaveList(list){
+  var i=(projects||[]).findIndex(function(x){return x.id===CID;});
+  if(i>=0) projects[i].rcd_items=list;
+  try{ await sb.from("projects").update({rcd_items:list}).eq("id",CID); showSaved(); }catch(e){ console.warn("save rcd_items",e); }
+}
+async function addRCItem(){
+  if(!CID||!isCEO()) return;
+  var name=prompt("New recurring item name:"); if(name==null) return; name=(name||"").trim(); if(!name) return;
+  var list=_rcCurrentList();
+  if(list.indexOf(name)>=0){ toast("That item already exists.",false); return; }
+  list.push(name); await _rcSaveList(list); renderRecurringDetail();
+}
+async function deleteRCItem(name){
+  if(!CID||!isCEO()) return;
+  if(!confirm('Remove "'+name+'" from this project?\n\nIts saved amounts stay in the database and come back if you re-add it with the same name.')) return;
+  var list=_rcCurrentList().filter(function(n){return n!==name;});
+  await _rcSaveList(list); renderRecurringDetail();
+}
+async function renameRCItem(oldName, el){
+  if(!CID||!isCEO()){ el.textContent=oldName; return; }
+  var newName=(el.textContent||"").trim();
+  if(!newName){ el.textContent=oldName; return; }
+  if(newName===oldName) return;
+  var list=_rcCurrentList();
+  if(list.indexOf(newName)>=0){ toast("An item with that name already exists.",false); el.textContent=oldName; return; }
+  list=list.map(function(n){return n===oldName?newName:n;});
+  if(recurringMap[CID] && recurringMap[CID][oldName]){ recurringMap[CID][newName]=recurringMap[CID][oldName]; delete recurringMap[CID][oldName]; }
+  await _rcSaveList(list);
+  try{
+    await sb.from("recurring_detail_meta").update({item_name:newName}).eq("project_id",CID).eq("item_name",oldName);
+    await sb.from("recurring_detail_months").update({item_name:newName}).eq("project_id",CID).eq("item_name",oldName);
+  }catch(e){ console.warn("rename rc data",e); }
+  renderRecurringDetail();
+}
+
 function _slugRC(name){return name.toLowerCase().replace(/[^a-z0-9]+/g,'-');}
 
 // ───── Update a META field (company / account / notes) ─────
-const RCD_PAYMETHODS=[['card','Cartão'],['account','Conta / débito'],['check','Cheque'],['zelle','Zelle'],['wire','Transfer'],['cash','Dinheiro']];
+const RCD_PAYMETHODS=[['card','Card'],['account','Account / debit'],['check','Check'],['zelle','Zelle'],['wire','Wire'],['cash','Cash']];
 
 // Troca a forma de pagamento e re-renderiza (pra mostrar/esconder o campo dos últimos 4)
 function setRCDPayMethod(itemName, val){
@@ -15805,8 +15855,8 @@ async function lancarSubmit(){
   let dupN=(pendingAll||[]).filter(n=>Math.abs((+n.extracted_total||0)-amount)<0.01).length;
   let dupWhere='na fila de pendentes';
   try{
-    if(dest==='obra' && _pidChk){ const q=await sb.from('budget_items').select('id').eq('project_id',_pidChk).gte('actual',amount-0.01).lte('actual',amount+0.01); const n=(q.data||[]).length; if(n){dupN+=n; dupWhere='nos Actual costs dthis project';} }
-    else if(dest==='utilities' && _pidChk){ const q=await sb.from('recurring_detail_months').select('project_id').eq('project_id',_pidChk).gte('amount',amount-0.01).lte('amount',amount+0.01); const n=(q.data||[]).length; if(n){dupN+=n; dupWhere='nas Recurring bills dthis project';} }
+    if(dest==='obra' && _pidChk){ const q=await sb.from('budget_items').select('id').eq('project_id',_pidChk).gte('actual',amount-0.01).lte('actual',amount+0.01); const n=(q.data||[]).length; if(n){dupN+=n; dupWhere='in Actual costs (this project)';} }
+    else if(dest==='utilities' && _pidChk){ const q=await sb.from('recurring_detail_months').select('project_id').eq('project_id',_pidChk).gte('amount',amount-0.01).lte('amount',amount+0.01); const n=(q.data||[]).length; if(n){dupN+=n; dupWhere='in Recurring bills (this project)';} }
     else if(dest==='overhead'){ const q=await sb.from('fixed_costs').select('id').gte('amount',amount-0.01).lte('amount',amount+0.01); const n=(q.data||[]).length; if(n){dupN+=n; dupWhere='nos Company costs';} }
   }catch(_){}
   if(dupN>0 && !confirm('⚠ Already exists '+dupN+' lançamento(s) com o valor $'+amount.toFixed(2)+' '+dupWhere+'.\n\nÉ a mesma conta? Se for, cancele. Post mesmo assim?')) return;
@@ -15905,7 +15955,7 @@ function renderImportQueue(){
       </tr>`;
     };
     el.innerHTML=`<div class="card" style="margin-bottom:18px;border-left:4px solid #CB704F">
-      <div class="card-title">📥 Compras importadas — fila <span style="font-weight:500;color:var(--gray3);font-size:12px">${mine.length} dthis project${unassigned.length?` · ${unassigned.length} sem obra`:''}</span></div>
+      <div class="card-title">📥 Compras importadas — fila <span style="font-weight:500;color:var(--gray3);font-size:12px">${mine.length} in this project${unassigned.length?` · ${unassigned.length} no project`:''}</span></div>
       <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px;min-width:640px">
         <thead><tr style="background:#F3F0EA"><th style="padding:6px 10px;text-align:left;font-size:10px">Date</th><th style="padding:6px 10px;text-align:left;font-size:10px">Vendor / PO</th><th style="padding:6px 10px;text-align:right;font-size:10px">Valor</th><th style="padding:6px 10px;text-align:left;font-size:10px">Work</th><th style="padding:6px 10px;font-size:10px"></th></tr></thead>
         <tbody>
