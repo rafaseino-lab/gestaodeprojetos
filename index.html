@@ -5347,7 +5347,10 @@ function buildBudgetRooms(){
     card.innerHTML=`<table class="bitbl">${thead}<tbody id="tb-act-all"></tbody></table>
       <div style="padding:10px 15px;background:#F3F0EA;border-top:1px solid #DFE4E5">
         <button class="btn btn-ghost" style="font-size:12px;padding:6px 12px" onclick="addItem('act')">+ Add item</button>
-        <button class="btn" style="font-size:12px;padding:6px 12px;margin-left:8px;background:#263238;color:#fff;border:0;border-radius:6px;cursor:pointer;font-weight:700" onclick="openLancarModal(CID)">📤 Post bill (AI reads the invoice)</button>
+        <button class="btn" style="font-size:12px;padding:6px 12px;margin-left:8px;background:#CB704F;color:#fff;border:0;border-radius:6px;cursor:pointer;font-weight:700" onclick="openLancarModal(CID)">＋ Post bill (manual)</button>
+        <input type="file" id="act-batch-input" accept="application/pdf,image/jpeg,image/png,image/webp" multiple style="display:none" onchange="handleActBatchUpload(event)">
+        <button class="btn" id="act-batch-btn" style="font-size:12px;padding:6px 12px;margin-left:8px;background:#263238;color:#fff;border:0;border-radius:6px;cursor:pointer;font-weight:700" onclick="document.getElementById('act-batch-input').click()" title="Upload up to 10 invoices; the AI reads each and matches it to the project">📤 Upload invoices (up to 10, AI)</button>
+        <div id="act-batch-status"></div>
       </div>`;
     actC.appendChild(card);
     renderActualFlat();
@@ -15408,6 +15411,29 @@ async function assignLancarProject(id,pid){
   renderLancar();
 }
 // Upload em lote (até 10) na Central — a IA lê cada nota e casa com a obra; cai na fila de revisão
+async function handleActBatchUpload(event){
+  const input=event.target; const fl=input.files; if(!fl||!fl.length) return;
+  const files=Array.from(fl); input.value='';
+  if(!isCEO()){ toast('CEO only',false); return; }
+  const MAXN=10, MAX_SIZE=5*1024*1024;
+  const allowed=['application/pdf','image/jpeg','image/jpg','image/png','image/webp'];
+  if(files.length>MAXN){ toast('Max '+MAXN+' invoices at a time. Selected: '+files.length,false); return; }
+  for(const f of files){ if(f.size>MAX_SIZE){toast('"'+f.name+'" is over 5MB',false);return;} if(!allowed.includes(f.type)){toast('"'+f.name+'" - unsupported type (PDF or image)',false);return;} }
+  const btn=document.getElementById('act-batch-btn'); if(btn) btn.disabled=true;
+  const st=document.getElementById('act-batch-status');
+  if(st) st.innerHTML='<div class="card" style="background:#F3F0EA;border:1.5px solid #DFE4E5;font-size:13px;color:#263238;margin:10px 0">🤖 Reading '+files.length+' invoice(s) and matching to projects...</div>';
+  let token=null; try{ const {data:{session}}=await sb.auth.getSession(); token=session&&session.access_token; }catch(_){}
+  const vendorsCtx=(vendors||[]).map(v=>({id:v.id,name:v.name}));
+  const results=await Promise.allSettled(files.map(f=>_lcBatchOne(f,vendorsCtx,token)));
+  let ok=0,matched=0,unassigned=0,err=0; const errs=[];
+  results.forEach((r,i)=>{ if(r.status==='fulfilled'&&r.value){ ok++; if(r.value.project_id) matched++; else unassigned++; } else { err++; errs.push(files[i].name+': '+(r.reason&&r.reason.message?r.reason.message:String(r.reason))); } });
+  if(btn) btn.disabled=false;
+  toast('OK - '+ok+' invoice(s) queued'+(matched?(' | '+matched+' matched'):'')+(unassigned?(' | '+unassigned+' no project'):'')+(err?(' | '+err+' error(s)'):''), ok>0);
+  if(st) st.innerHTML='';
+  try{ renderPendingNotes(); }catch(_){}
+  try{ renderImportQueue(); }catch(_){}
+  if(err&&errs.length){ const s2=document.getElementById('act-batch-status'); if(s2) s2.innerHTML='<div class="card" style="background:#FDECEA;border:1.5px solid #E6A9A2;font-size:12px;color:#922;margin:10px 0"><strong>'+err+' invoice(s) with error:</strong><br>'+errs.slice(0,5).map(e=>'- '+e.replace(/</g,'&lt;')).join('<br>')+(errs.length>5?('<br>(+'+(errs.length-5)+' more)'):'')+'</div>'; }
+}
 async function handleLancarBatchUpload(event){
   const input=event.target; const fl=input.files; if(!fl||!fl.length) return;
   const files=Array.from(fl); input.value='';
