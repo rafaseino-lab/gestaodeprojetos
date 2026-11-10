@@ -1403,7 +1403,7 @@ body.in-project .gtabs{display:none!important}
         <div class="card">
           <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:14px">
             <div class="card-title" style="margin:0;border:0;padding:0"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>Monthly entries
-              <span style="font-weight:500;text-transform:none;font-size:11px;color:var(--gray3);margin-left:8px">— 48 months (4 years)</span>
+              <span style="font-weight:500;text-transform:none;font-size:11px;color:var(--gray3);margin-left:8px">— 24 months (2 years)</span>
             </div>
             <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
               <div style="display:flex;align-items:center;gap:6px">
@@ -1414,14 +1414,6 @@ body.in-project .gtabs{display:none!important}
                 <label style="font-size:11px;font-weight:700;color:var(--gray3);text-transform:uppercase">Year 2</label>
                 <input id="rcd-year2" type="number" min="2000" max="2100" placeholder="2027" oninput="onRCYearChange()" style="padding:5px 8px;font-size:13px;border:1.5px solid var(--gray2);border-radius:6px;outline:none;width:80px;text-align:center">
               </div>
-              <div style="display:flex;align-items:center;gap:6px">
-                <label style="font-size:11px;font-weight:700;color:var(--gray3);text-transform:uppercase">Year 3</label>
-                <input id="rcd-year3" type="number" min="2000" max="2100" placeholder="2028" oninput="onRCYearChange()" style="padding:5px 8px;font-size:13px;border:1.5px solid var(--gray2);border-radius:6px;outline:none;width:80px;text-align:center">
-              </div>
-              <div style="display:flex;align-items:center;gap:6px">
-                <label style="font-size:11px;font-weight:700;color:var(--gray3);text-transform:uppercase">Year 4</label>
-                <input id="rcd-year4" type="number" min="2000" max="2100" placeholder="2029" oninput="onRCYearChange()" style="padding:5px 8px;font-size:13px;border:1.5px solid var(--gray2);border-radius:6px;outline:none;width:80px;text-align:center">
-              </div>
               <div style="font-size:13px;font-weight:700;color:var(--p3)">Grand Total: <span id="rcd-grand-total">$0</span></div>
             </div>
           </div>
@@ -1430,11 +1422,9 @@ body.in-project .gtabs{display:none!important}
           <div id="rcd-tabs" style="display:flex;gap:4px;margin-bottom:14px;border-bottom:2px solid #DFE4E5;flex-wrap:wrap">
             <button class="rcd-tab" data-year="0" onclick="setRCDActiveYear(0)" style="padding:8px 16px;font-size:13px;font-weight:700;background:transparent;border:0;border-bottom:3px solid transparent;cursor:pointer;color:var(--gray3);transition:all .15s">Year 1 <span id="rcd-tab-sub-0" style="font-size:11px;font-weight:500;color:var(--gray3);margin-left:4px"></span></button>
             <button class="rcd-tab" data-year="1" onclick="setRCDActiveYear(1)" style="padding:8px 16px;font-size:13px;font-weight:700;background:transparent;border:0;border-bottom:3px solid transparent;cursor:pointer;color:var(--gray3);transition:all .15s">Year 2 <span id="rcd-tab-sub-1" style="font-size:11px;font-weight:500;color:var(--gray3);margin-left:4px"></span></button>
-            <button class="rcd-tab" data-year="2" onclick="setRCDActiveYear(2)" style="padding:8px 16px;font-size:13px;font-weight:700;background:transparent;border:0;border-bottom:3px solid transparent;cursor:pointer;color:var(--gray3);transition:all .15s">Year 3 <span id="rcd-tab-sub-2" style="font-size:11px;font-weight:500;color:var(--gray3);margin-left:4px"></span></button>
-            <button class="rcd-tab" data-year="3" onclick="setRCDActiveYear(3)" style="padding:8px 16px;font-size:13px;font-weight:700;background:transparent;border:0;border-bottom:3px solid transparent;cursor:pointer;color:var(--gray3);transition:all .15s">Year 4 <span id="rcd-tab-sub-3" style="font-size:11px;font-weight:500;color:var(--gray3);margin-left:4px"></span></button>
           </div>
 
-          <div style="margin-bottom:10px"><button onclick="addRCItem()" style="padding:7px 14px;background:#fff;color:#263238;border:1.5px solid #CB704F;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit">+ Add item</button> <span style="font-size:11px;color:var(--gray3);margin-left:4px">tip: click an item name to rename it, × to remove</span></div>
+          <div style="margin-bottom:10px"><button onclick="addRCItem()" style="padding:7px 14px;background:#fff;color:#263238;border:1.5px solid #CB704F;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit">+ Add item</button> <span style="font-size:11px;color:var(--gray3);margin-left:4px">tip: click an item name to rename it · use 🗑 Delete on each row to remove it</span></div>
           <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
             <table id="rcd-table" style="width:100%;border-collapse:collapse;font-size:12px;min-width:1400px">
               <thead id="rcd-thead"></thead>
@@ -13838,7 +13828,7 @@ function _rcCanonItem(name){
   const hit=RC_ITEMS.find(x=>x.toLowerCase()===t.toLowerCase());
   return hit || t;
 }
-const RC_YEARS_COUNT=4; // anos suportados (mude aqui se quiser 5, 6, etc)
+const RC_YEARS_COUNT=2; // anos suportados (mude aqui se quiser 3, 4, etc)
 const RC_MONTHS_PER_YEAR=12;
 const RC_MONTH_LABELS=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 // recurringMap structure: { project_id: { item_name: { company, account, notes, months: {"0_1": 100, "1_3": 250, ...} } } }
@@ -14013,7 +14003,7 @@ function renderRecurringDetailHeader(){
     html+=`<th style="padding:8px 6px;text-align:right;border-bottom:2px solid var(--gray2);min-width:75px;font-size:11px">${lbl}/${yShort}</th>`;
   });
   html+=`<th style="padding:8px 6px;text-align:right;border-bottom:2px solid var(--gray2);min-width:90px;background:#E7F2EB">Subtotal ${yearLabel}</th>
-    <th style="padding:8px 6px;text-align:right;border-bottom:2px solid var(--gray2);min-width:100px;background:#E7F2EB">Total 4 anos</th>
+    <th style="padding:8px 6px;text-align:right;border-bottom:2px solid var(--gray2);min-width:100px;background:#E7F2EB">Total (2 years)</th>
     <th style="padding:8px 6px;text-align:left;border-bottom:2px solid var(--gray2);min-width:160px">Remark</th>
   </tr>`;
   thead.innerHTML=html;
@@ -14060,7 +14050,7 @@ function renderRecurringDetail(){
       <td style="padding:6px 6px;border-bottom:1px solid #DFE4E5;position:sticky;left:0;background:#fff;z-index:1;font-size:12px">
         <div style="display:flex;align-items:center;gap:6px">
           <span contenteditable="true" onfocus="this.style.borderBottomColor='var(--navy)'" onblur="this.style.borderBottomColor='transparent';renameRCItem('${itemName.replace(/'/g,"\\'")}',this)" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}" style="font-weight:600;outline:none;border-bottom:1px dashed transparent;display:inline-block;min-width:80px">${escHtml(itemName)}</span>
-          <button onclick="deleteRCItem('${itemName.replace(/'/g,"\\'")}')" title="Remove item" style="background:transparent;border:0;color:#B33F36;cursor:pointer;font-size:15px;line-height:1;flex-shrink:0">×</button>
+          <button onclick="deleteRCItem('${itemName.replace(/'/g,"\\'")}')" title="Delete this item" style="background:#FBECEA;border:1px solid #E7B9B3;color:#B33F36;cursor:pointer;font-size:12px;font-weight:700;line-height:1;flex-shrink:0;border-radius:5px;padding:4px 7px">🗑 Delete</button>
         </div>
       </td>
       <td style="padding:4px 2px;border-bottom:1px solid #DFE4E5">
