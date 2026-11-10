@@ -418,7 +418,7 @@ body.in-project .gtabs{display:none!important}
       <p class="login-sub">Sign in and keep tracking your projects from anywhere.</p>
       <div class="login-fg"><label>E-mail</label><input id="li-email" type="email" placeholder="seu@email.com" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()"></div>
       <div class="login-fg"><label>Senha</label><input id="li-pass" type="password" placeholder="Sua senha" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
-      <button class="login-btn" onclick="doLogin()">Entrar →</button>
+      <button class="login-btn" onclick="doLogin()">Sign In →</button>
       <div class="login-err" id="login-err">Invalid email or password. Try again.</div>
       <div class="login-loading" id="login-load">Entrando…</div>
     </div>
@@ -482,7 +482,7 @@ body.in-project .gtabs{display:none!important}
   <button class="gtab" data-view="fluxo" onclick="goView('fluxo')" style="display:none"><span class="ico"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle"><path d="M3 3v18h18"/><rect x="7" y="10" width="3" height="8"/><rect x="12" y="6" width="3" height="12"/><rect x="17" y="13" width="3" height="5"/></svg></span>Cash Flow</button>
   <div class="snav-foot">
     <div class="snav-user"><div class="online-dot"></div><span id="snav-user-email">—</span></div>
-    <button class="snav-signout" onclick="doLogout()">Sair</button>
+    <button class="snav-signout" onclick="doLogout()">Sign Out</button>
   </div>
   <!-- Working Capital removido do menu (aba desativada; dados/colunas mantidos no banco). Para reativar, restaure este botão. -->
   <!-- <button class="gtab" data-view="working-capital" onclick="goView('working-capital')"><span class="ico"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></span>Working Capital</button> -->
@@ -665,7 +665,7 @@ body.in-project .gtabs{display:none!important}
               <label style="display:block;font-size:13px;color:var(--gray3);margin-bottom:10px;line-height:1.5">Upload a photo of the house front to identify the project in the cards and the investor portal.</label>
               <input type="file" id="cover-file" accept="image/*" style="display:none" onchange="uploadCoverPhoto(this)">
               <button class="btn btn-ghost" style="font-size:12px;padding:8px 14px" onclick="document.getElementById('cover-file').click()">📷 Escolher foto</button>
-              <button class="btn btn-ghost" id="cover-remove-btn" style="font-size:12px;padding:8px 14px;display:none;color:#C62B2B" onclick="removeCoverPhoto()">Remover</button>
+              <button class="btn btn-ghost" id="cover-remove-btn" style="font-size:12px;padding:8px 14px;display:none;color:#C62B2B" onclick="removeCoverPhoto()">Remove</button>
               <div id="cover-status" style="font-size:11px;color:var(--gray3);margin-top:8px"></div>
             </div>
           </div>
@@ -758,7 +758,7 @@ body.in-project .gtabs{display:none!important}
           <div id="dl-tasks-selected" style="margin-top:10px"></div>
           <div id="dl-photos-preview" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"></div>
           <div style="margin-top:14px;display:flex;gap:10px;justify-content:flex-end">
-            <button onclick="dlReset()" style="padding:8px 16px;background:transparent;color:#647078;border:1.5px solid var(--gray2);border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;font-family:inherit">Limpar</button>
+            <button onclick="dlReset()" style="padding:8px 16px;background:transparent;color:#647078;border:1.5px solid var(--gray2);border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;font-family:inherit">Clear</button>
             <button onclick="dlSaveEntry()" style="padding:8px 22px;background:linear-gradient(135deg,#263238,#647078);color:#fff;border:0;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Save entry</button>
           </div>
         </div>
@@ -1074,7 +1074,7 @@ body.in-project .gtabs{display:none!important}
               <select id="lc-manuf" onchange="saveLC()">
                 <option value="">— select —</option>
                 <option value="no">No</option>
-                <option value="yes">Sim</option>
+                <option value="yes">Yes</option>
                 <option value="yes-retired">Sim — aposentada</option>
               </select>
             </div>
@@ -1100,7 +1100,7 @@ body.in-project .gtabs{display:none!important}
               <select id="lc-roof-permit" onchange="saveLC()">
                 <option value="">— select —</option>
                 <option value="no">No</option>
-                <option value="yes">Sim</option>
+                <option value="yes">Yes</option>
               </select>
             </div>
             <div class="fg"><label>Permit number</label><input id="lc-roof-permit-num" placeholder="ex.: BR2024-1234" oninput="debounceLC()"></div>
@@ -1127,7 +1127,7 @@ body.in-project .gtabs{display:none!important}
               <select id="lc-hvac-permit" onchange="saveLC()">
                 <option value="">— select —</option>
                 <option value="no">No</option>
-                <option value="yes">Sim</option>
+                <option value="yes">Yes</option>
               </select>
             </div>
             <div class="fg"><label>Permit number</label><input id="lc-hvac-permit-num" oninput="debounceLC()"></div>
@@ -1153,7 +1153,7 @@ body.in-project .gtabs{display:none!important}
               <select id="lc-elec-permit" onchange="saveLC()">
                 <option value="">— select —</option>
                 <option value="no">No</option>
-                <option value="yes">Sim</option>
+                <option value="yes">Yes</option>
               </select>
             </div>
             <div class="fg"><label>Permit number</label><input id="lc-elec-permit-num" oninput="debounceLC()"></div>
@@ -1162,7 +1162,7 @@ body.in-project .gtabs{display:none!important}
             <div class="fg"><label>GFI outlets working? <span style="font-size:10px;color:var(--gray3)">— check before inspection</span></label>
               <select id="lc-gfi" onchange="saveLC()">
                 <option value="">— select —</option>
-                <option value="yes">Sim</option>
+                <option value="yes">Yes</option>
                 <option value="no">No (needs fixing)</option>
                 <option value="not-checked">Not verified yet</option>
               </select>
@@ -1218,7 +1218,7 @@ body.in-project .gtabs{display:none!important}
               <select id="lc-wh-permit" onchange="saveLC()">
                 <option value="">— select —</option>
                 <option value="no">No</option>
-                <option value="yes">Sim</option>
+                <option value="yes">Yes</option>
               </select>
             </div>
             <div class="fg"><label>Permit number</label><input id="lc-wh-permit-num" oninput="debounceLC()"></div>
@@ -1281,14 +1281,14 @@ body.in-project .gtabs{display:none!important}
             <div class="fg"><label>Extra shed / storage</label>
               <select id="lc-shed" onchange="saveLC()">
                 <option value="">— select —</option>
-                <option value="yes">Sim</option>
+                <option value="yes">Yes</option>
                 <option value="no">No</option>
               </select>
             </div>
             <div class="fg"><label>Cerca</label>
               <select id="lc-fence" onchange="saveLC()">
                 <option value="">— select —</option>
-                <option value="yes">Sim</option>
+                <option value="yes">Yes</option>
                 <option value="no">No</option>
               </select>
             </div>
@@ -1303,7 +1303,7 @@ body.in-project .gtabs{display:none!important}
             <div class="fg"><label>Tem piscina?</label>
               <select id="lc-pool" onchange="saveLC()">
                 <option value="">— select —</option>
-                <option value="yes">Sim</option>
+                <option value="yes">Yes</option>
                 <option value="no">No</option>
                 <option value="na">N/A</option>
               </select>
@@ -1349,7 +1349,7 @@ body.in-project .gtabs{display:none!important}
               <select id="lc-listed" onchange="debounceLC()">
                 <option value="">— select —</option>
                 <option value="no">No</option>
-                <option value="yes">Sim</option>
+                <option value="yes">Yes</option>
               </select>
             </div>
             <div class="fg"></div>
@@ -1512,7 +1512,7 @@ body.in-project .gtabs{display:none!important}
               </select>
             </div>
             <div>
-              <button id="sc-run-btn" onclick="runSupplyChainAnalysis()" style="background:linear-gradient(135deg,#263238,#647078);color:#fff;border:0;padding:10px 22px;border-radius:7px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;display:inline-flex;align-items:center;gap:8px;box-shadow:0 2px 8px rgba(61,39,26,.2);white-space:nowrap"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>Analisar</button>
+              <button id="sc-run-btn" onclick="runSupplyChainAnalysis()" style="background:linear-gradient(135deg,#263238,#647078);color:#fff;border:0;padding:10px 22px;border-radius:7px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;display:inline-flex;align-items:center;gap:8px;box-shadow:0 2px 8px rgba(61,39,26,.2);white-space:nowrap"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>Analyze</button>
             </div>
           </div>
           <div id="sc-status" style="margin-top:10px;font-size:12px;color:#647078;min-height:18px"></div>
@@ -12229,7 +12229,7 @@ function _buildDuplicateChooserHtml(inputName, matches, entityType){
   });
   html+=`</div>
     <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:14px">
-      <button onclick="_dupChooserPick('__cancel__')" style="background:transparent;border:1px solid var(--gray2);color:#647078;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600;font-family:inherit">Cancelar</button>
+      <button onclick="_dupChooserPick('__cancel__')" style="background:transparent;border:1px solid var(--gray2);color:#647078;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600;font-family:inherit">Cancel</button>
       <button onclick="_dupChooserPick('__create__')" style="background:#CB704F;color:#fff;border:0;padding:8px 20px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit">+ Create new anyway</button>
     </div>
   </div>`;
@@ -15813,7 +15813,7 @@ function renderImportQueue(){
         <td style="padding:8px 10px;font-size:11px">${(pi.vendor||'').replace(/</g,'&lt;')} · #${(pi.order_number||'').replace(/</g,'&lt;')}<div style="color:#CB704F">PO: ${(pi.po_job_name||'—').replace(/</g,'&lt;')}</div></td>
         <td style="padding:8px 10px;text-align:right;font-weight:700;white-space:nowrap">${fmtc(pi.total)}${dupBadge}</td>
         <td style="padding:8px 10px;font-size:11px">${assignable?`<select onchange="assignImportProject('${pi.id}',this.value)" style="font-size:11px;padding:4px 6px;max-width:180px">${projOpts}</select>`:'<span style="color:#237A50;font-weight:700">this project</span>'}</td>
-        <td style="padding:8px 10px;text-align:center;white-space:nowrap">${pi.receipt_path?`<a href="javascript:void(0)" onclick="_openNotaPath('${(pi.receipt_path||'').replace(/'/g,"\\'")}')" style="color:#CB704F;text-decoration:underline;font-size:11px">receipt</a> · `:''}<button onclick="postImport('${pi.id}')" style="background:#263238;color:#fff;border:0;border-radius:5px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer">Postar</button> <button onclick="ignoreImport('${pi.id}')" title="Ignorar" style="background:transparent;border:1px solid var(--gray2);border-radius:5px;padding:5px 8px;font-size:11px;cursor:pointer;color:var(--p1)">🚫</button></td>
+        <td style="padding:8px 10px;text-align:center;white-space:nowrap">${pi.receipt_path?`<a href="javascript:void(0)" onclick="_openNotaPath('${(pi.receipt_path||'').replace(/'/g,"\\'")}')" style="color:#CB704F;text-decoration:underline;font-size:11px">receipt</a> · `:''}<button onclick="postImport('${pi.id}')" style="background:#263238;color:#fff;border:0;border-radius:5px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer">Post</button> <button onclick="ignoreImport('${pi.id}')" title="Ignorar" style="background:transparent;border:1px solid var(--gray2);border-radius:5px;padding:5px 8px;font-size:11px;cursor:pointer;color:var(--p1)">🚫</button></td>
       </tr>`;
     };
     el.innerHTML=`<div class="card" style="margin-bottom:18px;border-left:4px solid #CB704F">
@@ -17065,12 +17065,12 @@ function renderBudgetEditorModal(){
     <!-- Footer with actions -->
     <div style="padding:14px 24px;border-top:1px solid #DFE4E5;background:#F3F0EA;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px">
       <div>
-        ${b.id?`<button onclick="deleteBudget()" style="padding:8px 14px;background:transparent;color:#B33F36;border:1.5px solid #FFB5B5;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;font-family:inherit"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Deletar</button>`:''}
+        ${b.id?`<button onclick="deleteBudget()" style="padding:8px 14px;background:transparent;color:#B33F36;border:1.5px solid #FFB5B5;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;font-family:inherit"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Delete</button>`:''}
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         ${b.id?`<button onclick="generateBudgetPDF()" style="padding:8px 14px;background:#fff;color:#263238;border:1.5px solid #CB704F;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>PDF</button>
         <button onclick="downloadBudgetExcel()" style="padding:8px 14px;background:#fff;color:#263238;border:1.5px solid #237A50;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>Excel</button>`:''}
-        <button onclick="closeBudgetEditor()" style="padding:8px 14px;background:transparent;color:#647078;border:1.5px solid var(--gray2);border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;font-family:inherit">Cancelar</button>
+        <button onclick="closeBudgetEditor()" style="padding:8px 14px;background:transparent;color:#647078;border:1.5px solid var(--gray2);border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;font-family:inherit">Cancel</button>
         <button onclick="saveBudget()" style="padding:8px 22px;background:linear-gradient(135deg,#263238,#647078);color:#fff;border:0;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Save</button>
       </div>
     </div>
@@ -17778,7 +17778,7 @@ function dlPickTasksFromGantt(){
     </div>
     <div id="dl-modal-tasks-list" style="overflow-y:auto;flex:1;padding:8px 14px">${rows}</div>
     <div style="padding:12px 18px;border-top:1px solid #DFE4E5;display:flex;justify-content:flex-end;gap:8px">
-      <button onclick="document.getElementById('dl-modal-tasks').remove()" style="padding:7px 14px;background:transparent;color:#647078;border:1.5px solid var(--gray2);border-radius:5px;cursor:pointer;font-size:12px;font-weight:600;font-family:inherit">Cancelar</button>
+      <button onclick="document.getElementById('dl-modal-tasks').remove()" style="padding:7px 14px;background:transparent;color:#647078;border:1.5px solid var(--gray2);border-radius:5px;cursor:pointer;font-size:12px;font-weight:600;font-family:inherit">Cancel</button>
       <button onclick="dlConfirmTasksPick(${JSON.stringify(allTasks).replace(/"/g,'&quot;')})" style="padding:7px 18px;background:linear-gradient(135deg,#263238,#647078);color:#fff;border:0;border-radius:5px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit">✓ Adicionar selecionadas</button>
     </div>
   </div>`;
