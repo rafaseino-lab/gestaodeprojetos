@@ -437,6 +437,7 @@ body.in-project .gtabs{display:none!important}
 <!-- TOP NAV -->
 <div class="topnav">
   <button class="nav-burger" onclick="document.body.classList.toggle('nav-open')" aria-label="Abrir menu"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <button id="nav-back-btn" onclick="goBack()" title="Go back" style="display:none;align-items:center;gap:5px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.28);color:#fff;border-radius:8px;padding:7px 13px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;margin-right:6px;flex-shrink:0"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" x2="5" y1="12" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>Back</button>
   <div class="tn-brand" onclick="goView('home')">
     <svg width="26" height="26" viewBox="0 0 48 48" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink:0">
       <path d="M15 37V11h8.5a7.5 7.5 0 0 1 0 15H15"/>
@@ -446,7 +447,7 @@ body.in-project .gtabs{display:none!important}
     <h1>Project Management</h1>
     <span id="proj-count-lbl">Loading...</span>
   </div>
-  <div class="back-btn" id="back-btn" onclick="goView('portfolio')"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px"><line x1="19" x2="5" y1="12" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>Todos os projetos</div>
+  <div class="back-btn" id="back-btn" onclick="goView('portfolio')"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px"><line x1="19" x2="5" y1="12" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>All projects</div>
   <div class="tn-center" id="tn-pname"></div>
   <div class="tn-right">
     <div class="user-chip"><div class="online-dot"></div><span id="user-email-lbl">—</span></div>
@@ -491,7 +492,7 @@ body.in-project .gtabs{display:none!important}
 
 <!-- PORTFOLIO -->
 <div id="view-portfolio">
-  <div class="port-hdr"><div><h2>Todos os projetos</h2><p id="port-sub">Carregando projetos...</p></div></div>
+  <div class="port-hdr"><div><h2>All projects</h2><p id="port-sub">Carregando projetos...</p></div></div>
   <div class="kpi-row">
     <div class="kpi" style="cursor:pointer" title="Filtrar: todos" onclick="setPortFilter('all')"><label>Total</label><div class="val" id="pk-total">—</div></div>
     <div class="kpi ko" style="cursor:pointer" title="Filtrar: em andamento" onclick="setPortFilter('in_progress')"><label>Em andamento</label><div class="val" id="pk-prog">—</div></div>
@@ -1486,7 +1487,7 @@ body.in-project .gtabs{display:none!important}
             <div>
               <div style="font-size:11px;font-weight:700;color:#647078;margin-bottom:4px">Escopo</div>
               <select id="sc-scope" onchange="onSupplyScopeChange()" style="width:100%;padding:8px 10px;border:1px solid var(--gray2);border-radius:6px;background:#fff;font-family:inherit;font-size:13px">
-                <option value="global">Todos os projetos</option>
+                <option value="global">All projects</option>
                 <option value="project">A specific project</option>
               </select>
             </div>
@@ -1679,7 +1680,7 @@ body.in-project .gtabs{display:none!important}
       </div>
       <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
         <select id="vexp-proj" onchange="renderVendorExpenses()" style="padding:7px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:6px;outline:none;max-width:260px">
-          <option value="">Todos os projetos</option>
+          <option value="">All projects</option>
         </select>
         <select id="vexp-sort" onchange="renderVendorExpenses()" style="padding:7px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:6px;outline:none">
           <option value="name">A → Z (name)</option>
@@ -4268,6 +4269,47 @@ const GLOBAL_VIEWS=['home','portfolio','clients','client-detail','vendors','invo
 // ─── Memória de navegação: lembra a última tela no refresh ───────────────
 function _saveNav(o){ try{ localStorage.setItem('dec_nav', JSON.stringify(o)); }catch(e){} }
 function _readNav(){ try{ return JSON.parse(localStorage.getItem('dec_nav')||'null'); }catch(e){ return null; } }
+// ===== Navegação pelo histórico do navegador (botão voltar não sai do sistema) =====
+let _curView='portfolio';
+let _curProjTab='dash';
+let _navApplying=false;
+function _navStateNow(){
+  if(CID) return {t:'proj',cid:CID,tab:_curProjTab||'dash'};
+  return {t:'view',view:_curView||'portfolio'};
+}
+function _updateBackBtn(){
+  const b=document.getElementById('nav-back-btn'); if(!b) return;
+  const landing=(!CID) && (_curView===((typeof isCEO==='function'&&isCEO())?'home':'portfolio'));
+  b.style.display = landing ? 'none' : 'inline-flex';
+}
+function _pushNav(){
+  if(_navApplying) return;
+  try{
+    const st=_navStateNow();
+    const cur=history.state;
+    if(!cur){ history.replaceState(st,''); return; }
+    if(cur.t===st.t && cur.view===st.view && cur.cid===st.cid && cur.tab===st.tab) return;
+    history.pushState(st,'');
+  }catch(e){}
+}
+function _applyNav(st){
+  if(!st) return;
+  _navApplying=true;
+  try{
+    if(st.t==='proj' && st.cid && (projects||[]).find(p=>p.id===st.cid)){
+      if(CID!==st.cid) openProject(st.cid);
+      const tab=st.tab||'dash';
+      const el=document.getElementById('snav-'+tab);
+      const cls=({ph1:'s1',ph2:'s2',ph3:'s3',ph4:'s4'})[tab]||'';
+      if(document.getElementById('page-'+tab)) sp(tab, el, cls);
+    } else {
+      goView((st.view)||'portfolio');
+    }
+  }catch(e){ console.warn('apply nav',e); }
+  finally{ _navApplying=false; _updateBackBtn(); }
+}
+function goBack(){ try{ history.back(); }catch(e){} }
+window.addEventListener('popstate', function(e){ _applyNav(e.state || _navStateNow()); });
 function goView(view){
   if(!GLOBAL_VIEWS.includes(view)) view='portfolio';
   // CEO check for restricted views
@@ -4317,6 +4359,7 @@ function goView(view){
   else if(view==='piso' && isCEO()) renderPiso();
   else if(view==='lixeira' && isCEO()) renderTrash();
   _saveNav({t:'view',view});
+  _curView=view; _pushNav(); _updateBackBtn();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -9936,7 +9979,7 @@ function _vexpPopulateProjects(){
   const cur=sel.value;
   const opts=(projects||[]).slice().sort((a,b)=>(a.name||'').localeCompare(b.name||''))
     .map(p=>`<option value="${p.id}">${((p.address||p.name)||'').replace(/</g,'&lt;')}</option>`).join('');
-  sel.innerHTML='<option value="">Todos os projetos</option>'+opts;
+  sel.innerHTML='<option value="">All projects</option>'+opts;
   if(cur) sel.value=cur;
 }
 
@@ -15630,7 +15673,7 @@ async function renderAuditoria(){
     <div class="card" style="text-align:center"><div style="font-size:11px;color:var(--gray3);text-transform:uppercase">With duplicates</div><div style="font-size:24px;font-weight:800;color:${nDup?'#C0392B':'#237A50'}">${nDup}</div></div>
     <div class="card" style="text-align:center"><div style="font-size:11px;color:var(--gray3);text-transform:uppercase">Amount without receipt</div><div style="font-size:20px;font-weight:800;color:#CB704F">${fmtc(faltaTotal)}</div></div>
   </div>`;
-  const filtro=`<div style="margin-bottom:12px"><select id="aud-proj" onchange="_audRender()" style="padding:8px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:6px"><option value="">Todos os projetos (${projOpts.length})</option>${projOpts.map(p=>`<option value="${p.replace(/"/g,'&quot;')}">${p.replace(/</g,'&lt;')}</option>`).join('')}</select></div>`;
+  const filtro=`<div style="margin-bottom:12px"><select id="aud-proj" onchange="_audRender()" style="padding:8px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:6px"><option value="">All projects (${projOpts.length})</option>${projOpts.map(p=>`<option value="${p.replace(/"/g,'&quot;')}">${p.replace(/</g,'&lt;')}</option>`).join('')}</select></div>`;
   el.innerHTML=header+kpis+filtro+'<div id="aud-table"></div>';
   _audRender();
 }
@@ -16124,7 +16167,8 @@ function sp(id,el,cls){
   if(id==='act' && isCEO()){ _populateActVendorFilter(); renderProjectSupplierSummary(); }
   if(id==='daily') dlOpen();
   // (clients/vendors/invoices moved to global views — see goView)
-  if(CID) _saveNav({t:'proj',cid:CID,tab:id});
+  if(CID){ _curProjTab=id; _saveNav({t:'proj',cid:CID,tab:id}); _pushNav(); }
+  _updateBackBtn();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
