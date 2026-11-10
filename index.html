@@ -417,7 +417,7 @@ body.in-project .gtabs{display:none!important}
       <h2>Bem-vindo</h2>
       <p class="login-sub">Sign in and keep tracking your projects from anywhere.</p>
       <div class="login-fg"><label>E-mail</label><input id="li-email" type="email" placeholder="seu@email.com" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()"></div>
-      <div class="login-fg"><label>Senha</label><input id="li-pass" type="password" placeholder="Sua senha" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <div class="login-fg"><label>Password</label><input id="li-pass" type="password" placeholder="Sua senha" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
       <button class="login-btn" onclick="doLogin()">Sign In →</button>
       <div class="login-err" id="login-err">Invalid email or password. Try again.</div>
       <div class="login-loading" id="login-load">Entrando…</div>
@@ -492,7 +492,7 @@ body.in-project .gtabs{display:none!important}
 
 <!-- PORTFOLIO -->
 <div id="view-portfolio">
-  <div class="port-hdr"><div><h2>All projects</h2><p id="port-sub">Carregando projetos...</p></div></div>
+  <div class="port-hdr"><div><h2>All projects</h2><p id="port-sub">Loading projects...</p></div></div>
   <div class="kpi-row">
     <div class="kpi" style="cursor:pointer" title="Filtrar: todos" onclick="setPortFilter('all')"><label>Total</label><div class="val" id="pk-total">—</div></div>
     <div class="kpi ko" style="cursor:pointer" title="Filtrar: em andamento" onclick="setPortFilter('in_progress')"><label>Em andamento</label><div class="val" id="pk-prog">—</div></div>
@@ -516,10 +516,10 @@ body.in-project .gtabs{display:none!important}
       <option value="cancelled">Cancelado</option>
     </select>
     <!-- Filtro de cliente removido: empresa única, sem clientes. -->
-    <select id="port-client-filter" onchange="setPortClientFilter(this.value)" style="display:none"><option value="">Todos os clientes</option></select>
+    <select id="port-client-filter" onchange="setPortClientFilter(this.value)" style="display:none"><option value="">All clients</option></select>
     <label for="port-type-filter" style="font-size:12px;color:var(--gray3);font-weight:600">Tipo:</label>
     <select id="port-type-filter" onchange="setPortTypeFilter(this.value)" style="padding:7px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:6px;outline:none;background:#fff;font-family:inherit;cursor:pointer;min-width:160px">
-      <option value="">Todos os tipos</option>
+      <option value="">All types</option>
       <option value="single_family">Casa unifamiliar</option>
       <option value="high_end">High-end</option>
       <option value="mobile_home">Mobile home</option>
@@ -559,8 +559,8 @@ body.in-project .gtabs{display:none!important}
       </div>
       <div class="sb-nav">
         <div class="sb-sec">Overview</div>
-        <div class="sb-lnk active" id="snav-dash"    onclick="sp('dash',this,'')"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:8px"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>Painel</div>
-        <div class="sb-lnk"        id="snav-gantt"   onclick="sp('gantt',this,'')" style="display:none"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:8px"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>Cronograma</div>
+        <div class="sb-lnk active" id="snav-dash"    onclick="sp('dash',this,'')"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:8px"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>Dashboard</div>
+        <div class="sb-lnk"        id="snav-gantt"   onclick="sp('gantt',this,'')" style="display:none"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:8px"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>Schedule</div>
         <div class="sb-sec">Budget</div>
         <div class="sb-lnk"        id="snav-est"     onclick="sp('est',this,'')"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:8px"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>Budget</div>
         <div class="sb-lnk"        id="snav-act"     onclick="sp('act',this,'')"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:8px"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"/><path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4z"/></svg>Real costs</div>
@@ -582,7 +582,7 @@ body.in-project .gtabs{display:none!important}
         <div class="page-title">Project dashboard</div><div class="page-sub" id="dash-sub"></div>
         <div id="d-baseline"></div>
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-bottom:16px">
-          <div class="kpi" style="display:none"><label>Cronograma</label><div class="val" id="d-sched">0%</div></div>
+          <div class="kpi" style="display:none"><label>Schedule</label><div class="val" id="d-sched">0%</div></div>
           <div class="kpi kp"><label><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>Estimado</label><div class="val" id="d-est">$0</div></div>
           <div class="kpi ko"><label><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"/><path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4z"/></svg>Real costs</label><div class="val" id="d-actual">$0</div></div>
           <div class="kpi" id="d-var-kpi"><label><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px"><line x1="12" x2="12" y1="20" y2="10"/><line x1="18" x2="18" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="16"/></svg>Variance</label><div class="val" id="d-var">$0</div><small id="d-var-lbl"></small></div>
@@ -599,7 +599,7 @@ body.in-project .gtabs{display:none!important}
       </div>
 
       <div class="page" id="page-gantt">
-        <div class="page-title"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:8px;color:var(--dec-gold)"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>Cronograma</div><div class="page-sub">timeline · 12 weeks</div>
+        <div class="page-title"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:8px;color:var(--dec-gold)"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>Schedule</div><div class="page-sub">timeline · 12 weeks</div>
         <div class="card" style="padding:0;overflow:hidden"><div class="gantt-wrap"><table class="gtbl" id="gantt-tbl"></table></div></div>
       </div>
 
@@ -616,7 +616,7 @@ body.in-project .gtabs{display:none!important}
           <span style="font-size:18px">🔍</span>
           <label for="act-vendor-filter" style="font-size:12px;color:#647078;font-weight:700">Filter by vendor:</label>
           <select id="act-vendor-filter" onchange="onActVendorFilterChange()" style="padding:6px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:6px;outline:none;background:#fff;font-family:inherit;cursor:pointer;min-width:220px;flex:1;max-width:300px">
-            <option value="">— Todos os fornecedores —</option>
+            <option value="">— All vendors —</option>
           </select>
           <button id="act-vendor-clear" onclick="clearActVendorFilter()" style="display:none;padding:6px 12px;font-size:12px;background:#fff;border:1px solid var(--gray2);border-radius:6px;cursor:pointer;color:#C62B2B">✕ Clear</button>
           <span id="act-vendor-count" style="font-size:11px;color:var(--gray3);font-style:italic"></span>
@@ -657,7 +657,7 @@ body.in-project .gtabs{display:none!important}
             <div style="flex:1;min-width:210px">
               <label style="display:block;font-size:13px;color:var(--gray3);margin-bottom:10px;line-height:1.5">Upload a photo of the house front to identify the project in the cards and the investor portal.</label>
               <input type="file" id="cover-file" accept="image/*" style="display:none" onchange="uploadCoverPhoto(this)">
-              <button class="btn btn-ghost" style="font-size:12px;padding:8px 14px" onclick="document.getElementById('cover-file').click()">📷 Escolher foto</button>
+              <button class="btn btn-ghost" style="font-size:12px;padding:8px 14px" onclick="document.getElementById('cover-file').click()">📷 Choose photo</button>
               <button class="btn btn-ghost" id="cover-remove-btn" style="font-size:12px;padding:8px 14px;display:none;color:#C62B2B" onclick="removeCoverPhoto()">Remove</button>
               <div id="cover-status" style="font-size:11px;color:var(--gray3);margin-top:8px"></div>
             </div>
@@ -843,7 +843,7 @@ body.in-project .gtabs{display:none!important}
           </div>
           <div id="ec-dec-list"></div>
           <div style="margin-top:10px;display:flex;justify-content:flex-end">
-            <button class="btn btn-ghost" style="font-size:12px;padding:6px 12px" onclick="addExtraCost('dec_invoice')">+ Adicionar item</button>
+            <button class="btn btn-ghost" style="font-size:12px;padding:6px 12px" onclick="addExtraCost('dec_invoice')">+ Add item</button>
           </div>
           <!-- Operational Invoices — info only, already counted in Total invested -->
           <div id="ec-op-invoices-block" style="margin-top:14px;padding-top:14px;border-top:1.5px dashed var(--gray2);display:none">
@@ -911,17 +911,17 @@ body.in-project .gtabs{display:none!important}
               <div class="fg"><label>% Client</label>
                 <input id="pi-pct-client" type="number" min="0" max="100" step="0.1" placeholder="50" value="50" oninput="onPctChange('client')">
               </div>
-              <div class="fg"><label>% Empresa</label>
+              <div class="fg"><label>% Company</label>
                 <input id="pi-pct-dec" type="number" min="0" max="100" step="0.1" placeholder="50" value="50" oninput="onPctChange('dec')">
               </div>
             </div>
             <div class="dgrid" style="grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px">
               <div class="kpi" style="border-left-color:var(--gold);background:#F4E7E0"><div class="kpi-l"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Client receives</div><div class="kpi-v" id="pft-client">$0</div><div class="kpi-l" style="margin-top:4px;font-size:10px">% Client of profit</div></div>
-              <div class="kpi" style="border-left-color:var(--blue);background:#F3F0EA"><div class="kpi-l"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><path d="M9 22v-4h6v4"/></svg>Empresa recebe</div><div class="kpi-v" id="pft-dec">$0</div><div class="kpi-l" style="margin-top:4px;font-size:10px">% Empresa of profit</div></div>
+              <div class="kpi" style="border-left-color:var(--blue);background:#F3F0EA"><div class="kpi-l"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><path d="M9 22v-4h6v4"/></svg>Company gets</div><div class="kpi-v" id="pft-dec">$0</div><div class="kpi-l" style="margin-top:4px;font-size:10px">% Company of profit</div></div>
               <div class="kpi" style="border-left-color:var(--p3);background:#E7F2EB"><div class="kpi-l"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px"><line x1="19" x2="5" y1="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>Refund</div><div class="kpi-v" id="pft-refund">$0</div><div class="kpi-l" style="margin-top:4px;font-size:10px">From Refund invoices · info only (not summed)</div></div>
             </div>
             <div style="margin-top:14px;padding:12px 14px;background:#F3F0EA;border-left:3px solid var(--gray3);border-radius:6px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-              <span style="color:var(--navy);font-weight:700;font-size:13px"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>Fatura nº:</span>
+              <span style="color:var(--navy);font-weight:700;font-size:13px"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>Invoice #:</span>
               <input id="pi-dec-invoice" type="text" placeholder="INV-2025-001" oninput="debouncePI()" style="padding:6px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:6px;outline:none;width:180px">
               <span style="color:var(--gray3);font-size:11px;font-style:italic">— issued invoice number (billed separately)</span>
             </div>
@@ -975,7 +975,7 @@ body.in-project .gtabs{display:none!important}
             </div>
           </div>
           <div class="fgrid">
-            <div class="fg"><label>Valor HOA / CDD ($)</label><input id="lc-hoa-val" type="number" min="0" step="0.01" placeholder="ex.: 250.00" oninput="debounceLC()"></div>
+            <div class="fg"><label>HOA / CDD amount ($)</label><input id="lc-hoa-val" type="number" min="0" step="0.01" placeholder="ex.: 250.00" oninput="debounceLC()"></div>
             <div class="fg"></div>
           </div>
           <div class="fgrid" style="margin-top:6px">
@@ -1363,7 +1363,7 @@ body.in-project .gtabs{display:none!important}
           <span style="font-size:18px">🔍</span>
           <label for="rcd-vendor-filter" style="font-size:12px;color:#647078;font-weight:700">Filter by vendor:</label>
           <select id="rcd-vendor-filter" onchange="onRcdVendorFilterChange()" style="padding:6px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:6px;outline:none;background:#fff;font-family:inherit;cursor:pointer;min-width:220px;flex:1;max-width:300px">
-            <option value="">— Todos os fornecedores —</option>
+            <option value="">— All vendors —</option>
           </select>
           <button id="rcd-vendor-clear" onclick="clearRcdVendorFilter()" style="display:none;padding:6px 12px;font-size:12px;background:#fff;border:1px solid var(--gray2);border-radius:6px;cursor:pointer;color:#C62B2B">✕ Clear</button>
           <span id="rcd-vendor-count" style="font-size:11px;color:var(--gray3);font-style:italic"></span>
@@ -1433,10 +1433,10 @@ body.in-project .gtabs{display:none!important}
               <div class="card-title" style="margin:0;border:0;padding:0"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/></svg>Invoice History Processadas</div>
               <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
                 <select id="vnr-filter-item" onchange="renderRecurringNotesHistory()" style="padding:6px 8px;font-size:12px;border:1.5px solid var(--gray2);border-radius:6px;outline:none">
-                  <option value="">Todos os itens</option>
+                  <option value="">All items</option>
                 </select>
                 <select id="vnr-filter-year" onchange="renderRecurringNotesHistory()" style="padding:6px 8px;font-size:12px;border:1.5px solid var(--gray2);border-radius:6px;outline:none">
-                  <option value="">Todos os anos</option>
+                  <option value="">All years</option>
                 </select>
               </div>
             </div>
@@ -1488,7 +1488,7 @@ body.in-project .gtabs{display:none!important}
               <select id="sc-project" style="width:100%;padding:8px 10px;border:1px solid var(--gray2);border-radius:6px;background:#fff;font-family:inherit;font-size:13px"></select>
             </div>
             <div>
-              <div style="font-size:11px;font-weight:700;color:#647078;margin-bottom:4px">Categoria</div>
+              <div style="font-size:11px;font-weight:700;color:#647078;margin-bottom:4px">Category</div>
               <select id="sc-category" style="width:100%;padding:8px 10px;border:1px solid var(--gray2);border-radius:6px;background:#fff;font-family:inherit;font-size:13px">
                 <option value="all">Todas</option>
                 <option value="material">Material</option>
@@ -1550,7 +1550,7 @@ body.in-project .gtabs{display:none!important}
 
 <!-- HOME -->
 <div id="view-home">
-  <div class="port-hdr"><div><h2><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:10px;color:var(--dec-gold)"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>Home — Overview</h2><p style="color:var(--gray3);margin-top:4px">Painel executivo · todos os projetos consolidados</p></div></div>
+  <div class="port-hdr"><div><h2><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:10px;color:var(--dec-gold)"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>Home — Overview</h2><p style="color:var(--gray3);margin-top:4px">Executive dashboard · all projects consolidated</p></div></div>
   <div class="home-grid" id="home-kpis"></div>
   <div class="card" style="margin-top:6px;display:none">
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px">
@@ -1597,7 +1597,7 @@ body.in-project .gtabs{display:none!important}
             <th style="padding:10px 12px;text-align:left;border-bottom:2px solid var(--gray2);font-size:12px">Name</th>
             <th style="padding:10px 12px;text-align:left;border-bottom:2px solid var(--gray2);font-size:12px">Address</th>
             <th style="padding:10px 12px;text-align:left;border-bottom:2px solid var(--gray2);font-size:12px">E-mail</th>
-            <th style="padding:10px 12px;text-align:left;border-bottom:2px solid var(--gray2);font-size:12px">Telefone</th>
+            <th style="padding:10px 12px;text-align:left;border-bottom:2px solid var(--gray2);font-size:12px">Phone</th>
             <th style="padding:10px 12px;text-align:left;border-bottom:2px solid var(--gray2);font-size:12px">EIN/Imposto</th>
             <th style="padding:10px 12px;text-align:center;border-bottom:2px solid var(--gray2);font-size:12px;width:150px">🔗 Investor portal</th>
             <th style="padding:10px 12px;text-align:center;border-bottom:2px solid var(--gray2);font-size:12px;width:90px">Actions</th>
@@ -1650,8 +1650,8 @@ body.in-project .gtabs{display:none!important}
           <tr style="background:#F3F0EA">
             <th style="padding:10px 12px;text-align:left;border-bottom:2px solid var(--gray2);font-size:12px">Name</th>
             <th style="padding:10px 12px;text-align:left;border-bottom:2px solid var(--gray2);font-size:12px">Specialty</th>
-            <th style="padding:10px 12px;text-align:left;border-bottom:2px solid var(--gray2);font-size:12px;width:170px">Categoria</th>
-            <th style="padding:10px 12px;text-align:left;border-bottom:2px solid var(--gray2);font-size:12px">Telefone</th>
+            <th style="padding:10px 12px;text-align:left;border-bottom:2px solid var(--gray2);font-size:12px;width:170px">Category</th>
+            <th style="padding:10px 12px;text-align:left;border-bottom:2px solid var(--gray2);font-size:12px">Phone</th>
             <th style="padding:10px 12px;text-align:left;border-bottom:2px solid var(--gray2);font-size:12px">E-mail</th>
             <th style="padding:10px 12px;text-align:center;border-bottom:2px solid var(--gray2);font-size:12px">Status</th>
             <th style="padding:10px 12px;text-align:center;border-bottom:2px solid var(--gray2);font-size:12px">📄 Contracts</th>
@@ -1702,7 +1702,7 @@ body.in-project .gtabs{display:none!important}
 
 <!-- INVOICES (global) -->
 <div id="view-invoices">
-  <div class="port-hdr"><div><h2><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:10px;color:var(--dec-gold)"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/></svg>Faturas</h2><p style="color:var(--gray3);margin-top:4px">Invoice creation and management</p></div></div>
+  <div class="port-hdr"><div><h2><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:10px;color:var(--dec-gold)"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/></svg>Invoices</h2><p style="color:var(--gray3);margin-top:4px">Invoice creation and management</p></div></div>
   <div class="card" style="border-left:4px solid #CB704F;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
     <div>
       <div style="font-size:13px;font-weight:800;color:#263238">🔔 Open invoices reminder</div>
@@ -1710,7 +1710,7 @@ body.in-project .gtabs{display:none!important}
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
       <button onclick="runInvoiceReminders(true)" style="padding:7px 14px;font-size:12px;font-weight:700;background:#fff;border:1.5px solid var(--gray2);border-radius:6px;cursor:pointer;color:#647078;font-family:inherit">👁️ Simulate</button>
-      <button onclick="runInvoiceReminders(false)" style="padding:7px 14px;font-size:12px;font-weight:700;background:linear-gradient(135deg,#263238,#647078);color:#fff;border:0;border-radius:6px;cursor:pointer;font-family:inherit">🔔 Enviar agora</button>
+      <button onclick="runInvoiceReminders(false)" style="padding:7px 14px;font-size:12px;font-weight:700;background:linear-gradient(135deg,#263238,#647078);color:#fff;border:0;border-radius:6px;cursor:pointer;font-family:inherit">🔔 Send now</button>
     </div>
   </div>
   <div class="card">
@@ -1720,7 +1720,7 @@ body.in-project .gtabs{display:none!important}
       </div>
       <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
         <select id="iv-flt-status" onchange="renderInvoices()" style="padding:7px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:6px;outline:none">
-          <option value="">Todos os status</option>
+          <option value="">All statuses</option>
           <option value="open">Pending</option>
           <option value="paid">Paid</option>
           <option value="cancelled">Cancelado</option>
@@ -1821,7 +1821,7 @@ body.in-project .gtabs{display:none!important}
           <tr style="background:#F3F0EA">
             <th style="padding:10px 12px;text-align:left;border-bottom:2px solid var(--gray2);font-size:12px;width:110px">Date</th>
             <th style="padding:10px 12px;text-align:center;border-bottom:2px solid var(--gray2);font-size:12px;width:90px">Tipo</th>
-            <th style="padding:10px 12px;text-align:left;border-bottom:2px solid var(--gray2);font-size:12px;width:170px">Categoria</th>
+            <th style="padding:10px 12px;text-align:left;border-bottom:2px solid var(--gray2);font-size:12px;width:170px">Category</th>
             <th style="padding:10px 12px;text-align:left;border-bottom:2px solid var(--gray2);font-size:12px">Description</th>
             <th style="padding:10px 12px;text-align:right;border-bottom:2px solid var(--gray2);font-size:12px;width:120px">Amount</th>
             <th style="padding:10px 12px;text-align:left;border-bottom:2px solid var(--gray2);font-size:12px">Notas</th>
@@ -1864,7 +1864,7 @@ body.in-project .gtabs{display:none!important}
       </div>
       <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
         <select id="fin-flt-status" onchange="renderFinancial()" style="padding:7px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:6px;outline:none">
-          <option value="">Todos os status</option>
+          <option value="">All statuses</option>
           <option value="in_progress">Em andamento</option>
           <option value="completed">Done</option>
           <option value="for_sale">For sale</option>
@@ -2119,7 +2119,7 @@ body.in-project .gtabs{display:none!important}
     <div style="margin-top:6px;border:1.5px solid var(--gray2);border-radius:8px;padding:14px;background:#F3F0EA">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
         <div style="font-size:12px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.4px">📋 Items *</div>
-        <button class="btn btn-ghost" style="padding:5px 12px;font-size:11px" onclick="addInvoiceItem()">+ Adicionar item</button>
+        <button class="btn btn-ghost" style="padding:5px 12px;font-size:11px" onclick="addInvoiceItem()">+ Add item</button>
       </div>
       <div id="im-items"></div>
       <div id="im-op-overhead-wrap" style="display:none;justify-content:flex-end;align-items:center;gap:10px;padding-top:8px;margin-top:6px;border-top:1px dashed var(--gray2)">
@@ -2167,7 +2167,7 @@ body.in-project .gtabs{display:none!important}
     <div id="im-partial-wrap" style="display:none;background:#FFF8E7;border:1.5px dashed #CB704F;border-radius:8px;padding:14px;margin-top:8px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
         <div style="font-size:12px;font-weight:700;color:#CB704F;text-transform:uppercase;letter-spacing:.4px">💵 Pagamentos parciais</div>
-        <button class="btn btn-ghost" style="padding:4px 10px;font-size:11px" onclick="addPartialPayment()">+ Adicionar pagamento</button>
+        <button class="btn btn-ghost" style="padding:4px 10px;font-size:11px" onclick="addPartialPayment()">+ Add payment</button>
       </div>
       <div id="im-partial-list"></div>
       <div style="display:flex;justify-content:space-between;align-items:center;padding-top:10px;margin-top:8px;border-top:1.5px solid #E5D9B8;font-size:12px">
@@ -2236,7 +2236,7 @@ body.in-project .gtabs{display:none!important}
 <!-- ADD ITEM MODAL -->
 <div class="modal-overlay" id="modal-add-item">
   <div class="modal" style="max-width:440px">
-    <h2>Adicionar item</h2>
+    <h2>Add item</h2>
     <div id="add-item-phase-label" style="color:var(--gray3);font-size:13px;margin-bottom:16px"></div>
     <div class="fg"><label>Item name</label>
       <input id="add-item-name" placeholder="e.g. Drywall, Paint, Door frames..." autocomplete="off">
@@ -2424,7 +2424,7 @@ body.in-project .gtabs{display:none!important}
 <!-- ADD TASK MODAL -->
 <div class="modal-overlay" id="modal-add-task">
   <div class="modal" style="max-width:440px">
-    <h2>Adicionar tarefa</h2>
+    <h2>Add task</h2>
     <div id="add-task-phase-label" style="color:var(--gray3);font-size:13px;margin-bottom:16px"></div>
     <div class="fg"><label>Task name</label>
       <input id="add-task-name" placeholder="e.g. Remove kitchen cabinets, Install flooring..." autocomplete="off">
@@ -2693,7 +2693,7 @@ function showInvestorLogin(){
       <div style="background:#fff;max-width:420px;width:92%;padding:38px 34px;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,.08);text-align:center">
         <div style="font-size:12px;font-weight:800;color:#CB704F;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px">Investor Portal</div>
         <h1 style="font-size:22px;color:#263238;font-weight:800;margin-bottom:6px">Project Management</h1>
-        <p style="color:#647078;font-size:13px;margin-bottom:22px">Entre com seu e-mail. Enviaremos um link de acesso — sem senha.</p>
+        <p style="color:#647078;font-size:13px;margin-bottom:22px">Enter your email. We'll send you an access link — no password.</p>
         <input id="inv-email" type="email" placeholder="seu@email.com" onkeydown="if(event.key==='Enter')sendInvestorMagicLink()" style="width:100%;padding:12px 14px;font-size:14px;border:1.5px solid #DFE4E5;border-radius:9px;outline:none;margin-bottom:12px;font-family:inherit">
         <button id="inv-send-btn" onclick="sendInvestorMagicLink()" style="width:100%;padding:13px;background:#CB704F;color:#fff;border:0;border-radius:9px;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit">Send access link</button>
         <div id="inv-login-msg" style="font-size:12.5px;margin-top:14px;min-height:18px"></div>
@@ -2901,7 +2901,7 @@ async function _portalBundleByToken(token){
     if(e && e.category==='dec_invoice'){
       extraCostsByProj[e.project_id]=(extraCostsByProj[e.project_id]||0)+(+e.amount||0);
       if(!extraCostsItemsByProj[e.project_id]) extraCostsItemsByProj[e.project_id]=[];
-      extraCostsItemsByProj[e.project_id].push({name:e.name||'(sem nome)',amount:+e.amount||0});
+      extraCostsItemsByProj[e.project_id].push({name:e.name||'(no name)',amount:+e.amount||0});
     }
   });
   const listingByProj={};
@@ -3483,7 +3483,7 @@ function _renderInvestorPortal(client,projects,invoices,itemsByInvoice,propertyB
               <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
                 <div style="flex:1;min-width:200px">
                   <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-                    <span style="font-weight:700;color:#263238;font-size:14px">${isRefund?'Reembolso':'Fatura'} #${inv.invoice_number}</span>
+                    <span style="font-weight:700;color:#263238;font-size:14px">${isRefund?'Refund':'Invoice'} #${inv.invoice_number}</span>
                     ${_invStatusBadge(inv.status)}
                     ${refundBadge}
                   </div>
@@ -3518,7 +3518,7 @@ function _renderInvestorPortal(client,projects,invoices,itemsByInvoice,propertyB
     const lucroDec=netProfit*pctDec/100;
     const roiClient=roiTotal*pctClient/100;
     const roiDec=roiTotal*pctDec/100;
-    const pagarADec=lucroDec; // Empresa recebe = % Empresa of profit only
+    const pagarADec=lucroDec; // Empresa recebe = % Company of profit only
 
     // Header sub-info: Purchase Date, Final Sale Price, Execution Time (for sold projects)
     let executionDays=null;
@@ -3581,7 +3581,7 @@ function _renderInvestorPortal(client,projects,invoices,itemsByInvoice,propertyB
             <div style="font-size:16px;font-weight:800;color:#2D6A2D;margin-top:2px">${_fmtMoney(totalPaid)}</div>
           </div>
           <div>
-            <div style="font-size:10px;font-weight:700;color:#7A5A28;text-transform:uppercase;letter-spacing:.4px">⏳ Pendentes</div>
+            <div style="font-size:10px;font-weight:700;color:#7A5A28;text-transform:uppercase;letter-spacing:.4px">⏳ Pending</div>
             <div style="font-size:16px;font-weight:800;color:#7A5A28;margin-top:2px">${_fmtMoney(totalOpen)}</div>
           </div>
           ${refunded>0?`<div>
@@ -3622,7 +3622,7 @@ function _renderInvestorPortal(client,projects,invoices,itemsByInvoice,propertyB
         </div>`:''}
         ${executionDays!=null?`<div>
           <span style="opacity:.7;font-weight:600">⏱️ Execution time:</span>
-          <span style="font-weight:700;margin-left:6px">${executionDays} dias</span>
+          <span style="font-weight:700;margin-left:6px">${executionDays} days</span>
           <div style="font-size:10px;opacity:.6;margin-top:3px;font-style:italic;font-weight:400">* allow 15 to 30 days for the house closing to settle</div>
         </div>`:''}
       </div>`:'';
@@ -3630,7 +3630,7 @@ function _renderInvestorPortal(client,projects,invoices,itemsByInvoice,propertyB
     // Company sub-header (only in grouped portal, once per company)
     const _coHeader=(_companyOrder && _firstOfCompany.has(p.id))
       ? `<div style="margin:34px 0 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-          <div style="font-size:13px;font-weight:800;color:#CB704F;letter-spacing:1px;text-transform:uppercase">🏢 ${((_companyNames&&_companyNames[p.customer])||'Empresa').replace(/</g,'&lt;')}</div>
+          <div style="font-size:13px;font-weight:800;color:#CB704F;letter-spacing:1px;text-transform:uppercase">🏢 ${((_companyNames&&_companyNames[p.customer])||'Company').replace(/</g,'&lt;')}</div>
           <div style="flex:1;height:1px;background:linear-gradient(to right,#DFE4E5,transparent)"></div>
         </div>`
       : '';
@@ -3655,7 +3655,7 @@ function _renderInvestorPortal(client,projects,invoices,itemsByInvoice,propertyB
         <div style="padding:0 20px 16px">${timelineHTML}</div>
 
         <div style="padding:6px 20px 4px;background:#fff;border-top:1px solid #DFE4E5">
-          <div style="font-size:12px;font-weight:700;color:#263238;text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px">📄 Faturas <span style="color:#999;font-weight:600;text-transform:none">— clique em "Ver fatura" para abrir o documento</span></div>
+          <div style="font-size:12px;font-weight:700;color:#263238;text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px">📄 Invoices <span style="color:#999;font-weight:600;text-transform:none">— clique em "Ver fatura" para abrir o documento</span></div>
         </div>
         <div>${invoicesHTML}</div>
 
@@ -3843,7 +3843,7 @@ function _renderInvestorPortal(client,projects,invoices,itemsByInvoice,propertyB
           // Linha-título da empresa (somente na visão de grupo, uma vez por empresa)
           const _coRow=(_companyOrder && _firstOfCompany.has(p.id))
             ? `<tr><td colspan="11" style="padding:16px 14px 8px;background:#F3F0EA;border-bottom:2px solid #DFE4E5">
-                 <span style="font-size:12px;font-weight:800;color:#CB704F;letter-spacing:1px;text-transform:uppercase">🏢 ${((_companyNames&&_companyNames[p.customer])||'Empresa').replace(/</g,'&lt;')}</span>
+                 <span style="font-size:12px;font-weight:800;color:#CB704F;letter-spacing:1px;text-transform:uppercase">🏢 ${((_companyNames&&_companyNames[p.customer])||'Company').replace(/</g,'&lt;')}</span>
                </td></tr>${_grpHdr}`
             : '';
           return `${_coRow}
@@ -4369,7 +4369,7 @@ async function _lxBackupBanner(){
   }catch(e){}
   return '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:#E7F2EB;border:1px solid #D7E0C6;border-radius:10px;padding:12px 16px;margin-bottom:16px">'
     +'<div style="font-size:13px;color:#3D4A2A"><strong>🛡 Daily automatic backup active</strong><br><span style="color:#5C6B45">Last backup: '+_lxEsc(lastTxt)+'</span></div>'
-    +'<button class="btn btn-gold" style="margin-left:auto;padding:8px 14px;font-size:12px" onclick="doBackupNow(this)">💾 Fazer backup agora</button></div>';
+    +'<button class="btn btn-gold" style="margin-left:auto;padding:8px 14px;font-size:12px" onclick="doBackupNow(this)">💾 Back up now</button></div>';
 }
 async function doBackupNow(btn){
   if(btn){ btn.disabled=true; btn.textContent='💾 Salvando…'; }
@@ -4402,7 +4402,7 @@ async function doBackupNow(btn){
 }
 async function renderTrash(){
   const root=document.getElementById('lixeira-root'); if(!root) return;
-  root.innerHTML='<div style="color:var(--gray3);padding:20px">🗑 Carregando…</div>';
+  root.innerHTML='<div style="color:var(--gray3);padding:20px">🗑 Loading…</div>';
   const banner=await _lxBackupBanner();
   const {data,error}=await sb.from('budget_items').select('*').not('deleted_at','is',null).order('deleted_at',{ascending:false}).limit(2000);
   if(error){ root.innerHTML=banner+'<div style="color:#B33F36;padding:20px">Erro ao carregar a lixeira: '+_lxEsc(error.message)+'</div>'; return; }
@@ -4537,7 +4537,7 @@ async function loadFinRecurring(){
   catch(e){ console.warn('loadFinRecurring',e); _finRecurring=[]; }
 }
 function _finAccName(id){const a=finAccounts.find(x=>x.id===id);return a?(a.name||'—'):'—';}
-function _finCatName(id){const c=finCategories.find(x=>x.id===id);return c?(c.name||'—'):'<span style="color:#B33F36">a classificar</span>';}
+function _finCatName(id){const c=finCategories.find(x=>x.id===id);return c?(c.name||'—'):'<span style="color:#B33F36">to classify</span>';}
 function _finProjName(id){const p=(projects||[]).find(x=>x.id===id);return p?(p.name||'—'):'—';}
 function renderFinLedger(){
   const el=document.getElementById('fin-ledger'); if(!el) return;
@@ -4545,7 +4545,7 @@ function renderFinLedger(){
   const monthsSet=[...new Set(finTx.map(t=>(t.txn_date||'').slice(0,7)).filter(Boolean))].sort().reverse();
   let list=finTx.filter(t=>(!_finLedgerAcc||t.account_id===_finLedgerAcc)&&(!_finLedgerMonth||(t.txn_date||'').slice(0,7)===_finLedgerMonth));
   const accSel='<select onchange="_finLedgerFilter(\'acc\',this.value)" style="font-size:11px;padding:5px 7px;border:1.5px solid var(--gray2);border-radius:6px;outline:none"><option value="">Todas as contas</option>'+finAccounts.map(a=>`<option value="${a.id}"${a.id===_finLedgerAcc?' selected':''}>${_finAccName(a.id)}</option>`).join('')+'</select>';
-  const monSel='<select onchange="_finLedgerFilter(\'mon\',this.value)" style="font-size:11px;padding:5px 7px;border:1.5px solid var(--gray2);border-radius:6px;outline:none"><option value="">Todos os meses</option>'+monthsSet.map(m=>`<option value="${m}"${m===_finLedgerMonth?' selected':''}>${m}</option>`).join('')+'</select>';
+  const monSel='<select onchange="_finLedgerFilter(\'mon\',this.value)" style="font-size:11px;padding:5px 7px;border:1.5px solid var(--gray2);border-radius:6px;outline:none"><option value="">All months</option>'+monthsSet.map(m=>`<option value="${m}"${m===_finLedgerMonth?' selected':''}>${m}</option>`).join('')+'</select>';
   const bal={};
   list.forEach(t=>{ const s=(t.direction==='in'?1:-1)*(+t.amount||0); bal[t.account_id]=(bal[t.account_id]||0)+s; });
   const chips=Object.keys(bal).map(aid=>`<span style="display:inline-flex;gap:6px;align-items:center;padding:5px 10px;background:#F3F0EA;border:1px solid #DFE4E5;border-radius:8px;font-size:12px;margin:3px"><strong>${_finAccName(aid)}</strong> <span style="color:${bal[aid]>=0?'#2D7D5F':'#B33F36'};font-weight:700">${fmtc(bal[aid])}</span></span>`).join('');
@@ -4556,7 +4556,7 @@ function renderFinLedger(){
     <td style="padding:6px 8px;font-size:11px">${_finCatName(t.category_id)}</td>
     <td style="padding:6px 8px;font-size:11px">${t.project_id?_finProjName(t.project_id):'<span style="color:#999">Overhead</span>'}</td>
     <td style="padding:6px 8px;text-align:right;font-weight:700;white-space:nowrap;color:${t.direction==='in'?'#2D7D5F':'#263238'}">${t.direction==='in'?'+':'−'}${fmtc(t.amount)}</td>
-    <td style="padding:6px 8px;text-align:center"><button onclick="_finDeleteTx('${t.id}')" title="Remover" style="background:transparent;border:1px solid var(--gray2);border-radius:5px;cursor:pointer;color:var(--p1);font-size:11px;padding:3px 6px">🗑</button></td>
+    <td style="padding:6px 8px;text-align:center"><button onclick="_finDeleteTx('${t.id}')" title="Remove" style="background:transparent;border:1px solid var(--gray2);border-radius:5px;cursor:pointer;color:var(--p1);font-size:11px;padding:3px 6px">🗑</button></td>
   </tr>`;
   // Agrupa por mês (cabeçalho do mês + subtotais)
   const nn=['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
@@ -4581,9 +4581,9 @@ function renderFinLedger(){
         <th style="padding:6px 8px;text-align:left;font-size:10px">Date</th>
         <th style="padding:6px 8px;text-align:left;font-size:10px">Account</th>
         <th style="padding:6px 8px;text-align:left;font-size:10px">Description</th>
-        <th style="padding:6px 8px;text-align:left;font-size:10px">Categoria</th>
+        <th style="padding:6px 8px;text-align:left;font-size:10px">Category</th>
         <th style="padding:6px 8px;text-align:left;font-size:10px">Project</th>
-        <th style="padding:6px 8px;text-align:right;font-size:10px">Valor</th>
+        <th style="padding:6px 8px;text-align:right;font-size:10px">Amount</th>
         <th style="padding:6px 8px;font-size:10px"></th>
       </tr></thead><tbody>${rows}</tbody></table></div>
     ${list.length>300?'<div style="font-size:11px;color:var(--gray3);margin-top:6px">Mostrando as 300 mais recentes.</div>':''}
@@ -4796,7 +4796,7 @@ function renderFinReview(){
     return `<tr style="border-bottom:1px solid #DFE4E5;${rowbg}">
       <td style="padding:6px 8px;text-align:center">${badge}</td>
       <td style="padding:6px 8px;white-space:nowrap;font-size:11px">${l.date}${l.dup?'<div style="font-size:9px;color:#B33F36;font-weight:700">already imported</div>':''}</td>
-      <td style="padding:6px 8px;font-size:11px;max-width:220px">${(l.description||'').replace(/</g,'&lt;')}${l._dupActual?`<div style="font-size:9px;color:#C0392B;font-weight:700">⚠ possível duplicado — já no Real Costs: ${_finProjName(l._dupActual.project_id).replace(/</g,'&lt;')} · ${(l._dupActual.item_name||'').replace(/</g,'&lt;')} · ${fmtc(l._dupActual.actual)}${l._dupNotaPath?` <a href="javascript:void(0)" onclick="_openNotaPath('${(l._dupNotaPath||'').replace(/'/g,"\\'")}')" style="color:#CB704F;text-decoration:underline">abrir nota →</a>`:' <span style="color:#c9a">(no PDF)</span>'}</div>`:''}${l._dupPosted?`<div style="font-size:9px;color:#8a3b12;font-weight:700">⚠ já lançado no livro em ${l._dupPosted.txn_date} (${_finAccName(l._dupPosted.account_id).replace(/</g,'&lt;')})</div>`:''}${l._dupRecurring?`<div style="font-size:9px;color:#8a3b12;font-weight:700">⚠ possível duplicado — já no Recurring: ${_finProjName(l._dupRecurring.project_id).replace(/</g,'&lt;')} · ${(l._dupRecurring.item_name||'').replace(/</g,'&lt;')}</div>`:''}</td>
+      <td style="padding:6px 8px;font-size:11px;max-width:220px">${(l.description||'').replace(/</g,'&lt;')}${l._dupActual?`<div style="font-size:9px;color:#C0392B;font-weight:700">⚠ possible duplicate — already in Real Costs: ${_finProjName(l._dupActual.project_id).replace(/</g,'&lt;')} · ${(l._dupActual.item_name||'').replace(/</g,'&lt;')} · ${fmtc(l._dupActual.actual)}${l._dupNotaPath?` <a href="javascript:void(0)" onclick="_openNotaPath('${(l._dupNotaPath||'').replace(/'/g,"\\'")}')" style="color:#CB704F;text-decoration:underline">abrir nota →</a>`:' <span style="color:#c9a">(no PDF)</span>'}</div>`:''}${l._dupPosted?`<div style="font-size:9px;color:#8a3b12;font-weight:700">⚠ já lançado no livro em ${l._dupPosted.txn_date} (${_finAccName(l._dupPosted.account_id).replace(/</g,'&lt;')})</div>`:''}${l._dupRecurring?`<div style="font-size:9px;color:#8a3b12;font-weight:700">⚠ possível duplicado — já no Recurring: ${_finProjName(l._dupRecurring.project_id).replace(/</g,'&lt;')} · ${(l._dupRecurring.item_name||'').replace(/</g,'&lt;')}</div>`:''}</td>
       <td style="padding:6px 8px;text-align:right;white-space:nowrap;font-weight:700;color:${l.direction==='in'?'#2D7D5F':'#263238'}">${l.direction==='in'?'+':'−'}${fmtc(l.amount)}</td>
       <td style="padding:6px 6px"><select onchange="_finSet(${i},'category_id',this.value)" style="font-size:11px;padding:4px 5px;max-width:150px">${_finCatOptions(l.category_id)}</select></td>
       <td style="padding:6px 6px"><select onchange="_finSet(${i},'project_id',this.value)" style="font-size:11px;padding:4px 5px;max-width:140px">${_finProjOptions(l.project_id)}</select></td>
@@ -4807,7 +4807,7 @@ function renderFinReview(){
   }).join('');
   wrap.innerHTML=`<div class="card">
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:8px">
-      <div style="font-weight:800;color:#263238">${(_finImport.account.name||'').replace(/</g,'&lt;')} · ${_finImport.period||'período ?'} <span style="font-weight:500;color:var(--gray3);font-size:12px">— ${L.length} linhas${dups?` · ${dups} já importadas (ignoradas)`:''}</span></div>
+      <div style="font-weight:800;color:#263238">${(_finImport.account.name||'').replace(/</g,'&lt;')} · ${_finImport.period||'período ?'} <span style="font-weight:500;color:var(--gray3);font-size:12px">— ${L.length} lines${dups?` · ${dups} already imported (ignored)`:''}</span></div>
       <button class="btn btn-primary" style="font-size:13px;padding:8px 16px" onclick="postFinImport()">✓ Postar ${toPost.length} transações</button>
     </div>
     <div style="font-size:12px;color:#647078;margin-bottom:8px">To post: outflows <strong style="color:#263238">${fmtc(sumOut)}</strong> · entradas <strong style="color:#2D7D5F">${fmtc(sumIn)}</strong>${(rep.out!=null||rep.in!=null)?` <span style="color:var(--gray3)">· extrato reportou: saídas ${rep.out!=null?fmtc(rep.out):'?'} / entradas ${rep.in!=null?fmtc(rep.in):'?'}</span>`:''}${warn}</div>
@@ -4817,8 +4817,8 @@ function renderFinReview(){
         <th style="padding:6px 8px;font-size:10px"></th>
         <th style="padding:6px 8px;text-align:left;font-size:10px">Date</th>
         <th style="padding:6px 8px;text-align:left;font-size:10px">Description</th>
-        <th style="padding:6px 8px;text-align:right;font-size:10px">Valor</th>
-        <th style="padding:6px 8px;text-align:left;font-size:10px">Categoria</th>
+        <th style="padding:6px 8px;text-align:right;font-size:10px">Amount</th>
+        <th style="padding:6px 8px;text-align:left;font-size:10px">Category</th>
         <th style="padding:6px 8px;text-align:left;font-size:10px">Project</th>
         <th style="padding:6px 8px;text-align:left;font-size:10px">Vendor</th>
         <th style="padding:6px 8px;font-size:10px" title="Transfer">↔</th>
@@ -4826,7 +4826,7 @@ function renderFinReview(){
       </tr></thead>
       <tbody>${rows}</tbody>
     </table></div>
-    <div style="font-size:10px;color:var(--gray3);margin-top:8px">◆ verde = casado c/ Real Costs · ● verde = regra · ● dourado = IA · ● azul = você · fundo laranja = possível duplicado do Real Costs · fundo amarelo = "a classificar" · fundo roxo = transferência · fundo vermelho = already imported. 📌 cria regra pra próxima importação.</div>
+    <div style="font-size:10px;color:var(--gray3);margin-top:8px">◆ green = matched with Real Costs · ● green = rule · ● gold = AI · ● blue = you · orange bg = possible Real Costs duplicate · yellow bg = "to classify" · purple bg = transfer · red bg = already imported. 📌 create a rule for the next import.</div>
   </div>`;
 }
 
@@ -4872,7 +4872,7 @@ function _fluxoSetYear(v){ _fluxoYear=parseInt(v)||_fluxoYear; renderFluxo(); }
 async function renderFluxo(){
   await loadFinData();
   const root=document.getElementById('fluxo-root'); if(!root) return;
-  root.innerHTML='<div style="padding:40px;text-align:center;color:var(--gray3)">Carregando…</div>';
+  root.innerHTML='<div style="padding:40px;text-align:center;color:var(--gray3)">Loading…</div>';
   const y=_fluxoYear;
   const r=await sb.from('fin_transactions').select('*').gte('txn_date',y+'-01-01').lte('txn_date',y+'-12-31').eq('is_transfer',false).limit(5000);
   const tx=r.data||[];
@@ -4896,7 +4896,7 @@ async function renderFluxo(){
   const th='padding:9px 12px;text-align:right;font-size:11px;font-weight:700;color:#EFE3CC;white-space:nowrap';
   root.innerHTML=`
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:14px">
-      <div style="font-size:12px;font-weight:800;letter-spacing:2px;color:#8A7B68;text-transform:uppercase">Resumo Anual — Cash Flow</div>
+      <div style="font-size:12px;font-weight:800;letter-spacing:2px;color:#8A7B68;text-transform:uppercase">Annual Summary — Cash Flow</div>
       <div style="display:flex;gap:10px;align-items:center">
         <label style="font-size:11px;color:#8A7B68">ANO</label>
         <input type="number" value="${y}" onchange="_fluxoSetYear(this.value)" style="width:90px;padding:6px 8px;border:1.5px solid var(--gray2);border-radius:6px;font-size:13px;font-weight:700;text-align:center;outline:none">
@@ -5006,7 +5006,7 @@ function _populatePortClientFilter(){
   const individuals=Array.from(clientIdsWithProjects)
     .map(cid=>{
       const c=clients.find(cl=>cl.id===cid);
-      return c?{id:c.id,name:c.name||'(sem nome)'}:null;
+      return c?{id:c.id,name:c.name||'(no name)'}:null;
     })
     .filter(Boolean)
     .filter(c=>!groupedNames.has(c.name)) // hide grouped ones
@@ -5021,7 +5021,7 @@ function _populatePortClientFilter(){
   }).sort((a,b)=>a.label.localeCompare(b.label));
   const currentValue=sel.value;
   // Render: All + Groups (highlighted) + Individuals
-  let html='<option value="">Todos os clientes</option>';
+  let html='<option value="">All clients</option>';
   if(activeGroups.length>0){
     html+='<optgroup label="Grupos">';
     activeGroups.forEach(g=>{
@@ -5121,7 +5121,7 @@ function renderPortfolio(){
     const grid=section.querySelector('#grid-'+st);
     if(list.length===0){
       grid.parentElement.innerHTML=section.querySelector('.proj-section-hdr').outerHTML+
-        `<div class="proj-section-empty">Nenhum projeto · ${meta.label.toLowerCase()}</div>`;
+        `<div class="proj-section-empty">No project · ${meta.label.toLowerCase()}</div>`;
       return;
     }
     list.forEach(p=>grid.appendChild(buildProjectCard(p,meta)));
@@ -5328,7 +5328,7 @@ function buildBudgetRooms(){
     estC.innerHTML='';
     const card=document.createElement('div');
     card.className='broom-card';
-    card.innerHTML=`<table class="bitbl"><thead><tr><th style="width:240px">Item</th><th style="width:155px">Categoria</th><th style="width:110px">Vendor</th><th style="width:55px">Qty</th><th style="width:90px">Unit cost ($)</th><th style="width:100px">Budgeted value ($)</th><th style="width:110px">Notas</th><th style="width:40px"></th></tr></thead><tbody id="tb-est-all"></tbody></table>
+    card.innerHTML=`<table class="bitbl"><thead><tr><th style="width:240px">Item</th><th style="width:155px">Category</th><th style="width:110px">Vendor</th><th style="width:55px">Qty</th><th style="width:90px">Unit cost ($)</th><th style="width:100px">Budgeted value ($)</th><th style="width:110px">Notas</th><th style="width:40px"></th></tr></thead><tbody id="tb-est-all"></tbody></table>
       <div style="padding:10px 15px;background:#F3F0EA;border-top:1px solid #DFE4E5">
         <button class="btn btn-ghost" style="font-size:12px;padding:6px 12px" onclick="addItem('est')">+ Add item</button>
         <button class="btn" style="font-size:12px;padding:6px 12px;margin-left:8px;background:var(--kf-gold,#CB704F);color:#183541;border:0;border-radius:6px;cursor:pointer;font-weight:700" onclick="estimateBudgetAI()">✨ Estimate with AI</button>
@@ -5343,7 +5343,7 @@ function buildBudgetRooms(){
     actC.innerHTML='';
     const card=document.createElement('div');
     card.className='broom-card';
-    const thead=`<thead><tr><th style="width:240px">Item</th><th style="width:155px">Categoria</th><th style="width:100px">Vendor</th><th style="width:120px">Real costs ($)</th><th style="width:120px">Notas</th><th style="width:60px;text-align:center">📎</th><th style="width:40px"></th></tr></thead>`;
+    const thead=`<thead><tr><th style="width:240px">Item</th><th style="width:155px">Category</th><th style="width:100px">Vendor</th><th style="width:120px">Real costs ($)</th><th style="width:120px">Notas</th><th style="width:60px;text-align:center">📎</th><th style="width:40px"></th></tr></thead>`;
     card.innerHTML=`<table class="bitbl">${thead}<tbody id="tb-act-all"></tbody></table>
       <div style="padding:10px 15px;background:#F3F0EA;border-top:1px solid #DFE4E5">
         <button class="btn btn-ghost" style="font-size:12px;padding:6px 12px" onclick="addItem('act')">+ Add item</button>
@@ -5558,7 +5558,7 @@ function _populateActVendorFilter(){
     return {value:sup, name:sup};
   }).sort((a,b)=>(a.name||'').localeCompare(b.name||''));
   const current=sel.value;
-  sel.innerHTML='<option value="">— Todos os fornecedores —</option>'+
+  sel.innerHTML='<option value="">— All vendors —</option>'+
     list.map(v=>`<option value="${v.value.replace(/"/g,'&quot;')}">${(v.name||'').replace(/</g,'&lt;')}</option>`).join('');
   if(current && list.some(v=>v.value===current)){
     sel.value=current;
@@ -5639,7 +5639,7 @@ function _populateRcdVendorFilter(){
   });
   const list=Array.from(usedCompanies).sort((a,b)=>a.localeCompare(b));
   const current=sel.value;
-  sel.innerHTML='<option value="">— Todos os fornecedores —</option>'+
+  sel.innerHTML='<option value="">— All vendors —</option>'+
     list.map(c=>`<option value="${c.replace(/"/g,'&quot;')}">${c.replace(/</g,'&lt;')}</option>`).join('');
   if(current && list.includes(current)){
     sel.value=current;
@@ -6202,7 +6202,7 @@ function renderVnLines(){
       <select onchange="vnLineSet(${i},'category',this.value)" style="padding:7px;border:1px solid var(--gray2);border-radius:6px;font-size:12px;font-family:inherit">${_vnCatOptions(l.category)}</select>
       <input value="${(l.item_name||'').replace(/"/g,'&quot;')}" oninput="vnLineSet(${i},'item_name',this.value)" placeholder="Item" style="padding:7px;border:1px solid var(--gray2);border-radius:6px;font-size:12px;font-family:inherit">
       <input type="number" min="0" step="0.01" value="${l.amount||0}" oninput="vnLineSet(${i},'amount',this.value)" style="padding:7px;border:1px solid var(--gray2);border-radius:6px;font-size:12px;font-family:inherit;text-align:right">
-      <button type="button" onclick="vnRemoveLine(${i})" title="Remover" style="border:0;background:transparent;color:#B33F36;cursor:pointer;font-size:16px;padding:0 4px">×</button>
+      <button type="button" onclick="vnRemoveLine(${i})" title="Remove" style="border:0;background:transparent;color:#B33F36;cursor:pointer;font-size:16px;padding:0 4px">×</button>
     </div>`).join('');
   _vnUpdateLinesSum();
 }
@@ -6553,7 +6553,7 @@ async function approveVendorNoteItemized(){
     .map(l => ({ gid:(l.group_id||'').trim(), category:(l.category||'').trim(), itemName:(l.item_name||'').trim(), amount:+l.amount||0, notes:(l.notes||'').trim() }))
     .filter(l => l.amount > 0);
   if (lines.length === 0) { toast('No line with a value', false); return; }
-  if (lines.find(l => !l.gid)) { toast('Escolha a fase de todas as linhas', false); return; }
+  if (lines.find(l => !l.gid)) { toast('Choose the phase for all lines', false); return; }
   if (lines.find(l => !l.itemName)) { toast('Enter the item for every line', false); return; }
 
   // Duplicidade: nota (arquivo/tamanho) + valor de cada linha
@@ -6968,7 +6968,7 @@ function _renderRecurringQueueBanner() {
     html += `
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
         <div>
-          <div style="font-weight:700;color:#263238;font-size:13px"> ${remaining} bill(s) aguardando revisão ${subInfo}</div>
+          <div style="font-weight:700;color:#263238;font-size:13px"> ${remaining} bill(s) awaiting review ${subInfo}</div>
           <div style="font-size:11px;color:#647078;margin-top:2px">Next: <strong>${(next.original_filename||'').replace(/</g,'&lt;')}</strong></div>
         </div>
         <div style="display:flex;gap:6px;flex-wrap:wrap">
@@ -7280,7 +7280,7 @@ async function loadRecurringNotesHistory() {
   if (!CID || !isCEO()) return;
   const tbody = document.getElementById('vnr-history-tbody');
   if (tbody && !_vnrHistoryCache) {
-    tbody.innerHTML = '<tr><td colspan="6" style="padding:20px;text-align:center;color:var(--gray3);font-style:italic">Carregando...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" style="padding:20px;text-align:center;color:var(--gray3);font-style:italic">Loading...</td></tr>';
   }
 
   if (!_vnrHistoryCache) {
@@ -7302,14 +7302,14 @@ async function loadRecurringNotesHistory() {
   // Populate filter dropdowns
   const filterItem = document.getElementById('vnr-filter-item');
   if (filterItem && filterItem.options.length <= 1) {
-    let html = '<option value="">Todos os itens</option>';
+    let html = '<option value="">All items</option>';
     RC_ITEMS.forEach(it => { html += `<option value="${it.replace(/"/g,'&quot;')}">${it.replace(/</g,'&lt;')}</option>`; });
     filterItem.innerHTML = html;
   }
   const filterYear = document.getElementById('vnr-filter-year');
   if (filterYear && filterYear.options.length <= 1) {
     const { y1, y2, y3, y4 } = _getRCYears();
-    let html = '<option value="">Todos os anos</option>';
+    let html = '<option value="">All years</option>';
     [y1, y2, y3, y4].forEach((yr, i) => { html += `<option value="${i}">Ano ${i+1} (${yr})</option>`; });
     filterYear.innerHTML = html;
   }
@@ -7412,7 +7412,7 @@ async function _scLoadProjectsDropdown() {
     sel.innerHTML = '<option value="">(error loading)</option>';
     return;
   }
-  sel.innerHTML = data.map(p => `<option value="${p.id}">${(p.name || p.address || '(sem nome)').replace(/</g,'&lt;')}</option>`).join('');
+  sel.innerHTML = data.map(p => `<option value="${p.id}">${(p.name || p.address || '(no name)').replace(/</g,'&lt;')}</option>`).join('');
 }
 
 function _scSetStatus(msg, isError) {
@@ -7504,7 +7504,7 @@ function _scRenderResult(result) {
   const sumHtml = `
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
       <div style="font-size:22px">📋</div>
-      <div style="font-weight:800;color:#263238;font-size:15px">Resumo</div>
+      <div style="font-weight:800;color:#263238;font-size:15px">Summary</div>
     </div>
     <div style="font-size:13px;color:#263238;line-height:1.5;margin-bottom:12px">${_scEsc(insights.summary_text || 'Sem resumo disponível.')}</div>
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
@@ -8769,7 +8769,7 @@ function generateReport(){
   const pctDec=+p.pct_dec||0;
   const lucroClient=lucroLiquido*pctClient/100;
   const lucroDec=lucroLiquido*pctDec/100;
-  const pagarADec=lucroDec; // Empresa recebe = % Empresa of profit only (refund is no longer added)
+  const pagarADec=lucroDec; // Empresa recebe = % Company of profit only (refund is no longer added)
   // ROI = Net Profit / Total invested × 100 (dividido proporcionalmente entre Client e DEC)
   const roiTotal=totalInvested>0?(lucroLiquido/totalInvested*100):0;
   const roiClient=roiTotal*pctClient/100;
@@ -8867,7 +8867,7 @@ function generateReport(){
   <div class="section-title">Purchase (acquisition)</div>
   <table>
     <thead>
-      <tr><th>Description</th><th class="docs">Obs.</th><th class="val">Valor</th></tr>
+      <tr><th>Description</th><th class="docs">Obs.</th><th class="val">Amount</th></tr>
     </thead>
     <tbody>
       ${emd>0?`<tr><td>EMD — sinal</td><td class="docs"></td><td class="val">${$$(emd)}</td></tr>`:''}
@@ -8883,7 +8883,7 @@ function generateReport(){
   <div class="section-title">Work & costs</div>
   <table>
     <thead>
-      <tr><th>Description</th><th class="docs">Obs.</th><th class="val">Valor</th></tr>
+      <tr><th>Description</th><th class="docs">Obs.</th><th class="val">Amount</th></tr>
     </thead>
     <tbody>
       ${obraRealPDF>0?`<tr><td>Work (actual)</td><td class="docs"></td><td class="val">${$$(obraRealPDF)}</td></tr>`:''}
@@ -8954,7 +8954,7 @@ function generateBudgetReport(){
   if(!sections) sections='<p style="text-align:center;color:#999;font-style:italic;padding:40px 10px">No budget items posted in this project.</p>';
   const totVar=totAct-totEst;
   const today=new Date().toLocaleDateString('pt-BR');
-  const projName=proj.name||'(sem nome)';
+  const projName=proj.name||'(no name)';
   const address=proj.address||'';
   const reportHTML=`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><title>Budget - ${projName}</title>
 <style>
@@ -9299,7 +9299,7 @@ function showAIResultsModal(d,meta){
           <tr><td style="padding:7px 10px;color:#647078;font-weight:600;background:#F3F0EA">Garage</td><td style="padding:7px 10px">${$$b(d.has_garage)} ${d.garage_type?'· '+d.garage_type:''}</td></tr>
           <tr><td style="padding:7px 10px;color:#647078;font-weight:600;background:#F3F0EA">HOA</td><td style="padding:7px 10px">${$$b(d.has_hoa)} ${d.hoa_fee_monthly?'· '+$$$(d.hoa_fee_monthly)+'/mo':''}</td></tr>
           <tr><td style="padding:7px 10px;color:#647078;font-weight:600;background:#F3F0EA">Property tax (annual)</td><td style="padding:7px 10px">${$$$(d.property_tax_annual)}</td></tr>
-          <tr><td style="padding:7px 10px;color:#647078;font-weight:600;background:#F3F0EA">Valor estimado</td><td style="padding:7px 10px">${$$$(d.estimated_value)}</td></tr>
+          <tr><td style="padding:7px 10px;color:#647078;font-weight:600;background:#F3F0EA">Estimated value</td><td style="padding:7px 10px">${$$$(d.estimated_value)}</td></tr>
           <tr><td style="padding:7px 10px;color:#647078;font-weight:600;background:#F3F0EA">Last sale date</td><td style="padding:7px 10px">${$$(d.last_sale_date)}</td></tr>
           <tr><td style="padding:7px 10px;color:#647078;font-weight:600;background:#F3F0EA">Last sale price</td><td style="padding:7px 10px">${$$$(d.last_sale_price)}</td></tr>
           <tr><td style="padding:7px 10px;color:#647078;font-weight:600;background:#F3F0EA">Parcel ID</td><td style="padding:7px 10px">${$$(d.parcel_id)}</td></tr>
@@ -9940,7 +9940,7 @@ th{background:#F3F0EA;padding:6px 10px;text-align:left;font-size:10px;color:#647
   <div class="section">
     <h3><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>Entradas <small>· Invoices tipo Working Capital</small></h3>
     <table>
-      <thead><tr><th>Description</th><th style="text-align:center;width:80px">Date</th><th style="text-align:center;width:60px">Status</th><th style="text-align:right;width:90px">Valor</th></tr></thead>
+      <thead><tr><th>Description</th><th style="text-align:center;width:80px">Date</th><th style="text-align:center;width:60px">Status</th><th style="text-align:right;width:90px">Amount</th></tr></thead>
       <tbody>${inflowsRows}</tbody>
       <tfoot><tr class="totrow"><td colspan="3">Total Recebido</td><td style="text-align:right">${$$(inPaidTotal)}</td></tr></tfoot>
     </table>
@@ -9948,7 +9948,7 @@ th{background:#F3F0EA;padding:6px 10px;text-align:left;font-size:10px;color:#647
   <div class="section">
     <h3><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><line x1="22" x2="11" y1="2" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Outflows <small>· Costs paid with WC</small></h3>
     <table>
-      <thead><tr><th>Description</th><th style="text-align:center;width:80px">Date</th><th style="text-align:center;width:60px">Tipo</th><th style="text-align:right;width:90px">Valor</th></tr></thead>
+      <thead><tr><th>Description</th><th style="text-align:center;width:80px">Date</th><th style="text-align:center;width:60px">Tipo</th><th style="text-align:right;width:90px">Amount</th></tr></thead>
       <tbody>${outflowsRows}</tbody>
       <tfoot><tr class="totrow"><td colspan="3">Total Outflows</td><td style="text-align:right">-${$$(outTotal)}</td></tr></tfoot>
     </table>
@@ -10141,7 +10141,7 @@ async function _finFillCaixaKPI(){
 }
 
 // Profit REAL da DEC por projeto = mesmo cálculo do relatório (PAGO À EMPRESA):
-//   flip: lucro líquido × %DEC  ·  rehab (serviço): lucro do serviço (100% Empresa)
+//   flip: lucro líquido × %DEC  ·  rehab (serviço): lucro do serviço (100% Company)
 //   menos o overhead do projeto (descontado UMA vez).
 function _decProfitForProject(pid){
   const op=calcProjectInvoices(pid,'operational');   // faturamento da reforma
@@ -11107,7 +11107,7 @@ function renderPartialPayments(){
   const wrap=document.getElementById('im-partial-list');
   if(!wrap) return;
   if(_imPartials.length===0){
-    wrap.innerHTML=`<div style="padding:14px;text-align:center;color:var(--gray3);font-size:12px;font-style:italic;background:#fff;border:1px dashed #E5D9B8;border-radius:6px">No payment yet. Click <strong>+ Adicionar pagamento</strong> acima.</div>`;
+    wrap.innerHTML=`<div style="padding:14px;text-align:center;color:var(--gray3);font-size:12px;font-style:italic;background:#fff;border:1px dashed #E5D9B8;border-radius:6px">No payment yet. Click <strong>+ Add payment</strong> acima.</div>`;
     _updatePartialTotals();
     return;
   }
@@ -11134,7 +11134,7 @@ function renderPartialPayments(){
       <input type="date" value="${p.date||''}"
         onchange="onPartialChange(${idx},'date',this.value)"
         style="padding:6px 8px;font-size:12px;border:1px solid var(--gray2);border-radius:5px;outline:none;width:100%">
-      <button class="btn btn-ghost" style="padding:4px 8px;font-size:14px;color:var(--red)" title="Remover" onclick="removePartial(${idx})">🗑</button>
+      <button class="btn btn-ghost" style="padding:4px 8px;font-size:14px;color:var(--red)" title="Remove" onclick="removePartial(${idx})">🗑</button>
     </div>`;
   }).join('');
   _updatePartialTotals();
@@ -11211,7 +11211,7 @@ function renderInvoiceItemsEditor(){
   const wrap=document.getElementById('im-items');
   if(!wrap) return;
   if(_imItems.length===0){
-    wrap.innerHTML=`<div style="padding:14px;text-align:center;color:var(--gray3);font-size:12px;font-style:italic;background:#fff;border:1px dashed var(--gray2);border-radius:6px">No items yet. Click <strong>+ Adicionar item</strong> to start.</div>`;
+    wrap.innerHTML=`<div style="padding:14px;text-align:center;color:var(--gray3);font-size:12px;font-style:italic;background:#fff;border:1px dashed var(--gray2);border-radius:6px">No items yet. Click <strong>+ Add item</strong> to start.</div>`;
     document.getElementById('im-items-total').textContent='$0.00';
     return;
   }
@@ -11489,7 +11489,7 @@ async function saveInvoice(){
         date:(p.date||'').trim()
       }));
     if(partialPayments.length===0){
-      toast('Adicione pelo menos um pagamento parcial',false);
+      toast('Add at least one partial payment',false);
       return;
     }
     const bad=partialPayments.find(p=>!p.amount||p.amount<=0||!p.method||!p.date);
@@ -12030,7 +12030,7 @@ function _showInvoiceDoc(inv, client, items){
     </div>
     <div class="h-right">
       <div class="inv-num-lbl">${docLabel}</div>
-      <div style="font-size:11px;color:#647078;margin:4px 0 6px">Categoria: <strong style="color:#263238">${kindLabel}</strong></div>
+      <div style="font-size:11px;color:#647078;margin:4px 0 6px">Category: <strong style="color:#263238">${kindLabel}</strong></div>
       <div class="inv-date">${invDateStr}</div>
       <div class="total-box">
         <div class="lbl">TOTAL</div>
@@ -12715,7 +12715,7 @@ function renderInsuranceAlerts(){
   }).join('');
   el.innerHTML=`<div class="card" style="border-left:4px solid #CB704F">
     <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
-      <span>🛡️ Seguros vencendo <span style="font-weight:500;text-transform:none;font-size:11px;color:var(--gray3)">— próximos ${INS_ALERT_DAYS} dias (e vencidos)</span></span>
+      <span>🛡️ Insurance expiring <span style="font-weight:500;text-transform:none;font-size:11px;color:var(--gray3)">— next ${INS_ALERT_DAYS} days (and overdue)</span></span>
       <span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
         <button onclick="runInsuranceAlerts(true)" style="padding:5px 12px;font-size:11px;font-weight:700;background:#fff;border:1.5px solid var(--gray2);border-radius:5px;cursor:pointer;color:#647078;font-family:inherit">👁️ Simulate</button>
         <button onclick="runInsuranceAlerts(false)" style="padding:5px 12px;font-size:11px;font-weight:700;background:linear-gradient(135deg,#263238,#647078);color:#fff;border:0;border-radius:5px;cursor:pointer;font-family:inherit">🔔 Send reminders</button>
@@ -12800,7 +12800,7 @@ function emailInsuranceRenewal(vendorId){
   const v=(vendors||[]).find(x=>x.id===vendorId);
   if(!v){toast('Vendor not found',false);return;}
   const mail=(v.email||'').trim();
-  if(!mail){toast('Este vendor não tem e-mail cadastrado',false);return;}
+  if(!mail){toast('This vendor has no email on file',false);return;}
   const item=insuranceExpiringList(99999).find(x=>x.vendor.id===vendorId);
   const expTxt=item?new Date(item.doc.expiration_date+'T00:00:00').toLocaleDateString('en-US'):'';
   const past=item && item.days<0;
@@ -13064,7 +13064,7 @@ async function deleteVendor(id){
     });
   });
   if(inUseCount>0){
-    alert('Cannot delete "'+v.name+'": está in use in '+inUseCount+' Real Costs entries.');
+    alert('Cannot delete "'+v.name+'": in use in '+inUseCount+' Real Costs entries.');
     return;
   }
   if(!confirm('Delete vendor "'+v.name+'"?\n\nAll documents (contracts and insurance) will also be removed. This action cannot be undone.')) return;
@@ -13114,7 +13114,7 @@ function renderVendorDocsList(vendorId,docType){
   const wrap=document.getElementById('vdm-list');
   const docs=(vendorDocs[vendorId]||[]).filter(d=>d.doc_type===docType);
   if(docs.length===0){
-    wrap.innerHTML=`<div style="padding:24px;text-align:center;color:var(--gray3);font-style:italic;font-size:13px;background:#F3F0EA;border-radius:8px">Nenhum ${docType==='contract'?'contrato':'insurance'} enviado ainda.</div>`;
+    wrap.innerHTML=`<div style="padding:24px;text-align:center;color:var(--gray3);font-style:italic;font-size:13px;background:#F3F0EA;border-radius:8px">No ${docType==='contract'?'contract':'insurance'} uploaded yet.</div>`;
     return;
   }
   wrap.innerHTML=docs.map(d=>{
@@ -13506,7 +13506,7 @@ async function cdRenderBudgets(){
         <div onclick="openBudgetEditor('${b.id}')" style="cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px">
           <div style="flex:1;min-width:200px">
             <div style="font-size:15px;font-weight:800;color:#263238;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-              ${(b.name||'(sem nome)').replace(/</g,'&lt;')}
+              ${(b.name||'(no name)').replace(/</g,'&lt;')}
               <span style="display:inline-block;padding:2px 9px;background:${sbBadge.bg};color:${sbBadge.color};border-radius:10px;font-size:9px;font-weight:700">${sbBadge.label}</span>
               ${hasConverted?`<span style="display:inline-block;padding:2px 9px;background:#E0E8DA;color:#3F5C2A;border-radius:10px;font-size:9px;font-weight:700">🔗 linked to project</span>`:''}
             </div>
@@ -13869,7 +13869,7 @@ async function deleteClient(id){
   // Safety: check if any project uses this client
   const inUse=projects.filter(p=>p.customer===id);
   if(inUse.length>0){
-    alert('Cannot delete "'+c.name+'": está in use in '+inUse.length+' project(s).');
+    alert('Cannot delete "'+c.name+'": in use in '+inUse.length+' project(s).');
     return;
   }
   if(!confirm('Delete client "'+c.name+'"?\n\nThis action cannot be undone.')) return;
@@ -15304,12 +15304,12 @@ function renderPendingNotes(){
     });
     const dupCount=rows.filter(r=>r.dupA||r.dupP).length;
     el.innerHTML=`<div class="card" style="margin-bottom:18px;border-left:4px solid #B33F36">
-      <div class="card-title">📥 Invoices pending review <span style="font-weight:500;color:var(--gray3);font-size:12px">${pendingNotes.length} nthis project${dupCount?` · ${dupCount} c/ valor duplicado`:''} · não contam no total até aprovar</span></div>
+      <div class="card-title">📥 Invoices pending review <span style="font-weight:500;color:var(--gray3);font-size:12px">${pendingNotes.length} in this project${dupCount?` · ${dupCount} with duplicate amount`:''} · do not count in the total until approved</span></div>
       <table style="width:100%;border-collapse:collapse;font-size:12px">
         <thead><tr style="background:#F3F0EA">
           <th style="padding:7px 10px;text-align:left">Date</th>
           <th style="padding:7px 10px;text-align:left">Vendor / Item</th>
-          <th style="padding:7px 10px;text-align:right">Valor</th>
+          <th style="padding:7px 10px;text-align:right">Amount</th>
           <th style="padding:7px 10px;text-align:center">Arquivo</th>
           <th style="padding:7px 10px;text-align:center">Actions</th>
         </tr></thead><tbody>
@@ -15523,7 +15523,7 @@ async function renderPiso(){
   <div class="card" style="background:#FBF8F3;border:1px solid #EADFCD;display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px">
     <div style="font-weight:700;font-size:13px;color:#263238">🎯 Minimum deal ROI</div>
     <input id="piso-pct" type="number" min="0" step="0.5" value="${lucroPct}" onchange="localStorage.setItem('dec_piso_lucro_pct',this.value);renderPiso()" style="width:80px;padding:6px 9px;font-size:13px;border:1.5px solid var(--gray2);border-radius:6px;outline:none"> %
-    <span style="font-size:11px;color:var(--gray3);font-style:italic">Piso = zero-a-zero + ${lucroPct}% sobre o invested do negócio (não é a fatia da empresa). Ponha 0% pro zero-a-zero puro.</span>
+    <span style="font-size:11px;color:var(--gray3);font-style:italic">Floor = break-even + ${lucroPct}% over the invested in the deal (not the company share). Set 0% for pure break-even.</span>
   </div>
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:16px">
     <div class="card" style="text-align:center"><div style="font-size:11px;color:var(--gray3);text-transform:uppercase">Houses for sale</div><div style="font-size:24px;font-weight:800;color:#263238">${rows.length}</div></div>
@@ -15561,7 +15561,7 @@ async function renderPiso(){
 async function renderPanorama(){
   if(!isCEO()) return;
   const el=document.getElementById('panorama-root'); if(!el) return;
-  el.innerHTML='<div style="color:var(--gray3);padding:20px">📅 Carregando panorama…</div>';
+  el.innerHTML='<div style="color:var(--gray3);padding:20px">📅 Loading overview…</div>';
   // Garante que a ficha de imóvel (propertyMap) está carregada pra calcular invested/ROI
   if(typeof propertyMap==='undefined' || !propertyMap || Object.keys(propertyMap).length===0){
     try{ const r=await sb.from('property_info').select('*'); if(r.data){ if(typeof propertyMap==='undefined') window.propertyMap={}; r.data.forEach(x=>propertyMap[x.project_id]=x); } }catch(_){}
@@ -15719,7 +15719,7 @@ function _audRender(){
   el.innerHTML=`<div class="card" style="padding:0;overflow:hidden"><div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px;min-width:900px">
     <thead><tr style="background:#263238;color:#fff">
       <th style="padding:9px 10px;text-align:left">Project</th><th style="padding:9px 10px;text-align:left">Fase</th><th style="padding:9px 10px;text-align:left">Item</th>
-      <th style="padding:9px 10px;text-align:right">Valor linha</th><th style="padding:9px 10px;text-align:right">Soma recibos</th><th style="padding:9px 10px;text-align:right">Difference</th>
+      <th style="padding:9px 10px;text-align:right">Line amount</th><th style="padding:9px 10px;text-align:right">Soma recibos</th><th style="padding:9px 10px;text-align:right">Difference</th>
       <th style="padding:9px 10px;text-align:center">Recibos</th><th style="padding:9px 10px;text-align:center">Status</th>
     </tr></thead><tbody>${body||'<tr><td colspan="8" style="padding:20px;text-align:center;color:var(--gray3)">Nada a revisar 🎉</td></tr>'}</tbody>
   </table></div></div>
@@ -15741,9 +15741,9 @@ function renderLancar(){
     const projOptsL='<option value="">— choose work —</option>'+(projects||[]).slice().sort((a,b)=>_obraKeyL(a.address||a.name).localeCompare(_obraKeyL(b.address||b.name))).map(p=>`<option value="${p.id}">${((p.address||p.name||'')).replace(/</g,'&lt;')}</option>`).join('');
     if(!total){ el.innerHTML=header+statusDiv+'<div class="card" style="text-align:center;color:var(--gray3);padding:30px">✅ No pending invoices. All reviewed!</div>'; return; }
     const kpis=`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px">
-      <div class="card" style="text-align:center"><div style="font-size:11px;color:var(--gray3);text-transform:uppercase;letter-spacing:.5px">Pendentes</div><div style="font-size:24px;font-weight:800;color:#263238">${total}</div></div>
-      <div class="card" style="text-align:center"><div style="font-size:11px;color:var(--gray3);text-transform:uppercase;letter-spacing:.5px">Valor pendente</div><div style="font-size:24px;font-weight:800;color:#CB704F">${fmtc(somaP)}</div></div>
-      <div class="card" style="text-align:center"><div style="font-size:11px;color:var(--gray3);text-transform:uppercase;letter-spacing:.5px">Valor duplicado</div><div style="font-size:24px;font-weight:800;color:${dupCount?'#C0392B':'#237A50'}">${dupCount}</div></div>
+      <div class="card" style="text-align:center"><div style="font-size:11px;color:var(--gray3);text-transform:uppercase;letter-spacing:.5px">Pending</div><div style="font-size:24px;font-weight:800;color:#263238">${total}</div></div>
+      <div class="card" style="text-align:center"><div style="font-size:11px;color:var(--gray3);text-transform:uppercase;letter-spacing:.5px">Pending amount</div><div style="font-size:24px;font-weight:800;color:#CB704F">${fmtc(somaP)}</div></div>
+      <div class="card" style="text-align:center"><div style="font-size:11px;color:var(--gray3);text-transform:uppercase;letter-spacing:.5px">Duplicate amount</div><div style="font-size:24px;font-weight:800;color:${dupCount?'#C0392B':'#237A50'}">${dupCount}</div></div>
       <div class="card" style="text-align:center"><div style="font-size:11px;color:var(--gray3);text-transform:uppercase;letter-spacing:.5px">No value ($0)</div><div style="font-size:24px;font-weight:800;color:${zeroCount?'#C0392B':'#237A50'}">${zeroCount}</div></div>
     </div>`;
     // ordena por projeto, depois valor desc
@@ -15776,7 +15776,7 @@ function renderLancar(){
           <th style="padding:9px 10px;text-align:left">Project</th>
           <th style="padding:9px 10px;text-align:left">Date</th>
           <th style="padding:9px 10px;text-align:left">Vendor / Item</th>
-          <th style="padding:9px 10px;text-align:right">Valor</th>
+          <th style="padding:9px 10px;text-align:right">Amount</th>
           <th style="padding:9px 10px;text-align:center">Arquivo</th>
           <th style="padding:9px 10px;text-align:center">Actions</th>
         </tr></thead><tbody>${body}</tbody>
@@ -15823,14 +15823,14 @@ async function renderConciliacao(){
   el.innerHTML=`<div class="card" style="padding:0;overflow:hidden;border-left:4px solid #237A50">
     <div class="card-title" style="padding:12px 14px">🔗 To reconcile — statement × invoice <span style="font-weight:500;color:var(--gray3);font-size:12px">${pares.length} saída(s) dos Books batem com nota dos Real costs</span></div>
     <table style="width:100%;border-collapse:collapse;font-size:12px">
-      <thead><tr style="background:#F3F0EA"><th style="padding:8px 10px;text-align:left">Date (statement)</th><th style="padding:8px 10px;text-align:left">Description (Books)</th><th style="padding:8px 10px;text-align:right">Valor</th><th style="padding:8px 10px;text-align:left">Nota correspondente (Real Costs)</th><th style="padding:8px 10px;text-align:center">Action</th></tr></thead>
+      <thead><tr style="background:#F3F0EA"><th style="padding:8px 10px;text-align:left">Date (statement)</th><th style="padding:8px 10px;text-align:left">Description (Books)</th><th style="padding:8px 10px;text-align:right">Amount</th><th style="padding:8px 10px;text-align:left">Nota correspondente (Real Costs)</th><th style="padding:8px 10px;text-align:center">Action</th></tr></thead>
       <tbody>${rows}</tbody>
     </table>
     <div style="padding:8px 12px;font-size:10px;color:var(--gray3)">Reconciling marks the bank line as "paid by this invoice" (same money). It does not change values — it just links the two so it does not look like a double expense.</div>
   </div>`;
 }
 async function conciliarPar(txId){
-  const sel=document.getElementById('conc-sel-'+txId); if(!sel||!sel.value){toast('Escolha a nota',false);return;}
+  const sel=document.getElementById('conc-sel-'+txId); if(!sel||!sel.value){toast('Choose the invoice',false);return;}
   const r=await sb.from('fin_transactions').update({matched_budget_item_id:sel.value}).eq('id',txId);
   if(r.error){toast('Error reconciling: '+r.error.message,false);return;}
   toast('Conciliado ✓',true);
@@ -15873,7 +15873,7 @@ async function openLancarModal(preProj){
   const _obraKey=x=>String(x||'').replace(/^[\s\d().,#\-]+/,'').trim().toLowerCase();
   const projOpts='<option value="">— choose work —</option>'+(projects||[]).slice().sort((a,b)=>_obraKey(a.address||a.name).localeCompare(_obraKey(b.address||b.name))).map(p=>`<option value="${p.id}">${((p.address||p.name||'')).replace(/</g,'&lt;')}</option>`).join('');
   const acctOpts='<option value="">— choose account —</option>'+((typeof finAccounts!=='undefined'?finAccounts:[])||[]).map(a=>`<option value="${a.id}">${(a.name||'').replace(/</g,'&lt;')}</option>`).join('');
-  const rcOpts='<option value="">— escolher item —</option>'+((typeof RC_ITEMS!=='undefined'?RC_ITEMS:[])||[]).map(n=>`<option value="${n}">${n}</option>`).join('');
+  const rcOpts='<option value="">— choose item —</option>'+((typeof RC_ITEMS!=='undefined'?RC_ITEMS:[])||[]).map(n=>`<option value="${n}">${n}</option>`).join('');
   const today=new Date().toISOString().slice(0,10);
   const vendorDl=(vendors||[]).slice().sort((a,b)=>(a.name||'').localeCompare(b.name||'')).map(v=>`<option value="${(v.name||'').replace(/"/g,'&quot;')}">`).join('');
   m.innerHTML=`<div class="modal" style="max-width:560px;padding:0">
@@ -15896,7 +15896,7 @@ async function openLancarModal(preProj){
       </select>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
         <div><label style="font-size:11px;font-weight:700;color:#647078">Date</label><input id="lc-date" type="date" value="${today}" style="width:100%;padding:8px 10px;border:1.5px solid var(--gray2);border-radius:6px;font-family:inherit"></div>
-        <div><label style="font-size:11px;font-weight:700;color:#647078">Valor ($)</label><input id="lc-amount" type="number" step="0.01" min="0" placeholder="0.00" style="width:100%;padding:8px 10px;border:1.5px solid var(--gray2);border-radius:6px;font-family:inherit"></div>
+        <div><label style="font-size:11px;font-weight:700;color:#647078">Amount ($)</label><input id="lc-amount" type="number" step="0.01" min="0" placeholder="0.00" style="width:100%;padding:8px 10px;border:1.5px solid var(--gray2);border-radius:6px;font-family:inherit"></div>
       </div>
       <div style="margin-bottom:12px"><label style="font-size:11px;font-weight:700;color:#647078">Vendor</label>
         <div style="display:flex;gap:6px">
@@ -15907,7 +15907,7 @@ async function openLancarModal(preProj){
       </div>
       <div style="margin-bottom:12px"><label style="font-size:11px;font-weight:700;color:#647078">Description / item</label><input id="lc-desc" type="text" placeholder="e.g. Vinyl floor" style="width:100%;padding:8px 10px;border:1.5px solid var(--gray2);border-radius:6px;font-family:inherit"></div>
       <div id="lc-f-proj" style="margin-bottom:12px"><label style="font-size:11px;font-weight:700;color:#647078">Project (work)</label><select id="lc-proj" style="width:100%;padding:8px 10px;border:1.5px solid var(--gray2);border-radius:6px;font-family:inherit">${projOpts}</select></div>
-      <div id="lc-f-cat" style="margin-bottom:12px"><label style="font-size:11px;font-weight:700;color:#647078">Categoria</label><select id="lc-cat" style="width:100%;padding:8px 10px;border:1.5px solid var(--gray2);border-radius:6px;font-family:inherit"><option value="material">Material</option><option value="labor">Labor</option></select></div>
+      <div id="lc-f-cat" style="margin-bottom:12px"><label style="font-size:11px;font-weight:700;color:#647078">Category</label><select id="lc-cat" style="width:100%;padding:8px 10px;border:1.5px solid var(--gray2);border-radius:6px;font-family:inherit"><option value="material">Material</option><option value="labor">Labor</option></select></div>
       <div id="lc-f-conta" style="margin-bottom:12px;display:none"><label style="font-size:11px;font-weight:700;color:#647078">Recurring bill (official item)</label><select id="lc-conta" style="width:100%;padding:8px 10px;border:1.5px solid var(--gray2);border-radius:6px;font-family:inherit">${rcOpts}</select></div>
       <div id="lc-f-ohcat" style="margin-bottom:12px;display:none"><label style="font-size:11px;font-weight:700;color:#647078">Overhead category</label><input id="lc-ohcat" type="text" placeholder="e.g. Accountant, Fuel, Software" style="width:100%;padding:8px 10px;border:1.5px solid var(--gray2);border-radius:6px;font-family:inherit"></div>
       <div id="lc-f-acct" style="margin-bottom:12px;display:none"><label style="font-size:11px;font-weight:700;color:#647078">Bank account (where it came from)</label><select id="lc-acct" style="width:100%;padding:8px 10px;border:1.5px solid var(--gray2);border-radius:6px;font-family:inherit">${acctOpts}</select></div>
@@ -15931,7 +15931,7 @@ function _lancarDestChange(){
   show('lc-f-conta', d==='utilities');
   show('lc-f-ohcat', d==='overhead');
   show('lc-f-acct', false);
-  const hints={obra:'Vai pros Real costs do projeto como 1 linha (material ou mão de obra). Entra no DRE (COGS).',utilities:'Vai pras Recurring bills do projeto, no mês da data. É repasse ao cliente — NÃO entra no DRE; o reembolso entra quando você cria a fatura.',overhead:'Vai pros Company costs (overhead). Entra no DRE.'};
+  const hints={obra:'Goes to the project Real costs as 1 line (material or labor). Enters the P&L (COGS).',utilities:'Goes to the project Recurring bills, in the month of the date. It is a client pass-through — does NOT enter the P&L; the reimbursement enters when you create the invoice.',overhead:'Goes to Company costs (overhead). Enters the P&L.'};
   const h=document.getElementById('lc-hint'); if(h) h.textContent=hints[d]||'';
 }
 function _finCatIdByCode(code){ const c=((typeof finCategories!=='undefined'?finCategories:[])||[]).find(x=>x.code===code); return c?c.id:null; }
@@ -16046,7 +16046,7 @@ function renderImportQueue(){
       const pi=r.pi;
       const src=srcLbl[pi.source]||pi.source||'';
       const dupQ=_isDupQ(pi), dupA=_isDupA(pi);
-      const dupBadge=(dupQ||dupA)?`<div style="font-size:9px;color:#C0392B;font-weight:700">⚠ valor duplicado${dupA?' (já no Real Costs)':''}${dupQ&&!dupA?' (repetido na fila)':''}</div>`:'';
+      const dupBadge=(dupQ||dupA)?`<div style="font-size:9px;color:#C0392B;font-weight:700">⚠ duplicate amount${dupA?' (already in Real Costs)':''}${dupQ&&!dupA?' (repeated in queue)':''}</div>`:'';
       return `<tr style="border-bottom:1px solid #DFE4E5${(dupQ||dupA)?';background:#FFF1E0':''}">
         <td style="padding:8px 10px;font-size:11px;white-space:nowrap">${pi.order_date||''}<div style="color:#999">${src}</div></td>
         <td style="padding:8px 10px;font-size:11px">${(pi.vendor||'').replace(/</g,'&lt;')} · #${(pi.order_number||'').replace(/</g,'&lt;')}<div style="color:#CB704F">PO: ${(pi.po_job_name||'—').replace(/</g,'&lt;')}</div></td>
@@ -16058,7 +16058,7 @@ function renderImportQueue(){
     el.innerHTML=`<div class="card" style="margin-bottom:18px;border-left:4px solid #CB704F">
       <div class="card-title">📥 Compras importadas — fila <span style="font-weight:500;color:var(--gray3);font-size:12px">${mine.length} in this project${unassigned.length?` · ${unassigned.length} no project`:''}</span></div>
       <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px;min-width:640px">
-        <thead><tr style="background:#F3F0EA"><th style="padding:6px 10px;text-align:left;font-size:10px">Date</th><th style="padding:6px 10px;text-align:left;font-size:10px">Vendor / PO</th><th style="padding:6px 10px;text-align:right;font-size:10px">Valor</th><th style="padding:6px 10px;text-align:left;font-size:10px">Work</th><th style="padding:6px 10px;font-size:10px"></th></tr></thead>
+        <thead><tr style="background:#F3F0EA"><th style="padding:6px 10px;text-align:left;font-size:10px">Date</th><th style="padding:6px 10px;text-align:left;font-size:10px">Vendor / PO</th><th style="padding:6px 10px;text-align:right;font-size:10px">Amount</th><th style="padding:6px 10px;text-align:left;font-size:10px">Work</th><th style="padding:6px 10px;font-size:10px"></th></tr></thead>
         <tbody>
           ${mine.map(r=>rowHtml(r,false)).join('')}
           ${unassigned.length?`<tr><td colspan="5" style="padding:6px 10px;background:#FBF6EC;font-size:10px;font-weight:700;color:#8a3b12">No project identified — assign it (the alias is remembered):</td></tr>`:''}
@@ -16163,7 +16163,7 @@ async function renderProjectSupplierSummary(){
         <th style="padding:8px 10px;text-align:left;font-size:11px;border-bottom:2px solid var(--gray2);width:110px">Date</th>
         <th style="padding:8px 10px;text-align:left;font-size:11px;border-bottom:2px solid var(--gray2)">Vendor</th>
         <th style="padding:8px 10px;text-align:left;font-size:11px;border-bottom:2px solid var(--gray2)">Item</th>
-        <th style="padding:8px 10px;text-align:right;font-size:11px;border-bottom:2px solid var(--gray2);width:120px">Valor</th>
+        <th style="padding:8px 10px;text-align:right;font-size:11px;border-bottom:2px solid var(--gray2);width:120px">Amount</th>
         <th style="padding:8px 10px;text-align:center;font-size:11px;border-bottom:2px solid var(--gray2);width:70px">Arquivo</th>
       </tr></thead>
       <tbody>${rows}</tbody>
@@ -16319,7 +16319,7 @@ async function renderBudgets(){
       <div onclick="openBudgetEditor('${b.id}')" style="cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px">
         <div style="flex:1;min-width:200px">
           <div style="font-size:16px;font-weight:800;color:#263238;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-            ${(b.name||'(sem nome)').replace(/</g,'&lt;')}
+            ${(b.name||'(no name)').replace(/</g,'&lt;')}
             <span style="display:inline-block;padding:3px 10px;background:${sb.bg};color:${sb.color};border-radius:12px;font-size:10px;font-weight:700">${sb.label}</span>
           </div>
           ${b.address?`<div style="font-size:12px;color:#647078;margin-top:3px"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#B33F36" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px"><line x1="12" x2="12" y1="17" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/></svg>${b.address.replace(/</g,'&lt;')}</div>`:''}
@@ -16383,7 +16383,7 @@ function budgetHmLoan(b){
   const rehab=+b.rehab_estimate||0, rPct=hmRehabPct(b);
   return budgetHouseLoan(b) + (b.hm_includes_rehab ? rehab*rPct : 0);
 }
-// Split do lucro: 30% Empresa / 70% cliente
+// Split do lucro: 30% Company / 70% cliente
 const BUDGET_DEC_PCT = 0.30;
 
 // Garante que TODO custo computado tenha uma linha visível: injeta as linhas
@@ -16748,7 +16748,7 @@ function renderBudgetClientTable(budgetsArr){
             <th style="padding:12px 10px;text-align:right;font-size:10px;font-weight:800;color:#647078;letter-spacing:1px;text-transform:uppercase">Purchase</th>
             <th style="padding:12px 10px;text-align:right;font-size:10px;font-weight:800;color:#647078;letter-spacing:1px;text-transform:uppercase">Sale</th>
             <th style="padding:12px 10px;text-align:right;font-size:10px;font-weight:800;color:#647078;letter-spacing:1px;text-transform:uppercase">Client invests</th>
-            <th style="padding:12px 10px;text-align:right;font-size:10px;font-weight:800;color:#647078;letter-spacing:1px;text-transform:uppercase">Sobra</th>
+            <th style="padding:12px 10px;text-align:right;font-size:10px;font-weight:800;color:#647078;letter-spacing:1px;text-transform:uppercase">Leftover</th>
             <th style="padding:12px 14px;text-align:right;font-size:10px;font-weight:800;color:#647078;letter-spacing:1px;text-transform:uppercase">ROI</th>
           </tr>
         </thead>
@@ -16896,9 +16896,9 @@ function updateContingencyPct(v){
 function pullRehabFromObra(){
   const b=_bdgCurrent; if(!b) return;
   const pid=b.converted_to_project_id;
-  if(!pid){ toast('Este orçamento ainda não virou projeto. Aprove/converta em projeto e monte a obra no Budget (✨ Estimate with AI) — aí dá pra puxar.',false); return; }
+  if(!pid){ toast('This budget is not a project yet. Approve/convert it into a project and build the work in Budget (✨ Estimate with AI) — then you can pull it.',false); return; }
   const tot=_obraItemsTotal(pid);
-  if(tot<=0){ toast('A obra do projeto está zerada. Preencha o Budget do projeto (ou use ✨ Estimate with AI) e tente de novo.',false); return; }
+  if(tot<=0){ toast('The project work is empty. Fill in the project Budget (or use ✨ Estimate with AI) and try again.',false); return; }
   b.rehab_estimate=Math.round(tot*100)/100;
   renderBudgetEditorModal();
   toast('Rehab pulled from the work: $'+tot.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}),true);
@@ -16977,10 +16977,10 @@ function generateBudgetBreakdownPDF(b){
       <div class="brand">Project Management<small></small></div>
       <div style="text-align:right" class="meta">Detailed budget · ${today}</div>
     </div>
-    <h1>Budget de obra — ${tipo}</h1>
+    <h1>Work budget — ${tipo}</h1>
     <div class="meta">${addr?('Address: '+addr+' · '):''}Área: ${sqft.toLocaleString('en-US')} sqft${perSqft>0?(' · ~'+$$(perSqft)+'/sqft'):''}</div>
     <table>
-      <thead><tr><th>Phase / Service</th><th class="r">Valor (US$)</th></tr></thead>
+      <thead><tr><th>Phase / Service</th><th class="r">Amount (US$)</th></tr></thead>
       <tbody>${rows}</tbody>
     </table>
     <div class="tot"><span style="font-weight:700;text-transform:uppercase;letter-spacing:.5px">Total estimado</span><span class="v">${$$(d.total)}</span></div>
@@ -17066,7 +17066,7 @@ function renderBudgetEditorModal(){
       <td id="bm-line-hm-${idx}" style="padding:6px 4px;text-align:right;font-weight:600;color:#263238">${$fmt(valHm)}</td>
       <td style="padding:6px 4px;text-align:center">
         ${isExtra
-          ? `<button onclick="deleteBudgetLine(${idx})" title="Remover" style="background:transparent;border:1.5px solid #DFE4E5;color:#C00000;width:24px;height:24px;border-radius:5px;cursor:pointer;font-size:13px">×</button>`
+          ? `<button onclick="deleteBudgetLine(${idx})" title="Remove" style="background:transparent;border:1.5px solid #DFE4E5;color:#C00000;width:24px;height:24px;border-radius:5px;cursor:pointer;font-size:13px">×</button>`
           : ''}
       </td>
     </tr>`;
@@ -17186,7 +17186,7 @@ function renderBudgetEditorModal(){
                 </span>
               </label>
               <input type="text" inputmode="decimal" value="${_money(b.rehab_estimate)}" oninput="moneyInput(this,'rehab_estimate')" placeholder="0" style="width:100%;padding:7px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:5px;outline:none;font-family:inherit;font-variant-numeric:tabular-nums">
-              <div style="font-size:9px;color:#999;margin-top:2px;font-style:italic">${b.converted_to_project_id?'estime com IA ou puxe do orçamento de obra do projeto':'estime com IA pelo endereço + m² (ou digite)'}</div>
+              <div style="font-size:9px;color:#999;margin-top:2px;font-style:italic">${b.converted_to_project_id?'estimate with AI or pull from the project work budget':'estimate with AI from address + sq ft (or type it)'}</div>
             </div>
             <div>
               <label style="font-size:10px;font-weight:700;color:#647078;display:block;margin-bottom:3px">Closing Costs <span style="font-weight:500;color:#999">(just the % → auto $)</span></label>
@@ -17611,7 +17611,7 @@ async function saveBudget(){
   if(result.error && /column .* does not exist|hm_includes_rehab|dec_pct|hm_purchase_pct|hm_rehab_pct|hm_interest_dutch|arv_ltv_cap/i.test(result.error.message||'')){
     const p2={...payload}; delete p2.hm_includes_rehab; delete p2.dec_pct; delete p2.hm_purchase_pct; delete p2.hm_rehab_pct; delete p2.hm_interest_dutch; delete p2.arv_ltv_cap;
     result=await _doSave(p2);
-    if(!result.error) toast('Salvo (rode o SQL das colunas novas p/ guardar % purchase/obra, Dutch e teto ARV)',true);
+    if(!result.error) toast('Saved (run the SQL for the new columns to store % purchase/work, Dutch and ARV cap)',true);
   }
   if(result.error){console.error('saveBudget',result.error);toast('Error saving: '+result.error.message,false);if(_sb){_sb.disabled=false;_sb.textContent=_sbt;}return;}
   // Update in-memory
@@ -17708,7 +17708,7 @@ function generateBudgetPDF(){
 
   <h2>Property Data</h2>
   <table>
-    <tr><th>Item</th><th class="r">Valor</th><th>Item</th><th class="r">Valor</th></tr>
+    <tr><th>Item</th><th class="r">Amount</th><th>Item</th><th class="r">Amount</th></tr>
     <tr>
       <td style="padding:6px 10px;font-weight:600">Purchase Price</td>
       <td style="padding:6px 10px;text-align:right">${$$(purchase)}</td>
@@ -18019,7 +18019,7 @@ function dlPickTasksFromGantt(){
     <div id="dl-modal-tasks-list" style="overflow-y:auto;flex:1;padding:8px 14px">${rows}</div>
     <div style="padding:12px 18px;border-top:1px solid #DFE4E5;display:flex;justify-content:flex-end;gap:8px">
       <button onclick="document.getElementById('dl-modal-tasks').remove()" style="padding:7px 14px;background:transparent;color:#647078;border:1.5px solid var(--gray2);border-radius:5px;cursor:pointer;font-size:12px;font-weight:600;font-family:inherit">Cancel</button>
-      <button onclick="dlConfirmTasksPick(${JSON.stringify(allTasks).replace(/"/g,'&quot;')})" style="padding:7px 18px;background:linear-gradient(135deg,#263238,#647078);color:#fff;border:0;border-radius:5px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit">✓ Adicionar selecionadas</button>
+      <button onclick="dlConfirmTasksPick(${JSON.stringify(allTasks).replace(/"/g,'&quot;')})" style="padding:7px 18px;background:linear-gradient(135deg,#263238,#647078);color:#fff;border:0;border-radius:5px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit">✓ Add selected</button>
     </div>
   </div>`;
   document.body.appendChild(m);
