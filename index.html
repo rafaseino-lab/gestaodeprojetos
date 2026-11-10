@@ -15510,7 +15510,7 @@ async function handleLancarBatchUpload(event){
   for(const f of files){ if(f.size>MAX_SIZE){toast('"'+f.name+'" passa de 5MB',false);return;} if(!allowed.includes(f.type)){toast('"'+f.name+'" — tipo não suportado (PDF ou imagem)',false);return;} }
   const btn=document.getElementById('lc-batch-btn'); if(btn) btn.disabled=true;
   const st=document.getElementById('lc-batch-status');
-  if(st) st.innerHTML='<div class="card" style="background:#F3F0EA;border:1.5px solid #DFE4E5;font-size:13px;color:#263238;margin-bottom:14px">🤖 Lendo '+files.length+' nota(s) e casando com as obras…</div>';
+  if(st) st.innerHTML='<div class="card" style="background:#F3F0EA;border:1.5px solid #DFE4E5;font-size:13px;color:#263238;margin-bottom:14px">🤖 Reading '+files.length+' invoice(s) and matching to projects…</div>';
   let token=null; try{ const {data:{session}}=await sb.auth.getSession(); token=session&&session.access_token; }catch(_){}
   const vendorsCtx=(vendors||[]).map(v=>({id:v.id,name:v.name}));
   const results=await Promise.allSettled(files.map(f=>_lcBatchOne(f,vendorsCtx,token)));
@@ -15906,7 +15906,7 @@ async function conciliarPar(txId){
 let _lcUpload=null;
 async function lancarUploadFile(input){
   const f=input.files&&input.files[0]; if(!f) return;
-  const st=document.getElementById('lc-file-status'); if(st){st.textContent='🤖 lendo a nota…';st.style.color='var(--gray3)';}
+  const st=document.getElementById('lc-file-status'); if(st){st.textContent='🤖 reading the invoice…';st.style.color='var(--gray3)';}
   _lcUpload=null;
   try{
     const {data:{session}}=await sb.auth.getSession();
@@ -15927,8 +15927,8 @@ async function lancarUploadFile(input){
       const up=await sb.storage.from('vendor-notes').upload(path,f,{contentType:f.type,upsert:false});
       _lcUpload=up.error?null:{storage_path:path,filename:f.name,size:f.size,type:f.type};
     }catch(_){ _lcUpload=null; }
-    if(st){st.textContent='✓ lido: '+(d.vendor||'—')+' · '+fmtc(d.total);st.style.color='#237A50';}
-  }catch(e){ if(st){st.textContent='⚠ não consegui ler — preencha manual';st.style.color='#C0392B';} _lcUpload=null; }
+    if(st){st.textContent='✓ read: '+(d.vendor||'—')+' · '+fmtc(d.total);st.style.color='#237A50';}
+  }catch(e){ if(st){st.textContent='⚠ could not read — fill it in manually';st.style.color='#C0392B';} _lcUpload=null; }
 }
 async function openLancarModal(preProj){
   if(!isCEO()) return;
@@ -15949,12 +15949,12 @@ async function openLancarModal(preProj){
     </div>
     <div style="padding:20px 22px;max-height:calc(100vh - 200px);overflow-y:auto">
       <div style="border:1.5px dashed var(--gray2);border-radius:8px;padding:12px;margin-bottom:14px;background:#F3F0EA">
-        <div style="font-size:12px;font-weight:700;color:#263238;margin-bottom:6px">📎 Tem a nota? (opcional)</div>
+        <div style="font-size:12px;font-weight:700;color:#263238;margin-bottom:6px">📎 Have the invoice? (optional)</div>
         <input id="lc-file" type="file" accept="application/pdf,image/*" onchange="lancarUploadFile(this)" style="font-size:12px">
         <span id="lc-file-status" style="font-size:11px;color:var(--gray3);margin-left:8px"></span>
         <div style="font-size:10px;color:var(--gray3);margin-top:4px">The AI reads and fills amount, vendor and date. You review and choose the destination. (In the "Work cost" destination the invoice stays attached.)</div>
       </div>
-      <label style="font-size:11px;font-weight:700;color:#647078;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px">Destino</label>
+      <label style="font-size:11px;font-weight:700;color:#647078;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px">Destination</label>
       <select id="lc-dest" onchange="_lancarDestChange()" style="width:100%;padding:9px 10px;font-size:13px;border:1.5px solid var(--gray2);border-radius:6px;margin-bottom:14px;font-family:inherit">
         <option value="obra">🏠 Work cost (Real costs)</option>
         <option value="utilities">💡 Utilities / Recurring (passed to the client)</option>
@@ -16014,30 +16014,30 @@ async function lancarSubmit(){
   const amount=Math.round((parseFloat((document.getElementById('lc-amount')||{}).value)||0)*100)/100;
   const vendor=((document.getElementById('lc-vendor')||{}).value||'').trim();
   const desc=((document.getElementById('lc-desc')||{}).value||'').trim();
-  const nm=desc||vendor||'Lançamento';
+  const nm=desc||vendor||'Entry';
   if(!date){toast('Enter the date',false);return;}
   if(!(amount>0)){toast('Enter a valid value',false);return;}
   // ── Alerta de duplicidade: checa PENDENTES + JÁ LANÇADOS (por destino) ──
   const _pidChk=(document.getElementById('lc-proj')||{}).value;
   let dupN=(pendingAll||[]).filter(n=>Math.abs((+n.extracted_total||0)-amount)<0.01).length;
-  let dupWhere='na fila de pendentes';
+  let dupWhere='in the pending queue';
   try{
     if(dest==='obra' && _pidChk){ const q=await sb.from('budget_items').select('id').eq('project_id',_pidChk).gte('actual',amount-0.01).lte('actual',amount+0.01); const n=(q.data||[]).length; if(n){dupN+=n; dupWhere='in Real costs (this project)';} }
     else if(dest==='utilities' && _pidChk){ const q=await sb.from('recurring_detail_months').select('project_id').eq('project_id',_pidChk).gte('amount',amount-0.01).lte('amount',amount+0.01); const n=(q.data||[]).length; if(n){dupN+=n; dupWhere='in Recurring bills (this project)';} }
-    else if(dest==='overhead'){ const q=await sb.from('fixed_costs').select('id').gte('amount',amount-0.01).lte('amount',amount+0.01); const n=(q.data||[]).length; if(n){dupN+=n; dupWhere='nos Company costs';} }
+    else if(dest==='overhead'){ const q=await sb.from('fixed_costs').select('id').gte('amount',amount-0.01).lte('amount',amount+0.01); const n=(q.data||[]).length; if(n){dupN+=n; dupWhere='in Company costs';} }
   }catch(_){}
-  if(dupN>0 && !confirm('⚠ Already exists '+dupN+' lançamento(s) com o valor $'+amount.toFixed(2)+' '+dupWhere+'.\n\nÉ a mesma conta? Se for, cancele. Post mesmo assim?')) return;
+  if(dupN>0 && !confirm('⚠ There are already '+dupN+' entry(ies) with the amount $'+amount.toFixed(2)+' '+dupWhere+'.\n\nIs it the same bill? If so, cancel. Post anyway?')) return;
   const btn=document.getElementById('lc-submit'); if(btn){btn.disabled=true;btn.textContent='⏳ Posting...';}
   const done=(msg)=>{ toast(msg,true); document.getElementById('lancar-modal').classList.remove('open'); renderLancar(); };
   const fail=(msg)=>{ toast(msg,false); if(btn){btn.disabled=false;btn.textContent='Post';} };
   try{
     if(dest==='obra'){
-      const pid=(document.getElementById('lc-proj')||{}).value; if(!pid) return fail('Escolha a obra');
+      const pid=(document.getElementById('lc-proj')||{}).value; if(!pid) return fail('Choose the project');
       const cat=(document.getElementById('lc-cat')||{}).value||'material';
       const gid=(typeof GROUPS!=='undefined'&&GROUPS[0])?GROUPS[0].id:null;
       const islug=(slug(nm)||'nota')+'-'+(Date.now().toString(36)+Math.random().toString(36).slice(2,6));
       const r=await sb.from('budget_items').insert({project_id:pid,room_id:gid,item_slug:islug,item_name:nm,est:0,actual:amount,est_note:'',actual_note:vendor?('Vendor: '+vendor):'',est_supplier:'',actual_supplier:vendor||'',est_qty:0,actual_qty:1,est_unit_cost:amount,actual_unit_cost:amount,category:cat});
-      if(r.error) return fail('Erro (obra): '+r.error.message);
+      if(r.error) return fail('Error (work): '+r.error.message);
       // anexa a nota, se veio do upload
       if(_lcUpload && _lcUpload.storage_path){ try{
         const dl=await sb.storage.from('vendor-notes').download(_lcUpload.storage_path);
@@ -16048,22 +16048,22 @@ async function lancarSubmit(){
         }
       }catch(_){} }
       if(CID===pid) buildBudgetRooms();
-      return done('Lançado no Real Costs ✓');
+      return done('Posted to Real costs ✓');
     }
     if(dest==='overhead'){
       const cat=((document.getElementById('lc-ohcat')||{}).value||'').trim()||nm;
       const r=await sb.from('fixed_costs').insert({date,category:cat,description:nm,cost_type:'fixed',amount,notes:vendor?('Vendor: '+vendor):'',paid_from_wc:false});
-      if(r.error) return fail('Erro (overhead): '+r.error.message);
+      if(r.error) return fail('Error (overhead): '+r.error.message);
       // preserva o PDF da nota (registro, pra não ficar órfão)
       if(_lcUpload && _lcUpload.storage_path){ try{
         await sb.from('vendor_notes').insert({target_type:'fixed_costs',storage_path:_lcUpload.storage_path,original_filename:_lcUpload.filename,file_type:_lcUpload.type,file_size_bytes:_lcUpload.size,extracted_vendor:vendor||null,extracted_total:amount,extracted_date:date,extracted_category:cat,status:'approved',approved_at:new Date().toISOString()});
       }catch(_){} }
-      return done('Lançado em Company costs (overhead) ✓');
+      return done('Posted to Company costs (overhead) ✓');
     }
     if(dest==='utilities'){
-      const pid=(document.getElementById('lc-proj')||{}).value; if(!pid) return fail('Escolha a obra');
+      const pid=(document.getElementById('lc-proj')||{}).value; if(!pid) return fail('Choose the project');
       const conta=_rcCanonItem((document.getElementById('lc-conta')||{}).value||'');
-      if(!conta) return fail('Choose account recorrente (item da lista)');
+      if(!conta) return fail('Choose the recurring item from the list');
       const month=parseInt(date.slice(5,7),10);
       const proj=(projects||[]).find(p=>p.id===pid)||{};
       const cy=(new Date()).getFullYear();
@@ -16071,23 +16071,23 @@ async function lancarSubmit(){
       const dy=parseInt(date.slice(0,4),10);
       let yoff=years.indexOf(dy); if(yoff<0) yoff=0;
       const r=await sb.from('recurring_detail_months').upsert({project_id:pid,item_name:conta,year_offset:yoff,month,amount,paid_from_wc:false,updated_at:new Date().toISOString()},{onConflict:'project_id,item_name,year_offset,month'});
-      if(r.error) return fail('Erro (utilities): '+r.error.message);
+      if(r.error) return fail('Error (utilities): '+r.error.message);
       await sb.from('recurring_detail_meta').upsert({project_id:pid,item_name:conta,company:vendor||'',account:'',notes:''},{onConflict:'project_id,item_name'});
       // registra no Invoice History (com o PDF), se veio do upload
       if(_lcUpload && _lcUpload.storage_path){ try{
         await sb.from('vendor_notes').insert({project_id:pid,target_type:'recurring_costs',storage_path:_lcUpload.storage_path,original_filename:_lcUpload.filename,file_type:_lcUpload.type,file_size_bytes:_lcUpload.size,extracted_vendor:vendor||null,extracted_total:amount,extracted_date:date,recurring_item_name:conta,recurring_year_offset:yoff,recurring_month:month,status:'approved',approved_at:new Date().toISOString()});
       }catch(_){} }
-      return done('Lançado em Recurring ✓');
+      return done('Posted to Recurring ✓');
     }
     if(dest==='repasse'||dest==='socio'){
-      const acct=(document.getElementById('lc-acct')||{}).value; if(!acct) return fail('Choose account bancária');
+      const acct=(document.getElementById('lc-acct')||{}).value; if(!acct) return fail('Choose the bank account');
       const pid=dest==='repasse'?((document.getElementById('lc-proj')||{}).value||null):null;
       const catId=_finCatIdByCode(dest==='repasse'?'TR-CLITR':'OH-SOCIO');
       const r=await sb.from('fin_transactions').insert({account_id:acct,txn_date:date,description:nm+(vendor?(' · '+vendor):''),amount,direction:'out',category_id:catId,project_id:pid,is_transfer:(dest==='repasse'),status:'confirmed',classified_by:'manual',fingerprint:'manual|'+dest+'|'+Date.now()+'|'+amount.toFixed(2)});
-      if(r.error) return fail('Erro ('+dest+'): '+r.error.message);
-      return done('Lançado nos Books ✓');
+      if(r.error) return fail('Error ('+dest+'): '+r.error.message);
+      return done('Posted to Books ✓');
     }
-    fail('Destino inválido');
+    fail('Invalid destination');
   }catch(e){ fail('Error: '+(e.message||e)); }
 }
 function renderImportQueue(){
