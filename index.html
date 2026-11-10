@@ -15128,6 +15128,12 @@ async function clearConstrGantt(){
   renderConstructionStages();
   try{ await sb.from('projects').update({constr_gantt:{}}).eq('id',CID); }catch(e){}
 }
+var PHASE_COLORS=['#3E6B8C','#4C7FA0','#2D7D5F','#5B8C3E','#8A6D3B','#B07A3C','#7B5C8C','#9A5B7D','#C0603F','#CB704F','#2D8C8C','#3F8C6B','#8C7A3B','#6B8C3E','#7A6B5C','#5C6B7A','#8C5B5B'];
+function _cgVendorOpts(sel){
+  var o='<option value="">— sub —</option>';
+  o+=(vendors||[]).slice().sort(function(a,b){return (a.name||'').localeCompare(b.name||'');}).map(function(v){return '<option value="'+v.id+'"'+(v.id===sel?' selected':'')+'>'+(v.name||'').replace(/</g,'&lt;')+'</option>';}).join('');
+  return o;
+}
 function renderConstructionStages(){
   var el=document.getElementById('d-constr'); if(!el) return;
   var data=_projGantt();
@@ -15150,49 +15156,70 @@ function renderConstructionStages(){
     months.push({label:_cgFmtMon(mc), left:_cgDays(minD,segS)/span*100, width:(_cgDays(segS,segE)+1)/span*100, boundary:_cgDays(minD,mc)/span*100});
     mc=new Date(mc.getFullYear(),mc.getMonth()+1,1,12);
   }
-  var todayPct = (today>=minD&&today<=maxD)?(_cgDays(minD,today)/span*100):null;
-  var LBL=330;
-  function grid(){
-    return months.map(function(m){ return m.boundary>0?'<div style="position:absolute;top:0;bottom:0;left:'+m.boundary+'%;width:1px;background:#EBEFEC"></div>':''; }).join('')
-      + (todayPct!=null?'<div style="position:absolute;top:0;bottom:0;left:'+todayPct+'%;width:2px;background:#CB704F;z-index:2"></div>':'');
+  // week gridlines (Mondays) + weekend shading bands
+  var weekLines=[], weekendBands=[];
+  var wc=new Date(minD);
+  for(var dd=0; dd<=span; dd++){
+    var day=new Date(minD.getTime()+dd*86400000); var dow=day.getDay();
+    if(dow===1) weekLines.push(dd/span*100);
+    if(dow===6) weekendBands.push({left:dd/span*100, width:2/span*100});
   }
-  var head='<div style="display:flex;align-items:flex-end;margin-bottom:2px">'
-    +'<div style="width:'+LBL+'px;flex-shrink:0"></div>'
-    +'<div style="flex:1;position:relative;height:16px;min-width:360px">'+months.map(function(m){return '<div style="position:absolute;left:'+m.left+'%;width:'+m.width+'%;font-size:10px;color:var(--gray3);text-align:center;border-left:1px solid #EBEFEC;overflow:hidden">'+m.label+'</div>';}).join('')+'</div></div>';
-  var rowH=30;
-  var rows=STD_STAGES.map(function(st){
+  var todayPct = (today>=minD&&today<=maxD)?(_cgDays(minD,today)/span*100):null;
+  var LBL=150, VW=118, DW=90, DAYW=42;
+  var LEFTW=LBL+VW+DW+DW+DAYW+20;
+  function grid(){
+    var g=weekendBands.map(function(b){return '<div style="position:absolute;top:0;bottom:0;left:'+b.left+'%;width:'+b.width+'%;background:#F6F7F6"></div>';}).join('');
+    g+=weekLines.map(function(p){return p>0?'<div style="position:absolute;top:0;bottom:0;left:'+p+'%;width:1px;background:#F0F2F1"></div>':'';}).join('');
+    g+=months.map(function(m){return m.boundary>0?'<div style="position:absolute;top:0;bottom:0;left:'+m.boundary+'%;width:1px;background:#D9DEDC"></div>':'';}).join('');
+    g+=(todayPct!=null?'<div style="position:absolute;top:0;bottom:0;left:'+todayPct+'%;width:2px;background:#CB704F;z-index:3"></div>':'');
+    return g;
+  }
+  var colHead='<div style="display:flex;align-items:center;height:26px;font-size:9.5px;font-weight:700;color:var(--gray3);text-transform:uppercase;letter-spacing:.3px;border-bottom:2px solid #E3E6E4">'
+    +'<div style="width:'+LBL+'px;flex-shrink:0;padding-left:2px">Phase</div>'
+    +'<div style="width:'+VW+'px;flex-shrink:0">Assigned sub</div>'
+    +'<div style="width:'+DW+'px;flex-shrink:0">Start</div>'
+    +'<div style="width:'+DW+'px;flex-shrink:0">End</div>'
+    +'<div style="width:'+DAYW+'px;flex-shrink:0;text-align:center">Days</div>'
+    +'<div style="flex:1;min-width:360px;position:relative;height:26px">'+months.map(function(m){return '<div style="position:absolute;left:'+m.left+'%;width:'+m.width+'%;text-align:center;border-left:1px solid #D9DEDC;overflow:hidden">'+m.label+'</div>';}).join('')+'</div>'
+  +'</div>';
+  var rowH=32;
+  var rows=STD_STAGES.map(function(st,si){
     var d=data[st.id]||{}; var s=_cgParse(d.s), e=_cgParse(d.e);
-    var bar='';
+    var color=PHASE_COLORS[si%PHASE_COLORS.length];
+    var bar='', days='';
     if(s&&e&&e>=s){
-      var left=_cgDays(minD,s)/span*100, width=Math.max(1.2,(_cgDays(s,e)+1)/span*100);
-      var state = e<today?'done':(s<=today?'current':'future');
-      var bg = state==='done'?'#237A50':(state==='current'?'#CB704F':'#8FA8B8');
-      bar='<div title="'+st.label.replace(/"/g,"&quot;")+': '+(d.s||'')+' to '+(d.e||'')+'" style="position:absolute;top:6px;height:'+(rowH-14)+'px;left:'+left+'%;width:'+width+'%;background:'+bg+';border-radius:5px;min-width:6px;z-index:1"></div>';
+      var dur=_cgDays(s,e)+1; days=dur+'d';
+      var left=_cgDays(minD,s)/span*100, width=Math.max(1.2,dur/span*100);
+      var prog = e<=today?100:(s>=today?0:Math.round(_cgDays(s,today)/(_cgDays(s,e)||1)*100));
+      var vName=''; if(d.v){ var vv=(vendors||[]).find(function(x){return x.id===d.v;}); vName=vv?(vv.name||''):''; }
+      var inside = width>12 ? ('<span style="position:absolute;left:6px;top:50%;transform:translateY(-50%);font-size:9.5px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;max-width:92%;text-shadow:0 1px 1px rgba(0,0,0,.25)">'+st.label+(vName?(' · '+vName):'')+'</span>') : '';
+      bar='<div title="'+st.label.replace(/"/g,"&quot;")+': '+(d.s||'')+' → '+(d.e||'')+' ('+dur+'d, '+prog+'%)" style="position:absolute;top:6px;height:'+(rowH-14)+'px;left:'+left+'%;width:'+width+'%;background:'+color+'33;border:1px solid '+color+';border-radius:5px;min-width:8px;z-index:2;overflow:hidden">'
+        +'<div style="position:absolute;left:0;top:0;bottom:0;width:'+prog+'%;background:'+color+'"></div>'
+        +inside
+      +'</div>';
     }
-    return '<div style="display:flex;align-items:center;height:'+rowH+'px">'
-      +'<div style="width:'+LBL+'px;flex-shrink:0;display:flex;align-items:center;gap:4px">'
-        +'<span style="flex:1;font-size:11px;font-weight:600;color:#263238;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="'+st.label.replace(/"/g,"&quot;")+'">'+st.label+'</span>'
-        +'<input type="date" value="'+(d.s||'')+'" onchange="setConstrDate(\''+st.id+'\',\'s\',this.value)" title="Start" style="font-size:9px;padding:2px 2px;border:1px solid var(--gray2);border-radius:4px;width:86px">'
-        +'<input type="date" value="'+(d.e||'')+'" onchange="setConstrDate(\''+st.id+'\',\'e\',this.value)" title="End" style="font-size:9px;padding:2px 2px;border:1px solid var(--gray2);border-radius:4px;width:86px">'
-      +'</div>'
-      +'<div style="flex:1;position:relative;height:'+rowH+'px;border-bottom:1px solid #F3F5F4;min-width:360px">'+grid()+bar+'</div>'
+    return '<div style="display:flex;align-items:center;height:'+rowH+'px;border-bottom:1px solid #F3F5F4">'
+      +'<div style="width:'+LBL+'px;flex-shrink:0;display:flex;align-items:center;gap:6px;padding-left:2px"><span style="width:9px;height:9px;border-radius:2px;background:'+color+';flex-shrink:0"></span><span style="font-size:11px;font-weight:600;color:#263238;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="'+st.label.replace(/"/g,"&quot;")+'">'+st.label+'</span></div>'
+      +'<div style="width:'+VW+'px;flex-shrink:0;padding-right:4px"><select onchange="setConstrDate(\''+st.id+'\',\'v\',this.value)" style="width:100%;font-size:10px;padding:2px 3px;border:1px solid var(--gray2);border-radius:4px;font-family:inherit">'+_cgVendorOpts(d.v||'')+'</select></div>'
+      +'<div style="width:'+DW+'px;flex-shrink:0"><input type="date" value="'+(d.s||'')+'" onchange="setConstrDate(\''+st.id+'\',\'s\',this.value)" style="font-size:9px;padding:2px;border:1px solid var(--gray2);border-radius:4px;width:84px"></div>'
+      +'<div style="width:'+DW+'px;flex-shrink:0"><input type="date" value="'+(d.e||'')+'" onchange="setConstrDate(\''+st.id+'\',\'e\',this.value)" style="font-size:9px;padding:2px;border:1px solid var(--gray2);border-radius:4px;width:84px"></div>'
+      +'<div style="width:'+DAYW+'px;flex-shrink:0;text-align:center;font-size:10px;font-weight:700;color:var(--gray3)">'+days+'</div>'
+      +'<div style="flex:1;position:relative;height:'+rowH+'px;min-width:360px">'+grid()+bar+'</div>'
     +'</div>';
   }).join('');
   var inprog=STD_STAGES.filter(function(st){var dd=data[st.id]||{};var s=_cgParse(dd.s),e=_cgParse(dd.e);return s&&e&&s<=today&&e>=today;});
   el.innerHTML='<div class="card" style="margin-top:16px">'
     +'<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px">'
-      +'<div class="card-title" style="margin:0;border:0;padding:0">🏗️ Construction schedule (Gantt)</div>'
-      +'<div style="font-size:12px;color:var(--gray3)">'+(inprog.length?('In progress now: <strong style="color:#CB704F">'+inprog.map(function(st){return st.label;}).join(', ')+'</strong>'):'Set a start & end date per phase →')+'</div>'
+      +'<div class="card-title" style="margin:0;border:0;padding:0">🏗️ Construction schedule</div>'
+      +'<div style="font-size:12px;color:var(--gray3)">'+(inprog.length?('In progress now: <strong style="color:#CB704F">'+inprog.map(function(st){return st.label;}).join(', ')+'</strong>'):'Set start & end dates per phase →')+'</div>'
     +'</div>'
-    +'<div style="overflow-x:auto">'+head+rows+'</div>'
-    +'<div style="margin-top:10px;font-size:11px;color:var(--gray3);display:flex;gap:14px;flex-wrap:wrap;align-items:center">'
-      +'<span><span style="display:inline-block;width:11px;height:11px;background:#237A50;border-radius:2px;vertical-align:middle"></span> Done</span>'
-      +'<span><span style="display:inline-block;width:11px;height:11px;background:#CB704F;border-radius:2px;vertical-align:middle"></span> In progress</span>'
-      +'<span><span style="display:inline-block;width:11px;height:11px;background:#8FA8B8;border-radius:2px;vertical-align:middle"></span> Upcoming</span>'
+    +'<div style="overflow-x:auto">'+colHead+rows+'</div>'
+    +'<div style="margin-top:10px;font-size:11px;color:var(--gray3);display:flex;gap:16px;flex-wrap:wrap;align-items:center">'
+      +'<span>Assign a sub, set start/end — the bar fills with % progress automatically.</span>'
       +'<span style="color:#CB704F;font-weight:700">| Today</span>'
       +'<a href="javascript:void(0)" onclick="clearConstrGantt()" style="color:#CB704F;margin-left:auto">Clear dates</a>'
     +'</div>'
-    +'<div style="margin-top:6px;font-size:11px;color:var(--gray3)">Phases can overlap — set dates that run in parallel and the bars will stack.</div>'
+    +'<div style="margin-top:4px;font-size:11px;color:var(--gray3)">Phases can overlap — parallel dates stack as separate bars (Buildertrend-style).</div>'
   +'</div>';
 }
 function renderDashboard(){
